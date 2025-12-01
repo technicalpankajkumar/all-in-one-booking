@@ -1,0 +1,40 @@
+import { useLocation, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import BookingForm from "@/components/CabBookingForm";
+import { Button } from "@/components/ui/button";
+import Navbar from "@/components/layout/Navbar";
+
+export default function BookingCab() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const selectedCab = location.state?.cab;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <Navbar/>
+      <div className="container mx-auto px-4 py-8">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Cabs
+        </Button>
+
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold mb-2 gradient-text">Complete Your Booking</h1>
+            {selectedCab && (
+              <p className="text-muted-foreground">
+                {selectedCab.name} - {selectedCab.type} | Starting at ₹{selectedCab.price}
+              </p>
+            )}
+          </div>
+
+          <BookingForm selectedCab={selectedCab} />
+        </div>
+      </div>
+    </div>
+  );
+}
