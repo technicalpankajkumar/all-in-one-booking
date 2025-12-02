@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { TourPackage } from "../data/types";
+import { tourPackage } from "../data/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,7 +26,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface PackageBookingModalProps {
-  tour: TourPackage | null;
+  tour: tourPackage | null;
   isOpen: boolean;
   onClose: () => void;
 }

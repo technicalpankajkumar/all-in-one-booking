@@ -6,9 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Cabs from "./pages/Cabs";
+import Cabs from "./pages/Cabs/Cabs";
 import Hotels from "./pages/Hotels";
-import TourPackages from "./pages/TourPackages";
 import About from "./pages/About";
 import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
@@ -19,8 +18,9 @@ import Dashboard from "./pages/Dashboard";
 import NotFoundPage from "./pages/NotFoundPage";
 import LabTests from "./pages/LabTests";
 import LabTestDetail from "./pages/LabTestDetail";
-import PackageTour from "./pages/TourPackage";
+import TourPackage from "./pages/TourPackage";
 import BaseLayout from "./components/layout/BaseLayout";
+import CabListing from "./pages/Cabs/CabListing";
 
 const queryClient = new QueryClient();
 
@@ -37,7 +37,7 @@ const App = () => (
             <Route path="/" element={<Index/>} />
             <Route path="/cabs" element={<Cabs />} />
             <Route path="/hotels" element={<Hotels />} />
-            <Route path="/tour-packages" element={<PackageTour />} />
+            <Route path="/tour-packages" element={<TourPackage />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/hotel/:id" element={<HotelDetails />} />
@@ -45,7 +45,7 @@ const App = () => (
           </Route>
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/dashboard/notifications" element={<NotFoundPage />} />
+            <Route path="/dashboard/cabs" element={<CabListing />} />
             <Route path="/dashboard/settings" element={<NotFoundPage />} />
             <Route path="/dashboard/lab-tests" element={<LabTests />} />
             <Route path="/dashboard/lab-tests/:id" element={<LabTestDetail />} />

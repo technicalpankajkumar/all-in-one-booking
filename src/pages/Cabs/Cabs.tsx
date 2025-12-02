@@ -5,7 +5,7 @@ import { CabFilters } from "@/components/CabFilters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Car, MapPin, Clock, DollarSign } from "lucide-react";
-import { cabs as initialCabs } from "../data/data";
+import { cabs as initialCabs } from "../../data/data";
 import heroBg from "@/assets/hero-bg.jpg";
 import sedan1 from "@/assets/sedan-1.jpg";
 import suv1 from "@/assets/suv-1.jpg";
