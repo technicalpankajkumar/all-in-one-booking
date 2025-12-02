@@ -13,7 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { logoutUser } from "@/api/auth";
+import { toast } from "sonner";
 
 const languages = [
   { code: "en", name: "English" },
@@ -24,12 +26,22 @@ const languages = [
 ];
 
 export function ProfileMenu() {
-  const handleLogout = () => {
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out.",
-    });
-  };
+   const navigate = useNavigate()
+   
+   const handleLogout = async () => {
+   const result = await logoutUser();
+ 
+   if (result.error) {
+     console.error(result.error);
+     toast.error(result.error);
+   } else {
+     console.log(result.message);
+     toast.success("Logged out successfully");
+ 
+     // Redirect to login
+     navigate("/login");
+   }
+ };
 
   const handleLanguageChange = (language: string) => {
     toast({

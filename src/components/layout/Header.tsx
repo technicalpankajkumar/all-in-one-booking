@@ -15,6 +15,7 @@ export function Header({ onMenuClick, className }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
 
+
   return (
     <header
       className={cn(

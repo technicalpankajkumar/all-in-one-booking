@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import travelHero from "@/assets/travel-hero.jpg";
+import { registerUser, verificationUser } from "@/api/auth";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -17,28 +18,26 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
+  const [formData2,setFormData2] = useState({
+    code:"",
+    token:""
+  })
   const [isLoading, setIsLoading] = useState(false);
-
+  const [completeRegister,setCompleteRegister] = useState(true);
+  const navigate = useNavigate()
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+  const handleChange2 = (field: string, value: string) => {
+    setFormData2(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validation
-    if (!formData.name || !formData.email || !formData.mobile || !formData.profession || !formData.password || !formData.confirmPassword) {
+    if (!formData.name || !formData.email || !formData.mobile) {
       toast.error("Please fill in all fields");
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      toast.error("Password must be at least 8 characters");
       return;
     }
 
@@ -50,12 +49,28 @@ const Register = () => {
 
     setIsLoading(true);
     
-    // Simulate registration
-    setTimeout(() => {
-      toast.success("Account created successfully!");
-      setIsLoading(false);
-    }, 1000);
+    const result = await registerUser(formData,setIsLoading);
+    if(result.success){
+      toast.success(result.message)
+      setCompleteRegister(false)
+      setFormData2({
+        code:"",
+        token:result.token
+      })
+    }else{
+      toast.error(result.message || "Please check your email to verify email before complate registeration");
+    }
   };
+  const finalSubmit = async (e:React.FormEvent) =>{
+    e.preventDefault();
+   let res = await verificationUser(formData2,setIsLoading)
+    if(res.success){
+      navigate("/login");
+      setCompleteRegister(true);
+    }else {
+       toast.error(res.message)
+    }
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -83,7 +98,7 @@ const Register = () => {
             <p className="text-muted-foreground">Start exploring the world today</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+         { completeRegister ? <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <Input
@@ -123,7 +138,7 @@ const Register = () => {
               />
             </div>
 
-            <div className="space-y-2">
+           {/*<div className="space-y-2">
               <Label htmlFor="profession">Profession</Label>
               <Select onValueChange={(value) => handleChange("profession", value)}>
                 <SelectTrigger className="h-11">
@@ -139,33 +154,9 @@ const Register = () => {
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Minimum 8 characters"
-                value={formData.password}
-                onChange={(e) => handleChange("password", e.target.value)}
-                className="h-11"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Re-enter your password"
-                value={formData.confirmPassword}
-                onChange={(e) => handleChange("confirmPassword", e.target.value)}
-                className="h-11"
-                required
-              />
-            </div>
+           
 
             <Button 
               type="submit" 
@@ -182,6 +173,28 @@ const Register = () => {
               </Link>
             </div>
           </form>
+
+          :<form onSubmit={finalSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="code">Enter Verification Code</Label>
+              <Input
+                id="code"
+                type="text"
+                placeholder="Enter verification code"
+                value={formData2.code}
+                onChange={(e) => handleChange2("code", e.target.value)}
+                className="h-11"
+                required
+              />
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full h-11 text-base font-semibold"
+              disabled={isLoading}
+            >
+              {isLoading ? "Verifying Account..." : "Verify Account"}
+            </Button>
+          </form>}
         </Card>
       </div>
     </div>
