@@ -21,6 +21,8 @@ import LabTestDetail from "./pages/LabTestDetail";
 import TourPackage from "./pages/TourPackage";
 import BaseLayout from "./components/layout/BaseLayout";
 import CabListing from "./pages/Cabs/CabListing";
+import DriverListing from "./pages/drivers/DriverListing";
+import DriverDetailsPage from "./pages/drivers/DriverDetailsPage";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +48,8 @@ const App = () => (
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/cabs" element={<CabListing />} />
+            <Route path="/dashboard/drivers" element={<DriverListing />} />
+            <Route path="/dashboard/driver/:id" element={<DriverDetailsPage />} />
             <Route path="/dashboard/settings" element={<NotFoundPage />} />
             <Route path="/dashboard/lab-tests" element={<LabTests />} />
             <Route path="/dashboard/lab-tests/:id" element={<LabTestDetail />} />

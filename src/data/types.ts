@@ -50,3 +50,125 @@ export interface FilterState {
 }
 
 export type ViewMode = 'grid' | 'table';
+
+
+export interface DriverImage {
+  id: string;
+  driver_id: string;
+  image_type: string;
+  image_path: string;
+  created_at: string;
+}
+
+export interface CarFeatures {
+  id: string;
+  car_id: string;
+  ac: boolean;
+  gps: boolean;
+  music_system: boolean;
+  automatic_transmission: boolean;
+}
+
+export interface CarImage {
+  id: string;
+  car_id: string;
+  image_url: string;
+  is_main: boolean;
+}
+
+export interface Car {
+  id: string;
+  car_name: string;
+  car_type: string;
+  fuel_type: string;
+  seat_capacity: number;
+  bag_capacity: number;
+  base_price: number;
+  price_unit: string;
+  description: string;
+  is_available: boolean;
+  created_at: string;
+  updated_at: string;
+  features: CarFeatures | null;
+  images: CarImage[];
+}
+
+export interface Driver {
+  id: string;
+  full_name: string;
+  father_name: string;
+  email: string;
+  mobile: string;
+  alternate_mobile: string;
+  dob: string;
+  gender: string;
+  assigned_car_id: string | null;
+  current_address: string;
+  permanent_address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  aadhar_number: string;
+  pan_number: string;
+  driving_license_number: string;
+  driving_license_expiry: string;
+  bank_account_number: string;
+  bank_ifsc: string;
+  bank_name: string;
+  account_holder_name: string;
+  upi_id: string;
+  experience_years: number;
+  languages_known: string[];
+  availability_status: string;
+  preferred_city: string | null;
+  preferred_service_area: number;
+  rating: number;
+  total_rides: number;
+  cancellation_rate: number;
+  emergency_contact_name: string;
+  emergency_contact_number: string;
+  emergency_contact_relation: string;
+  created_at: string;
+  updated_at: string;
+  images: DriverImage[];
+  Car: Car | null;
+}
+
+export interface DriverBasicDetails {
+  full_name: string;
+  father_name: string;
+  email: string;
+  mobile: string;
+  alternate_mobile: string;
+  dob: string;
+  gender: string;
+  current_address: string;
+  permanent_address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  aadhar_number: string;
+  pan_number: string;
+  driving_license_number: string;
+  driving_license_expiry: string;
+  bank_account_number: string;
+  bank_ifsc: string;
+  bank_name: string;
+  account_holder_name: string;
+  upi_id: string;
+  experience_years: number;
+  languages_known: string[];
+  emergency_contact_name: string;
+  emergency_contact_number: string;
+  emergency_contact_relation: string;
+}
+
+export interface DriverDocuments {
+  profile_image: File | null;
+  aadhar_front: File | null;
+  aadhar_back: File | null;
+  pan_card: File | null;
+  driving_license_front: File | null;
+  driving_license_back: File | null;
+}
+

@@ -15,6 +15,7 @@ import {
   HotelIcon,
   CarIcon,
   Torus,
+  CableCar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -26,9 +27,10 @@ type SidebarLink = {
 
 const mainLinks: SidebarLink[] = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
+  { name: "Drivers", href: "/dashboard/drivers", icon: CableCar },
   { name: "Cabs", href: "/dashboard/cabs", icon: CarIcon },
   { name: "Hotels", href: "/dashboard/hotels", icon: HotelIcon },
-  { name: "Tour Package", href: "/dashboard/hotels", icon: Torus },
+  { name: "Tour Package", href: "/dashboard/tour-package", icon: Torus },
   { name: "Lab Tests", href: "/dashboard/lab-tests", icon: Bell },
   { name: "Messages", href: "/dashboard/messages", icon: MessageCircle },
   { name: "Notifications", href: "/dashboard/notifications", icon: Bell },
