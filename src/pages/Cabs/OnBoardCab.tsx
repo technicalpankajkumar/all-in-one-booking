@@ -45,7 +45,7 @@ type CarFormValues = z.infer<typeof carFormSchema>;
 
 interface PackageBookingModalProps {
     isOpen: boolean;
-    onClose: (value:boolean) => void;
+    onClose: (value: boolean) => void;
 }
 
 const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
@@ -78,20 +78,20 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
         },
     });
 
-   async function onSubmit(data: CarFormValues) {
-    const res = await addCab(data,uploadedImages?.map(res =>  res.file));
-        if(res.success){
+    async function onSubmit(data: CarFormValues) {
+        const res = await addCab(data, uploadedImages?.map(res => res.file));
+        if (res.success) {
             toast.success("Cab Added Successfully!")
             onClose(false)
             setUploadedImages([])
             reset();
-        }else{
+        } else {
             toast.error(res.message)
         }
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={()=>onClose(false)}>
+        <Dialog open={isOpen} onOpenChange={() => onClose(false)}>
             <DialogContent className="max-w-2xl max-h-[96vh] p-0 flex flex-col">
                 <DialogHeader className="px-6 pt-4 pb-4 border-b bg-muted/30">
                     <DialogTitle className="text-2xl font-bold text-foreground">
@@ -106,113 +106,113 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                             </Button>
                             <Button type="submit" size="sm" className="flex-1">Submit</Button>
                         </div>
-                         <Card>
+                        <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-lg">
-                                   Details
+                                    Details
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Car Name */}
-                            <CustomInput
-                                id="car_name"
-                                label="Car Name"
-                                required
-                                placeholder="Toyota Camry"
-                                register={register}
-                                errors={errors}
-                            />
-                            <CustomSelect
-                                id="car_type"
-                                label="Car Type"
-                                required
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {/* Car Name */}
+                                    <CustomInput
+                                        id="car_name"
+                                        label="Car Name"
+                                        required
+                                        placeholder="Toyota Camry"
+                                        register={register}
+                                        errors={errors}
+                                    />
+                                    <CustomSelect
+                                        id="car_type"
+                                        label="Car Type"
+                                        required
 
-                                items={[
-                                    { value: "Sedan", label: "Sedan" },
-                                    { value: "Mini", label: "Mini" },
-                                    { value: "SUV", label: "SUV" },
-                                ]}
-                                setValue={setValue}
-                                value={watch("car_type")}
-                                errors={errors}
-                            />
-                            <CustomSelect
-                                id="fuel_type"
-                                label="Fuel Type"
-                                required
-                                items={[
-                                    { value: "Diesel", label: "Diesel" },
-                                    { value: "Petrol", label: "Petrol" },
-                                    { value: "Electric", label: "Electric" },
-                                ]}
-                                setValue={setValue}
-                                value={watch("fuel_type")}
-                                errors={errors}
-                            />
-                            <CustomInput
-                                id="seat_capacity"
-                                label="Seat Capacity"
-                                required
-                                placeholder="Enter Seat Capacity"
-                                register={register}
-                                errors={errors}
-                                type="number"
-                                min={2}
-                            />
-                            <CustomInput
-                                id="bag_capacity"
-                                label="Bag Capacity"
-                                required
-                                placeholder="Enter Bag Capacity"
-                                register={register}
-                                errors={errors}
-                                type="number"
-                                min={2}
-                            />
-                            <CustomInput
-                                id="base_price"
-                                label="Base Price"
-                                required
-                                placeholder="Enter Base Price"
-                                register={register}
-                                errors={errors}
-                                type="number"
-                            />
+                                        items={[
+                                            { value: "Sedan", label: "Sedan" },
+                                            { value: "Mini", label: "Mini" },
+                                            { value: "SUV", label: "SUV" },
+                                        ]}
+                                        setValue={setValue}
+                                        value={watch("car_type")}
+                                        errors={errors}
+                                    />
+                                    <CustomSelect
+                                        id="fuel_type"
+                                        label="Fuel Type"
+                                        required
+                                        items={[
+                                            { value: "Diesel", label: "Diesel" },
+                                            { value: "Petrol", label: "Petrol" },
+                                            { value: "Electric", label: "Electric" },
+                                        ]}
+                                        setValue={setValue}
+                                        value={watch("fuel_type")}
+                                        errors={errors}
+                                    />
+                                    <CustomInput
+                                        id="seat_capacity"
+                                        label="Seat Capacity"
+                                        required
+                                        placeholder="Enter Seat Capacity"
+                                        register={register}
+                                        errors={errors}
+                                        type="number"
+                                        min={2}
+                                    />
+                                    <CustomInput
+                                        id="bag_capacity"
+                                        label="Bag Capacity"
+                                        required
+                                        placeholder="Enter Bag Capacity"
+                                        register={register}
+                                        errors={errors}
+                                        type="number"
+                                        min={2}
+                                    />
+                                    <CustomInput
+                                        id="base_price"
+                                        label="Base Price"
+                                        required
+                                        placeholder="Enter Base Price"
+                                        register={register}
+                                        errors={errors}
+                                        type="number"
+                                    />
 
-                            <CustomSelect
-                                id="price_unit"
-                                label="Price Unit"
-                                required
-                                items={[
-                                    { value: "per_trip", label: "Per Trip" },
-                                    { value: "per_km", label: "Per KM" },
-                                    { value: "per_day", label: "Per Day" },
-                                ]}
-                                setValue={setValue}
-                                value={watch("price_unit")}
-                                errors={errors}
-                            />
-                        </div>
-                        <CustomTextarea
-                            id="description"
-                            label="Description"
-                            required
-                            placeholder="Enter car description, features, and other details..."
-                            register={register}
-                            errors={errors}
-                        />
-                        <div className="flex gap-2">
-                            <Checkbox
-                                id="is_available"
-                                checked={watch('is_available')}
-                                onCheckedChange={(checked) => setValue('is_available', !!checked)}
-                            />
-                            <Label htmlFor="is_available" className="cursor-pointer text-muted-foreground ">
-                                Car Available
-                            </Label>
-                        </div>
+                                    <CustomSelect
+                                        id="price_unit"
+                                        label="Price Unit"
+                                        required
+                                        items={[
+                                            { value: "per_trip", label: "Per Trip" },
+                                            { value: "per_km", label: "Per KM" },
+                                            { value: "per_day", label: "Per Day" },
+                                        ]}
+                                        setValue={setValue}
+                                        value={watch("price_unit")}
+                                        errors={errors}
+                                    />
+                                </div>
+                                <CustomTextarea
+                                    id="description"
+                                    label="Description"
+                                    required
+                                    placeholder="Enter car description, features, and other details..."
+                                    register={register}
+                                    errors={errors}
+                                />
+                                <div className="flex gap-2">
+                                    <Checkbox
+                                        id="is_available"
+                                        checked={watch('is_available')}
+                                        onCheckedChange={(checked) => setValue('is_available', !!checked)}
+                                    />
+                                    <Label htmlFor="is_available" className="cursor-pointer text-muted-foreground ">
+                                        Car Available
+                                    </Label>
+                                </div>
                             </CardContent>
                         </Card>
 
@@ -232,20 +232,20 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                             </CardContent>
                         </Card>
                         <Card>
-                                  <CardHeader className="pb-4">
+                            <CardHeader className="pb-4">
                                 <CardTitle className="flex items-center gap-2 text-lg">
-                                   Cab Images
+                                    Cab Images
                                 </CardTitle>
                             </CardHeader>
-                                <CardContent>
-                                     <MultiImageUploader
-                                        images={uploadedImages}
-                                        onChange={setUploadedImages}
-                                        maxImages={8}
-                                        maxSizeInMB={5}
-                                        description="Upload up to 8 images (JPG, PNG, WebP, GIF)"
-                                        />
-                                </CardContent>
+                            <CardContent>
+                                <MultiImageUploader
+                                    images={uploadedImages}
+                                    onChange={setUploadedImages}
+                                    maxImages={8}
+                                    maxSizeInMB={5}
+                                    description="Upload up to 8 images (JPG, PNG, WebP, GIF)"
+                                />
+                            </CardContent>
                         </Card>
 
                     </form>

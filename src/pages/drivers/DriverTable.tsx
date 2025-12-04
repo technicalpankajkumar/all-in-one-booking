@@ -7,14 +7,16 @@ const DriverTable = ({ tours, totalItems, onView }) => {
     {
       key: "full_name",
       label: "Name",
-      render: (record) => (
+      render: (record) => {
+        console.log(record?.images?.filter(res =>  res.image_type == "profile"))
+        return (
         <div className="flex items-center gap-3">
-          <img src={record?.image} className="w-16 h-12 rounded-lg object-cover" />
+          <img src={"http://localhost:5000"+record?.images?.filter(res => res.image_type == 'profile')?.[0]?.image_path} className="w-16 h-12 rounded-lg object-cover" />
           <div>
             <p className="font-medium line-clamp-1">{record?.full_name}</p>
           </div>
         </div>
-      ),
+      )},
     },
     {
       key: "gender",

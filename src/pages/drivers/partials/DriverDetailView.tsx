@@ -42,7 +42,7 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
     }
   };
 
-  const profileImage = driver?.images?.find((img) => img?.image_type === "profile");
+  const profileImage ="http://localhost:5000"+driver?.images?.find((img) => img?.image_type === "profile")?.image_path;
 
   return (
     <div className="space-y-6">
@@ -52,7 +52,7 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
         <CardContent className="relative px-4 sm:px-6 pb-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-12 sm:-mt-16">
             <Avatar className="w-24 h-24 sm:w-32 sm:h-32 border-4 border-background shadow-lg">
-              <AvatarImage src={profileImage?.image_path} />
+              <AvatarImage src={profileImage} />
               <AvatarFallback className="text-2xl sm:text-3xl bg-primary text-primary-foreground">
                 {driver?.full_name
                   ?.split(" ")
@@ -293,11 +293,11 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {driver?.images?.map((image) => (
+                {driver?.images?.filter(res => res.image_type != "profile")?.map((image) => (
                   <div key={image?.id} className="space-y-2">
                     <div className="aspect-square bg-muted rounded-lg overflow-hidden">
                       <img
-                        src={image?.image_path}
+                        src={"http://localhost:5000"+image?.image_path}
                         alt={image?.image_type}
                         className="w-full h-full object-cover"
                       />

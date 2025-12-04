@@ -117,7 +117,7 @@ export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormP
                 <div className="w-full sm:w-48 h-32 bg-muted rounded-lg overflow-hidden">
                   {selectedCar.images?.[0] ? (
                     <img
-                      src={selectedCar.images[0].image_url}
+                      src={"http://localhost:5000"+selectedCar.images?.find(res => res.is_main == true)?.image_url}
                       alt={selectedCar.car_name}
                       className="w-full h-full object-cover"
                     />

@@ -81,7 +81,7 @@ export function CarSelectionModal({ open, onOpenChange, cars, selectedCarId, onS
                       <div className="w-24 h-24 sm:w-32 sm:h-24 bg-muted rounded-lg overflow-hidden shrink-0">
                         {car?.images?.[0] ? (
                           <img
-                            src={car?.images?.[0]?.image_url}
+                            src={"http://localhost:5000"+car.images?.find(res => res.is_main == true)?.image_url}
                             alt={car.car_name}
                             className="w-full h-full object-cover"
                           />

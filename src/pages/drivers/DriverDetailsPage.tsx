@@ -1,10 +1,7 @@
-import { DriverDetailsView } from "./partials/DriverDetailView";
-import { Driver } from "../../data/types";
-import { ArrowLeft, Edit, Trash2 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
 import { getDriverById } from "@/api/driver";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { DriverDetailsView } from "./partials/DriverDetailView";
 
 export default function DriverDetailsPage() {
   const { id } = useParams();

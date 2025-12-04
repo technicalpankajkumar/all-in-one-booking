@@ -8,7 +8,7 @@ const CabTable = ({ data, totalItems, onEdit=()=>{},onDelete=()=>{},onView=()=>{
       label: "Name",
       render: (record) => (
         <div className="flex items-center gap-3">
-          <img src={record.image} className="w-16 h-12 rounded-lg object-cover" />
+          <img src={"http://localhost:5000"+record.images?.find(res => res.is_main == true)?.image_url} className="w-16 h-12 rounded-lg object-cover" />
           <div>
             <p className="font-medium line-clamp-1">{record.car_name}</p>
           </div>
