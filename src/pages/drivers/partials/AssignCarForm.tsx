@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Car } from "../../../data/types";
 import { CarSelectionModal } from "../partials/CarSelectionModal";
 import { Car as CarIcon, Users, Briefcase, Fuel, Plus, X, Wind, Navigation, Music, Settings } from "lucide-react";
+import { getCabsListing } from "@/api/cab";
 
 // Mock cars data
 const mockCars: Car[] = [
@@ -69,6 +70,7 @@ export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormP
     initialCarId ? mockCars.find((c) => c.id === initialCarId) || null : null
   );
   const [modalOpen, setModalOpen] = useState(false);
+  const [cabs,setCabs] = useState([])
 
   const handleCarSelect = (car: Car) => {
     setSelectedCar(car);
@@ -78,6 +80,16 @@ export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormP
   const handleSubmit = () => {
     onSubmit(selectedCar?.id || null);
   };
+
+  
+  const listApi = async()=>{
+    let data = await getCabsListing();
+    setCabs(data)
+  }
+  useEffect(()=>{
+    listApi();
+  },[modalOpen])
+
 
   return (
     <div className="space-y-6 mb-4">
@@ -203,7 +215,7 @@ export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormP
       <CarSelectionModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        cars={mockCars}
+        cars={cabs}
         selectedCarId={selectedCar?.id || null}
         onSelect={handleCarSelect}
       />

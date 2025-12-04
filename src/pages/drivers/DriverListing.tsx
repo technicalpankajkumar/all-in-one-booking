@@ -3,15 +3,25 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { tourPackages } from "@/data/tours"
 import { Clock } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { OnBoardDriver } from "./OnBoardDriver"
 import DriverTable from "./DriverTable"
 import { useNavigate } from "react-router-dom"
+import { getDriverListing } from "@/api/driver"
 
 
 const DriverListing = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [data,setData] = useState([])
+  
+    const listApi = async()=>{
+      let data = await getDriverListing();
+      setData(data)
+    }
+    useEffect(()=>{
+      listApi();
+    },[isOpen])
   
   return (
     <>
@@ -22,7 +32,7 @@ const DriverListing = () => {
         </div>
         <div>
           <Card>
-            <DriverTable tours={tourPackages} onBookNow={() => navigate("/dashboard/driver/1")} totalItems={tourPackages?.length}/>
+            <DriverTable tours={data} onView={(record) => navigate(`/dashboard/driver/${record.id}`)} totalItems={data?.length}/>
           </Card>
         </div>
       </div>

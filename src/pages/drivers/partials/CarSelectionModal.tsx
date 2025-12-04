@@ -79,9 +79,9 @@ export function CarSelectionModal({ open, onOpenChange, cars, selectedCarId, onS
                     <div className="flex gap-4">
                       {/* Car Image */}
                       <div className="w-24 h-24 sm:w-32 sm:h-24 bg-muted rounded-lg overflow-hidden shrink-0">
-                        {car.images?.[0] ? (
+                        {car?.images?.[0] ? (
                           <img
-                            src={car.images[0].image_url}
+                            src={car?.images?.[0]?.image_url}
                             alt={car.car_name}
                             className="w-full h-full object-cover"
                           />
@@ -96,12 +96,12 @@ export function CarSelectionModal({ open, onOpenChange, cars, selectedCarId, onS
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between">
                           <div>
-                            <h3 className="font-semibold truncate">{car.car_name}</h3>
+                            <h3 className="font-semibold truncate">{car?.car_name}</h3>
                             <Badge variant="secondary" className="mt-1">
-                              {car.car_type}
+                              {car?.car_type}
                             </Badge>
                           </div>
-                          {selectedCarId === car.id && (
+                          {selectedCarId === car?.id && (
                             <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                               <Check className="w-4 h-4" />
                             </div>
@@ -111,37 +111,37 @@ export function CarSelectionModal({ open, onOpenChange, cars, selectedCarId, onS
                         <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Users className="w-4 h-4" />
-                            {car.seat_capacity}
+                            {car?.seat_capacity}
                           </span>
                           <span className="flex items-center gap-1">
                             <Briefcase className="w-4 h-4" />
-                            {car.bag_capacity}
+                            {car?.bag_capacity}
                           </span>
                           <span className="flex items-center gap-1">
                             <Fuel className="w-4 h-4" />
-                            {car.fuel_type}
+                            {car?.fuel_type}
                           </span>
                         </div>
 
                         {/* Features */}
-                        {car.features && (
+                        {car?.features && (
                           <div className="flex gap-2 mt-2">
-                            {car.features.ac && (
+                            {car?.features?.ac && (
                               <span className="text-xs bg-muted px-2 py-0.5 rounded flex items-center gap-1">
                                 <Wind className="w-3 h-3" /> AC
                               </span>
                             )}
-                            {car.features.gps && (
+                            {car?.features?.gps && (
                               <span className="text-xs bg-muted px-2 py-0.5 rounded flex items-center gap-1">
                                 <Navigation className="w-3 h-3" /> GPS
                               </span>
                             )}
-                            {car.features.music_system && (
+                            {car?.features?.music_system && (
                               <span className="text-xs bg-muted px-2 py-0.5 rounded flex items-center gap-1">
                                 <Music className="w-3 h-3" /> Music
                               </span>
                             )}
-                            {car.features.automatic_transmission && (
+                            {car?.features?.automatic_transmission && (
                               <span className="text-xs bg-muted px-2 py-0.5 rounded flex items-center gap-1">
                                 <Settings className="w-3 h-3" /> Auto
                               </span>

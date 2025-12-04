@@ -1,15 +1,23 @@
-import TourTable from "@/components/TourTable"
+import { getCabsListing } from "@/api/cab"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { tourPackages } from "@/data/tours"
-import { Clock } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import CabTable from "./CabTable"
 import OnBoardCab from "./OnBoardCab"
 
 
 const CabListing = () => {
   const [isOpen, setIsOpen] = useState(false);
-  
+  const [data,setData] = useState([])
+
+  const listApi = async()=>{
+    let data = await getCabsListing();
+    setData(data)
+  }
+  useEffect(()=>{
+    listApi();
+  },[isOpen])
+
   return (
     <>
       <div className="space-y-4">
@@ -19,14 +27,14 @@ const CabListing = () => {
         </div>
         <div>
           <Card>
-            <TourTable tours={tourPackages} onBookNow={() => { }} />
+              <CabTable data={data} totalItems={data?.length}/>
           </Card>
         </div>
       </div>
       {/* Boarding Modal */}
       <OnBoardCab
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={setIsOpen}
       />
     </>)
 }

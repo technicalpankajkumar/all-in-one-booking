@@ -42,7 +42,7 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
     }
   };
 
-  const profileImage = driver.images?.find((img) => img.image_type === "profile");
+  const profileImage = driver?.images?.find((img) => img?.image_type === "profile");
 
   return (
     <div className="space-y-6">
@@ -54,10 +54,10 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
             <Avatar className="w-24 h-24 sm:w-32 sm:h-32 border-4 border-background shadow-lg">
               <AvatarImage src={profileImage?.image_path} />
               <AvatarFallback className="text-2xl sm:text-3xl bg-primary text-primary-foreground">
-                {driver.full_name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {driver?.full_name
+                  ?.split(" ")
+                  ?.map((n) => n[0])
+                  ?.join("")}
               </AvatarFallback>
             </Avatar>
 
@@ -122,7 +122,10 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InfoItem label="Father's Name" value={driver.father_name} />
-              <InfoItem label="Date of Birth" value={format(new Date(driver.dob), "dd MMM yyyy")} />
+              <InfoItem label="Date of Birth" value={
+                driver?.dob &&
+                format(new Date(driver.dob), "dd MMM yyyy")
+              } />
               <InfoItem label="Gender" value={driver.gender} className="capitalize" />
               <InfoItem label="Languages" value={driver.languages_known?.join(", ") || "N/A"} />
               <InfoItem label="Alternate Mobile" value={driver.alternate_mobile || "N/A"} />
@@ -159,7 +162,10 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
             <InfoItem label="Driving License" value={driver.driving_license_number} />
             <InfoItem
               label="License Expiry"
-              value={format(new Date(driver.driving_license_expiry), "dd MMM yyyy")}
+              value={
+                driver?.driving_license_expiry &&
+                format(new Date(driver.driving_license_expiry), "dd MMM yyyy")
+              }
             />
 
             <Separator />
@@ -203,10 +209,10 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
             {driver.Car ? (
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="w-full sm:w-48 h-32 bg-muted rounded-lg overflow-hidden">
-                  {driver.Car.images?.[0] ? (
+                  {driver?.Car?.images?.[0] ? (
                     <img
-                      src={driver.Car.images[0].image_url}
-                      alt={driver.Car.car_name}
+                      src={driver?.Car?.images?.[0]?.image_url}
+                      alt={driver?.Car?.car_name}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -218,47 +224,47 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-semibold">{driver.Car.car_name}</h3>
-                    <Badge variant="secondary">{driver.Car.car_type}</Badge>
+                    <h3 className="text-xl font-semibold">{driver?.Car?.car_name}</h3>
+                    <Badge variant="secondary">{driver?.Car?.car_type}</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">{driver.Car.description}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{driver?.Car?.description}</p>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
                     <div className="flex items-center gap-2 text-sm">
                       <Users className="w-4 h-4 text-muted-foreground" />
-                      {driver.Car.seat_capacity} Seats
+                      {driver?.Car?.seat_capacity} Seats
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Briefcase className="w-4 h-4 text-muted-foreground" />
-                      {driver.Car.bag_capacity} Bags
+                      {driver?.Car?.bag_capacity} Bags
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Fuel className="w-4 h-4 text-muted-foreground" />
-                      {driver.Car.fuel_type}
+                      {driver?.Car?.fuel_type}
                     </div>
                     <div className="text-sm font-semibold text-primary">
-                      ₹{driver.Car.base_price}/{driver.Car.price_unit.replace("per_", "")}
+                      ₹{driver?.Car?.base_price}/{driver?.Car?.price_unit?.replace("per_", "")}
                     </div>
                   </div>
 
-                  {driver.Car.features && (
+                  {driver?.Car?.features && (
                     <div className="flex flex-wrap gap-2 mt-3">
-                      {driver.Car.features.ac && (
+                      {driver?.Car?.features?.ac && (
                         <Badge variant="outline">
                           <Wind className="w-3 h-3 mr-1" /> AC
                         </Badge>
                       )}
-                      {driver.Car.features.gps && (
+                      {driver?.Car?.features?.gps && (
                         <Badge variant="outline">
                           <Navigation className="w-3 h-3 mr-1" /> GPS
                         </Badge>
                       )}
-                      {driver.Car.features.music_system && (
+                      {driver?.Car?.features?.music_system && (
                         <Badge variant="outline">
                           <Music className="w-3 h-3 mr-1" /> Music
                         </Badge>
                       )}
-                      {driver.Car.features.automatic_transmission && (
+                      {driver?.Car?.features?.automatic_transmission && (
                         <Badge variant="outline">
                           <Settings className="w-3 h-3 mr-1" /> Auto
                         </Badge>
@@ -277,7 +283,7 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
         </Card>
 
         {/* Driver Images */}
-        {driver.images && driver.images.length > 0 && (
+        {driver?.images && driver?.images?.length > 0 && (
           <Card className="lg:col-span-3">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -287,17 +293,17 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {driver.images.map((image) => (
-                  <div key={image.id} className="space-y-2">
+                {driver?.images?.map((image) => (
+                  <div key={image?.id} className="space-y-2">
                     <div className="aspect-square bg-muted rounded-lg overflow-hidden">
                       <img
-                        src={image.image_path}
-                        alt={image.image_type}
+                        src={image?.image_path}
+                        alt={image?.image_type}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <p className="text-xs text-center text-muted-foreground capitalize">
-                      {image.image_type.replace("_", " ")}
+                      {image?.image_type?.replace("_", " ")}
                     </p>
                   </div>
                 ))}
@@ -311,11 +317,17 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
       <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
         <span className="flex items-center gap-1">
           <Clock className="w-4 h-4" />
-          Created: {format(new Date(driver.created_at), "dd MMM yyyy, HH:mm")}
+          Created: {
+            driver?.created_at &&
+            format(new Date(driver.created_at), "dd MMM yyyy, HH:mm")
+          }
         </span>
         <span className="flex items-center gap-1">
           <Calendar className="w-4 h-4" />
-          Updated: {format(new Date(driver.updated_at), "dd MMM yyyy, HH:mm")}
+          Updated: {
+            driver?.updated_at &&
+            format(new Date(driver.updated_at), "dd MMM yyyy, HH:mm")
+          }
         </span>
       </div>
     </div>

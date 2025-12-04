@@ -1,10 +1,13 @@
+import { addCab } from "@/api/cab";
 import { CustomCheckBoxGroup, CustomInput, CustomSelect, CustomTextarea } from "@/components/custom-ui";
+import { ImageFile, MultiImageUploader } from "@/components/custom-ui/MultiImageUploader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -42,10 +45,11 @@ type CarFormValues = z.infer<typeof carFormSchema>;
 
 interface PackageBookingModalProps {
     isOpen: boolean;
-    onClose: () => void;
+    onClose: (value:boolean) => void;
 }
 
 const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
+    const [uploadedImages, setUploadedImages] = useState<ImageFile[]>([]);
     const {
         register,
         handleSubmit,
@@ -74,17 +78,20 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
         },
     });
 
-
-
-
-    function onSubmit(data: CarFormValues) {
-        console.log("Car data:", data);
-        toast.success("Car added successfully!");
-        reset();
+   async function onSubmit(data: CarFormValues) {
+    const res = await addCab(data,uploadedImages?.map(res =>  res.file));
+        if(res.success){
+            toast.success("Cab Added Successfully!")
+            onClose(false)
+            setUploadedImages([])
+            reset();
+        }else{
+            toast.error(res.message)
+        }
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={isOpen} onOpenChange={()=>onClose(false)}>
             <DialogContent className="max-w-2xl max-h-[96vh] p-0 flex flex-col">
                 <DialogHeader className="px-6 pt-4 pb-4 border-b bg-muted/30">
                     <DialogTitle className="text-2xl font-bold text-foreground">
@@ -223,6 +230,22 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                                     featureList={FEATURES}
                                 />
                             </CardContent>
+                        </Card>
+                        <Card>
+                                  <CardHeader className="pb-4">
+                                <CardTitle className="flex items-center gap-2 text-lg">
+                                   Cab Images
+                                </CardTitle>
+                            </CardHeader>
+                                <CardContent>
+                                     <MultiImageUploader
+                                        images={uploadedImages}
+                                        onChange={setUploadedImages}
+                                        maxImages={8}
+                                        maxSizeInMB={5}
+                                        description="Upload up to 8 images (JPG, PNG, WebP, GIF)"
+                                        />
+                                </CardContent>
                         </Card>
 
                     </form>
