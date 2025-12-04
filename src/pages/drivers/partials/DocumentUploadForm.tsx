@@ -97,7 +97,7 @@ export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUp
           </p>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {documentFields.map((field) => (
               <div key={field.key} className="space-y-2">
                 <Label className="flex items-center gap-1">
@@ -105,7 +105,7 @@ export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUp
                   {field.required && <span className="text-destructive">*</span>}
                 </Label>
                 <div
-                  className={`relative border-2 border-dashed rounded-lg p-4 transition-colors cursor-pointer hover:border-primary/50 ${
+                  className={`relative border-2 border-primary/50 border-dashed rounded-lg p-4 transition-colors cursor-pointer hover:border-primary/50 ${
                     documents[field.key] ? "border-primary bg-primary/5" : "border-muted"
                   }`}
                   onDragOver={(e) => e.preventDefault()}

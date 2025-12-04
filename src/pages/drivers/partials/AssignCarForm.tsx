@@ -179,7 +179,7 @@ export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormP
                     </div>
                   )}
 
-                  <Button variant="outline" size="sm" className="mt-4" onClick={() => setModalOpen(true)}>
+                  <Button variant="default" size="sm" className="mt-4" onClick={() => setModalOpen(true)}>
                     Change Vehicle
                   </Button>
                 </div>

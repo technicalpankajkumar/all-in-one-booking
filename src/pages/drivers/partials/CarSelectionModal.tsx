@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Car } from "../../../data/types";
 import { Search, Users, Briefcase, Fuel, Check, Settings, Music, Navigation, Wind } from "lucide-react";
+import { CustomInput } from "@/components/custom-ui";
 
 interface CarSelectionModalProps {
   open: boolean;
@@ -29,23 +30,24 @@ export function CarSelectionModal({ open, onOpenChange, cars, selectedCarId, onS
     return matchesSearch && matchesType && car.is_available;
   });
 
+  let onChange=(e)=>setSearchTerm(e.target.value);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>Select a Car</DialogTitle>
+          <DialogTitle>Choose Car</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Search and Filters */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search cars..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+              <CustomInput
+                id={'search'}
+                placeholder="Search cars......."
+                register={()=> ({onChange})}
+                prefix={<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />}
               />
             </div>
             <div className="flex gap-2">

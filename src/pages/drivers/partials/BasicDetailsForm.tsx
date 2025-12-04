@@ -9,10 +9,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Phone, MapPin, CreditCard, AlertCircle } from "lucide-react";
 import { DriverBasicDetails } from "../../../data/types";
+import { CustomInput, CustomSelect, CustomTextarea } from "@/components/custom-ui";
 
 const basicDetailsSchema = z.object({
   full_name: z.string().min(2, "Full name is required"),
-  father_name: z.string().min(2, "Father's name is required"),
+  // father_name: z.string().min(2, "Father's name is required"),
   email: z.string().email("Invalid email address"),
   mobile: z.string().min(10, "Mobile number must be 10 digits"),
   alternate_mobile: z.string().optional(),
@@ -27,12 +28,12 @@ const basicDetailsSchema = z.object({
   pan_number: z.string().min(10, "PAN number is required"),
   driving_license_number: z.string().min(5, "License number is required"),
   driving_license_expiry: z.string().min(1, "License expiry date is required"),
-  bank_account_number: z.string().min(8, "Account number is required"),
-  bank_ifsc: z.string().min(11, "IFSC code is required"),
-  bank_name: z.string().min(2, "Bank name is required"),
-  account_holder_name: z.string().min(2, "Account holder name is required"),
+  // bank_account_number: z.string().min(8, "Account number is required"),
+  // bank_ifsc: z.string().min(11, "IFSC code is required"),
+  // bank_name: z.string().min(2, "Bank name is required"),
+  // account_holder_name: z.string().min(2, "Account holder name is required"),
   upi_id: z.string().optional(),
-  experience_years: z.number().min(0, "Experience must be positive"),
+  experience_years: z.string().min(1, "Experience must be positive"),
   languages_known: z.array(z.string()).min(1, "Select at least one language"),
   emergency_contact_name: z.string().min(2, "Emergency contact name is required"),
   emergency_contact_number: z.string().min(10, "Emergency contact number is required"),
@@ -84,21 +85,9 @@ export function BasicDetailsForm({ initialData, onSubmit }: BasicDetailsFormProp
     },
   });
 
-  const languages = ["Hindi", "English", "Bengali", "Tamil", "Telugu", "Marathi", "Gujarati", "Kannada"];
-  const selectedLanguages = watch("languages_known") || [];
-
-  const toggleLanguage = (lang: string) => {
-    if (selectedLanguages.includes(lang)) {
-      setValue("languages_known", selectedLanguages.filter((l) => l !== lang));
-    } else {
-      setValue("languages_known", [...selectedLanguages, lang]);
-    }
-  };
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mb-4">
-      {/* Personal Information */}
-       <div className="flex justify-end">
+      <div className="flex justify-end">
         <Button type="submit" size="sm" className="absolute top-2.5 right-12">
           Continue
         </Button>
@@ -111,79 +100,95 @@ export function BasicDetailsForm({ initialData, onSubmit }: BasicDetailsFormProp
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="full_name">Full Name *</Label>
-            <Input id="full_name" placeholder="Enter full name" {...register("full_name")} />
-            {errors.full_name && <p className="text-xs text-destructive">{errors.full_name.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="father_name">Father's Name *</Label>
-            <Input id="father_name" placeholder="Enter father's name" {...register("father_name")} />
-            {errors.father_name && <p className="text-xs text-destructive">{errors.father_name.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
-            <Input id="email" type="email" placeholder="email@example.com" {...register("email")} />
-            {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="mobile">Mobile *</Label>
-            <Input id="mobile" placeholder="10-digit mobile" {...register("mobile")} />
-            {errors.mobile && <p className="text-xs text-destructive">{errors.mobile.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="alternate_mobile">Alternate Mobile</Label>
-            <Input id="alternate_mobile" placeholder="10-digit mobile" {...register("alternate_mobile")} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="dob">Date of Birth *</Label>
-            <Input id="dob" type="date" {...register("dob")} />
-            {errors.dob && <p className="text-xs text-destructive">{errors.dob.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="gender">Gender *</Label>
-            <Select onValueChange={(value) => setValue("gender", value)} defaultValue={initialData?.gender}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select gender" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.gender && <p className="text-xs text-destructive">{errors.gender.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="experience_years">Experience (Years) *</Label>
-            <Input
-              id="experience_years"
-              type="number"
-              min="0"
-              {...register("experience_years", { valueAsNumber: true })}
-            />
-            {errors.experience_years && <p className="text-xs text-destructive">{errors.experience_years.message}</p>}
-          </div>
-          <div className="space-y-2 md:col-span-2 lg:col-span-1">
-            <Label>Languages Known *</Label>
-            <div className="flex flex-wrap gap-2">
-              {languages.map((lang) => (
-                <button
-                  key={lang}
-                  type="button"
-                  onClick={() => toggleLanguage(lang)}
-                  className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
-                    selectedLanguages.includes(lang)
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground hover:bg-muted/80"
-                  }`}
-                >
-                  {lang}
-                </button>
-              ))}
-            </div>
-            {errors.languages_known && <p className="text-xs text-destructive">{errors.languages_known.message}</p>}
-          </div>
+          <CustomInput
+            id="full_name"
+            label="Full Name"
+            required
+            placeholder="Enter full name"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="father_name"
+            label="Father Name"
+            // required
+            placeholder="Enter father's name"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="email"
+            label="Email"
+            required
+            placeholder="email@example.com"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="mobile"
+            label="Mobile"
+            required
+            placeholder="10-digit mobile"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="alternate_mobile"
+            label="Alternate Mobile"
+            placeholder="10-digit mobile"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="dob"
+            label="Date of Birth"
+            required
+            type="date"
+            register={register}
+            errors={errors}
+          />
+          <CustomSelect
+            id="gender"
+            label="Gender"
+            required
+            items={[
+              { value: "male", label: "Male" },
+              { value: "female", label: "Female" },
+              { value: "other", label: "Other" },
+            ]}
+            setValue={setValue}
+            value={watch('gender')}
+            errors={errors}
+            defaultValue={initialData?.gender}
+          />
+          <CustomInput
+            id="experience_years"
+            label="Experience (Years)"
+            required
+            register={register}
+            errors={errors}
+            type="number"
+            min={0}
+          />
+          <CustomSelect
+            id="languages_known"
+            label="Languages Known"
+            required
+            multi
+            items={[
+              { value: "hindi", label: "Hindi" },
+              { value: "english", label: "English" },
+              { value: "bengali", label: "Bengali" },
+              { value: "tamil", label: "Tamil" },
+              { value: "telugu", label: "Telugu" },
+              { value: "marathi", label: "Marathi" },
+              { value: "gujarati", label: "Gujarati" },
+              { value: "kannada", label: "Kannada" }
+            ]}
+            setValue={setValue}
+            multiValues={watch("languages_known") || []}
+            errors={errors}
+          />
         </CardContent>
       </Card>
 
@@ -196,31 +201,46 @@ export function BasicDetailsForm({ initialData, onSubmit }: BasicDetailsFormProp
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="current_address">Current Address *</Label>
-            <Textarea id="current_address" placeholder="Enter current address" {...register("current_address")} />
-            {errors.current_address && <p className="text-xs text-destructive">{errors.current_address.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="permanent_address">Permanent Address *</Label>
-            <Textarea id="permanent_address" placeholder="Enter permanent address" {...register("permanent_address")} />
-            {errors.permanent_address && <p className="text-xs text-destructive">{errors.permanent_address.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="city">City *</Label>
-            <Input id="city" placeholder="Enter city" {...register("city")} />
-            {errors.city && <p className="text-xs text-destructive">{errors.city.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="state">State *</Label>
-            <Input id="state" placeholder="Enter state" {...register("state")} />
-            {errors.state && <p className="text-xs text-destructive">{errors.state.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="pincode">Pincode *</Label>
-            <Input id="pincode" placeholder="6-digit pincode" {...register("pincode")} />
-            {errors.pincode && <p className="text-xs text-destructive">{errors.pincode.message}</p>}
-          </div>
+          <CustomTextarea
+            id="current_address"
+            label="Current Address"
+            required
+            placeholder="Enter current address"
+            register={register}
+            errors={errors}
+          />
+          <CustomTextarea
+            id="permanent_address"
+            label="Permanent Address"
+            required
+            placeholder="Enter permanent address"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="city"
+            label="City"
+            required
+            placeholder="Enter city"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="state"
+            label="State"
+            required
+            placeholder="Enter state"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="pincode"
+            label="Pincode"
+            required
+            placeholder="6-digit pincode"
+            register={register}
+            errors={errors}
+          />
         </CardContent>
       </Card>
 
@@ -233,30 +253,39 @@ export function BasicDetailsForm({ initialData, onSubmit }: BasicDetailsFormProp
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="aadhar_number">Aadhar Number *</Label>
-            <Input id="aadhar_number" placeholder="12-digit Aadhar" {...register("aadhar_number")} />
-            {errors.aadhar_number && <p className="text-xs text-destructive">{errors.aadhar_number.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="pan_number">PAN Number *</Label>
-            <Input id="pan_number" placeholder="PAN number" {...register("pan_number")} />
-            {errors.pan_number && <p className="text-xs text-destructive">{errors.pan_number.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="driving_license_number">Driving License Number *</Label>
-            <Input id="driving_license_number" placeholder="License number" {...register("driving_license_number")} />
-            {errors.driving_license_number && (
-              <p className="text-xs text-destructive">{errors.driving_license_number.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="driving_license_expiry">License Expiry Date *</Label>
-            <Input id="driving_license_expiry" type="date" {...register("driving_license_expiry")} />
-            {errors.driving_license_expiry && (
-              <p className="text-xs text-destructive">{errors.driving_license_expiry.message}</p>
-            )}
-          </div>
+          <CustomInput
+            id="aadhar_number"
+            label="Aadhar Number"
+            required
+            placeholder="12-digit Aadhar"
+            register={register}
+            errors={errors}
+            type="number"
+          />
+          <CustomInput
+            id="pan_number"
+            label="PAN Number"
+            required
+            placeholder="PAN number"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="driving_license_number"
+            label="Driving License Number"
+            required
+            placeholder="License Number"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="driving_license_expiry"
+            label="License Expiry Date"
+            required
+            type="date"
+            register={register}
+            errors={errors}
+          />
         </CardContent>
       </Card>
 
@@ -269,34 +298,41 @@ export function BasicDetailsForm({ initialData, onSubmit }: BasicDetailsFormProp
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="bank_name">Bank Name *</Label>
-            <Input id="bank_name" placeholder="Enter bank name" {...register("bank_name")} />
-            {errors.bank_name && <p className="text-xs text-destructive">{errors.bank_name.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="bank_account_number">Account Number *</Label>
-            <Input id="bank_account_number" placeholder="Account number" {...register("bank_account_number")} />
-            {errors.bank_account_number && (
-              <p className="text-xs text-destructive">{errors.bank_account_number.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="bank_ifsc">IFSC Code *</Label>
-            <Input id="bank_ifsc" placeholder="IFSC code" {...register("bank_ifsc")} />
-            {errors.bank_ifsc && <p className="text-xs text-destructive">{errors.bank_ifsc.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="account_holder_name">Account Holder Name *</Label>
-            <Input id="account_holder_name" placeholder="Account holder name" {...register("account_holder_name")} />
-            {errors.account_holder_name && (
-              <p className="text-xs text-destructive">{errors.account_holder_name.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="upi_id">UPI ID</Label>
-            <Input id="upi_id" placeholder="example@upi" {...register("upi_id")} />
-          </div>
+          <CustomInput
+            id="bank_name"
+            label="Bank Name"
+            placeholder="Enter bank name"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="bank_account_number"
+            label="Account Number"
+            placeholder="Enter account number"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="bank_ifsc"
+            label="IFSC code"
+            placeholder="Enter IFSC code"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="account_holder_name"
+            label="Account Holder Name"
+            placeholder="Enter account holder name"
+            register={register}
+            errors={errors}
+          />
+          <CustomInput
+            id="upi_id"
+            label="UPI ID"
+            placeholder="Enter upi id"
+            register={register}
+            errors={errors}
+          />
         </CardContent>
       </Card>
 
@@ -309,38 +345,33 @@ export function BasicDetailsForm({ initialData, onSubmit }: BasicDetailsFormProp
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="emergency_contact_name">Contact Name *</Label>
-            <Input id="emergency_contact_name" placeholder="Contact name" {...register("emergency_contact_name")} />
-            {errors.emergency_contact_name && (
-              <p className="text-xs text-destructive">{errors.emergency_contact_name.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="emergency_contact_number">Contact Number *</Label>
-            <Input
-              id="emergency_contact_number"
-              placeholder="10-digit mobile"
-              {...register("emergency_contact_number")}
-            />
-            {errors.emergency_contact_number && (
-              <p className="text-xs text-destructive">{errors.emergency_contact_number.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="emergency_contact_relation">Relation *</Label>
-            <Input
-              id="emergency_contact_relation"
-              placeholder="e.g., Brother, Father"
-              {...register("emergency_contact_relation")}
-            />
-            {errors.emergency_contact_relation && (
-              <p className="text-xs text-destructive">{errors.emergency_contact_relation.message}</p>
-            )}
-          </div>
+          <CustomInput
+            id="emergency_contact_name"
+            label="Contact Name"
+            placeholder="Enter contact name"
+            register={register}
+            errors={errors}
+            required
+          />
+          <CustomInput
+            id="emergency_contact_number"
+            label="Contact Number"
+            placeholder="10-digit mobile"
+            register={register}
+            errors={errors}
+            type="number"
+            required
+          />
+          <CustomInput
+            id="emergency_contact_relation"
+            label="Relation"
+            placeholder="E.G., brother, father"
+            register={register}
+            errors={errors}
+            required
+          />
         </CardContent>
       </Card>
-
     </form>
   );
 }
