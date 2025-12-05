@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "@/api/auth";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 const languages = [
   { code: "en", name: "English" },
@@ -27,7 +28,7 @@ const languages = [
 
 export function ProfileMenu() {
    const navigate = useNavigate()
-   
+   const { setIsAuthenticated } = useAuth();
    const handleLogout = async () => {
    const result = await logoutUser();
  
@@ -35,7 +36,7 @@ export function ProfileMenu() {
      console.error(result.error);
      toast.error(result.error);
    } else {
-     console.log(result.message);
+     setIsAuthenticated(false);
      toast.success("Logged out successfully");
  
      // Redirect to login
@@ -44,10 +45,7 @@ export function ProfileMenu() {
  };
 
   const handleLanguageChange = (language: string) => {
-    toast({
-      title: "Language changed",
-      description: `Language set to ${language}`,
-    });
+    toast.success(`Language set to ${language}`)
   };
 
   return (

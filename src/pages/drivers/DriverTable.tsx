@@ -1,17 +1,17 @@
+import { deleteDriver } from "@/api/driver";
 import { DynamicTable } from "@/components/DynamicTable";
 import { Button } from "@/components/ui/button";
-
-const DriverTable = ({ tours, totalItems, onView }) => {
-
+const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
+const DriverTable = ({ tours, totalItems, onView,onDelete}) => {
+ 
   const columns = [
     {
       key: "full_name",
       label: "Name",
       render: (record) => {
-        console.log(record?.images?.filter(res =>  res.image_type == "profile"))
         return (
         <div className="flex items-center gap-3">
-          <img src={"http://localhost:5000"+record?.images?.filter(res => res.image_type == 'profile')?.[0]?.image_path} className="w-16 h-12 rounded-lg object-cover" />
+          <img src={API_URL+record?.images?.find(res => res.image_type == 'profile')?.image_path} className="w-16 h-12 rounded-lg object-cover" />
           <div>
             <p className="font-medium line-clamp-1">{record?.full_name}</p>
           </div>
@@ -53,12 +53,10 @@ const DriverTable = ({ tours, totalItems, onView }) => {
       label: "Action",
       className: "text-center",
       render: (record) => (
-        <Button
-          onClick={() => onView(record)}
-         variant="secondary"
-        >
-          View
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={()=>onDelete(record.id)} size="sm" variant="destructive" >Delete</Button>
+          <Button onClick={() => onView(record)}  variant="secondary" > View </Button>
+      </div>
       ),
     },
   ];

@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-
+const API_URL = import.meta.env.VITE_APP_API_URL;
 export const addCab = async (cabData, images) => {
   try {
     const formData = new FormData();
@@ -20,7 +20,7 @@ export const addCab = async (cabData, images) => {
       return { error: "You are not logged in." };
     }
 
-    const res = await fetch("http://localhost:5000/api/v1/cab/create", {
+    const res = await fetch(`${API_URL}/cab/create`, {
       method: "POST",
       headers: {
         "Authorization": token, // ⬅ same as backend expects
@@ -46,7 +46,7 @@ export const getCabsListing = async () => {
       return { error: "You are not logged in." };
     }
 
-    const res = await fetch("http://localhost:5000/api/v1/cab", {
+    const res = await fetch(`${API_URL}/cab`, {
       method: "GET",
       headers: {
         "Authorization": token

@@ -23,12 +23,18 @@ import {
   Settings,
 } from "lucide-react";
 import { format } from "date-fns";
-
+import { getCabsListing } from "@/api/cab";
+import { useEffect, useState } from "react";
+import { CarSelectionModal } from "./CarSelectionModal";
+import { Button } from "@/components/ui/button";
+import { updateDriver } from "@/api/driver";
+const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 interface DriverDetailsViewProps {
   driver: Driver;
+  trigger:()=>{}
 }
 
-export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
+export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "online":
@@ -41,8 +47,32 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
         return "bg-muted-foreground";
     }
   };
+  const [cabs, setCabs] = useState([])
+  const [selectedCar, setSelectedCar] = useState<any | null>(
+    driver ? cabs?.find((c) => c.id === driver.assigned_car_id) || null : null
+  );
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const profileImage ="http://localhost:5000"+driver?.images?.find((img) => img?.image_type === "profile")?.image_path;
+  const handleCarSelect = async(car: any) => {
+    setSelectedCar(car);
+    const data = {...driver};
+    delete data.images;
+    delete data.Car;
+    delete data.id;
+    const res = await updateDriver(driver.id,{...data,assigned_car_id:car.id},{},[])
+    trigger()
+    setModalOpen(false);
+  };
+
+  const profileImage = API_URL + driver?.images?.find((img) => img?.image_type === "profile")?.image_path;
+
+  const getCarApi = async () => {
+    let data = await getCabsListing();
+    setCabs(data)
+  }
+  useEffect(() => {
+    getCarApi();
+  }, [modalOpen])
 
   return (
     <div className="space-y-6">
@@ -211,7 +241,7 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
                 <div className="w-full sm:w-48 h-32 bg-muted rounded-lg overflow-hidden">
                   {driver?.Car?.images?.[0] ? (
                     <img
-                      src={driver?.Car?.images?.[0]?.image_url}
+                      src={API_URL + driver?.Car?.images?.find(res => res.is_main == true)?.image_url}
                       alt={driver?.Car?.car_name}
                       className="w-full h-full object-cover"
                     />
@@ -271,12 +301,18 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
                       )}
                     </div>
                   )}
+                  <Button variant="default" size="sm" className="mt-4" onClick={() => setModalOpen(true)}>
+                    Change Vehicle
+                  </Button>
                 </div>
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <Car className="w-12 h-12 mx-auto mb-2 opacity-50" />
                 <p>No vehicle assigned</p>
+                <Button variant="default" size="sm" className="mt-4" onClick={() => setModalOpen(true)}>
+                  Assign Vehicle
+                </Button>
               </div>
             )}
           </CardContent>
@@ -297,7 +333,7 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
                   <div key={image?.id} className="space-y-2">
                     <div className="aspect-square bg-muted rounded-lg overflow-hidden">
                       <img
-                        src={"http://localhost:5000"+image?.image_path}
+                        src={API_URL + image?.image_path}
                         alt={image?.image_type}
                         className="w-full h-full object-cover"
                       />
@@ -330,6 +366,13 @@ export function DriverDetailsView({ driver }: DriverDetailsViewProps) {
           }
         </span>
       </div>
+      <CarSelectionModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        cars={cabs}
+        selectedCarId={selectedCar?.id || null}
+        onSelect={handleCarSelect}
+      />
     </div>
   );
 }

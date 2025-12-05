@@ -1,14 +1,15 @@
 import { DynamicTable } from "@/components/DynamicTable";
 import { Button } from "@/components/ui/button";
+const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 
-const CabTable = ({ data, totalItems, onEdit=()=>{},onDelete=()=>{},onView=()=>{} }) => {
+const CabTable = ({ data, totalItems, onEdit=(id)=>{},onDelete=(id)=>{},onView=()=>{} }) => {
   const columns = [
     {
       key: "car_name",
       label: "Name",
       render: (record) => (
         <div className="flex items-center gap-3">
-          <img src={"http://localhost:5000"+record.images?.find(res => res.is_main == true)?.image_url} className="w-16 h-12 rounded-lg object-cover" />
+          <img src={API_URL+record.images?.find(res => res.is_main == true)?.image_url} className="w-16 h-12 rounded-lg object-cover" />
           <div>
             <p className="font-medium line-clamp-1">{record.car_name}</p>
           </div>
@@ -41,8 +42,8 @@ const CabTable = ({ data, totalItems, onEdit=()=>{},onDelete=()=>{},onView=()=>{
       className: "text-center",
       render: (record) => (
         <div className="space-x-2">
-            <Button size="sm" onClick={onEdit} variant="default">Edit</Button>
-            <Button size="sm" onClick={onDelete} variant="destructive">Delete</Button>
+            <Button size="sm" onClick={()=>onEdit(record.id)} variant="default">Edit</Button>
+            <Button size="sm" onClick={()=>onDelete(record.id)} variant="destructive">Delete</Button>
         </div>
       ),
     },

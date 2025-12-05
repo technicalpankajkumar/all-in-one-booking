@@ -9,8 +9,10 @@ import travelHero from "@/assets/travel-hero.jpg";
 import { loadRememberedData } from "@/lib/encrypt";
 import { loginUser } from "@/api/auth";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
+  const { setIsAuthenticated } = useAuth();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +31,7 @@ const Login = () => {
     let res = await loginUser({login,password},security,setIsLoading)
     if(res.success){
        toast.success(res.message);
+       setIsAuthenticated(true);
        navigate("/dashboard");
     }else{
       toast.error(res.message || res.error)

@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Car } from "../../../data/types";
 import { Search, Users, Briefcase, Fuel, Check, Settings, Music, Navigation, Wind } from "lucide-react";
 import { CustomInput } from "@/components/custom-ui";
-
+const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 interface CarSelectionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -81,7 +81,7 @@ export function CarSelectionModal({ open, onOpenChange, cars, selectedCarId, onS
                       <div className="w-24 h-24 sm:w-32 sm:h-24 bg-muted rounded-lg overflow-hidden shrink-0">
                         {car?.images?.[0] ? (
                           <img
-                            src={"http://localhost:5000"+car.images?.find(res => res.is_main == true)?.image_url}
+                            src={API_URL+car.images?.find(res => res.is_main == true)?.image_url}
                             alt={car.car_name}
                             className="w-full h-full object-cover"
                           />

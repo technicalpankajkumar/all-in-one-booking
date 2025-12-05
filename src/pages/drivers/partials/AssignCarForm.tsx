@@ -6,6 +6,7 @@ import { Car } from "../../../data/types";
 import { CarSelectionModal } from "../partials/CarSelectionModal";
 import { Car as CarIcon, Users, Briefcase, Fuel, Plus, X, Wind, Navigation, Music, Settings } from "lucide-react";
 import { getCabsListing } from "@/api/cab";
+const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 
 interface AssignCarFormProps {
   initialCarId?: string | null;
@@ -30,12 +31,12 @@ export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormP
   };
 
   
-  const listApi = async()=>{
+  const getCarApi = async()=>{
     let data = await getCabsListing();
     setCabs(data)
   }
   useEffect(()=>{
-    listApi();
+    getCarApi();
   },[modalOpen])
 
 
@@ -65,7 +66,7 @@ export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormP
                 <div className="w-full sm:w-48 h-32 bg-muted rounded-lg overflow-hidden">
                   {selectedCar.images?.[0] ? (
                     <img
-                      src={"http://localhost:5000"+selectedCar.images?.find(res => res.is_main == true)?.image_url}
+                      src={API_URL+selectedCar.images?.find(res => res.is_main == true)?.image_url}
                       alt={selectedCar.car_name}
                       className="w-full h-full object-cover"
                     />

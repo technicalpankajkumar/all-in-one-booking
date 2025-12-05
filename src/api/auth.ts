@@ -1,8 +1,8 @@
 import { encryptText } from "@/lib/encrypt";
-
+const API_URL = import.meta.env.VITE_APP_API_URL;
 export const registerUser = async (formData,loader) => {
   try {
-    const res = await fetch("http://localhost:5000/api/v1/auth/register", {
+    const res = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -24,7 +24,7 @@ export const registerUser = async (formData,loader) => {
 
 export const verificationUser = async (payload,loader) => {
   try{
-    const res = await fetch("http://localhost:5000/api/v1/auth/activate-account", {
+    const res = await fetch(`${API_URL}/auth/activate-account`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -40,7 +40,7 @@ export const verificationUser = async (payload,loader) => {
 
 export const loginUser = async (payload, rememberMe = false,loader) => {
   try {
-    const res = await fetch("http://localhost:5000/api/v1/auth/login", {
+    const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -83,7 +83,7 @@ export const logoutUser = async () => {
       return { error: "You are not logged in." };
     }
 
-    const res = await fetch("http://localhost:5000/api/v1/auth/logout", {
+    const res = await fetch(`${API_URL}/auth/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
