@@ -7,70 +7,18 @@ import { CarSelectionModal } from "../partials/CarSelectionModal";
 import { Car as CarIcon, Users, Briefcase, Fuel, Plus, X, Wind, Navigation, Music, Settings } from "lucide-react";
 import { getCabsListing } from "@/api/cab";
 
-// Mock cars data
-const mockCars: Car[] = [
-  {
-    id: "1",
-    car_name: "Maruti X100",
-    car_type: "Mini",
-    fuel_type: "Petrol",
-    seat_capacity: 4,
-    bag_capacity: 1,
-    base_price: 9.5,
-    price_unit: "per_km",
-    description: "Best for short city rides",
-    is_available: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    features: { id: "1", car_id: "1", ac: true, gps: false, music_system: true, automatic_transmission: false },
-    images: [],
-  },
-  {
-    id: "2",
-    car_name: "Honda City",
-    car_type: "Sedan",
-    fuel_type: "Petrol",
-    seat_capacity: 5,
-    bag_capacity: 2,
-    base_price: 14,
-    price_unit: "per_km",
-    description: "Comfortable sedan for family",
-    is_available: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    features: { id: "2", car_id: "2", ac: true, gps: true, music_system: true, automatic_transmission: true },
-    images: [],
-  },
-  {
-    id: "3",
-    car_name: "Toyota Innova",
-    car_type: "SUV",
-    fuel_type: "Diesel",
-    seat_capacity: 7,
-    bag_capacity: 4,
-    base_price: 18,
-    price_unit: "per_km",
-    description: "Spacious SUV for groups",
-    is_available: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    features: { id: "3", car_id: "3", ac: true, gps: true, music_system: true, automatic_transmission: false },
-    images: [],
-  },
-];
-
 interface AssignCarFormProps {
   initialCarId?: string | null;
-  onSubmit: (carId: string | null) => void;
+  onSubmit: (assigned_car_id: string | null) => void;
   onBack: () => void;
 }
 
 export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormProps) {
+  const [cabs,setCabs] = useState([])
   const [selectedCar, setSelectedCar] = useState<Car | null>(
-    initialCarId ? mockCars.find((c) => c.id === initialCarId) || null : null
+    initialCarId ? cabs?.find((c) => c.id === initialCarId) || null : null
   );
   const [modalOpen, setModalOpen] = useState(false);
-  const [cabs,setCabs] = useState([])
 
   const handleCarSelect = (car: Car) => {
     setSelectedCar(car);

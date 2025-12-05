@@ -19,20 +19,20 @@ interface DocumentField {
 }
 
 const documentFields: DocumentField[] = [
-  { key: "profile_image", label: "Profile Photo", description: "Clear face photo for identification", required: true },
+  { key: "profile", label: "Profile Photo", description: "Clear face photo for identification", required: true },
   { key: "aadhar_front", label: "Aadhar Card (Front)", description: "Front side of Aadhar card", required: true },
   { key: "aadhar_back", label: "Aadhar Card (Back)", description: "Back side of Aadhar card", required: true },
-  { key: "pan_card", label: "PAN Card", description: "Clear image of PAN card", required: true },
+  { key: "pan", label: "PAN Card", description: "Clear image of PAN card", required: false },
   { key: "driving_license_front", label: "Driving License (Front)", description: "Front side of DL", required: true },
   { key: "driving_license_back", label: "Driving License (Back)", description: "Back side of DL", required: true },
 ];
 
 export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUploadFormProps) {
   const [documents, setDocuments] = useState<DriverDocuments>({
-    profile_image: null,
+    profile: null,
     aadhar_front: null,
     aadhar_back: null,
-    pan_card: null,
+    pan: null,
     driving_license_front: null,
     driving_license_back: null,
     ...initialData,
@@ -102,7 +102,7 @@ export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUp
               <div key={field.key} className="space-y-2">
                 <Label className="flex items-center gap-1">
                   {field.label}
-                  {field.required && <span className="text-destructive">*</span>}
+                  {field.required && <span className="text-destructive text-red-500">*</span>}
                 </Label>
                 <div
                   className={`relative border-2 border-primary/50 border-dashed rounded-lg p-4 transition-colors cursor-pointer hover:border-primary/50 ${

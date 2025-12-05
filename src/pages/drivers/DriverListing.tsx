@@ -39,7 +39,6 @@ const DriverListing = () => {
       <OnBoardDriver 
           open={isOpen} 
           onOpenChange={setIsOpen}
-          onComplete={(data) => console.log("Driver registered:", data)}
         />
     </>)
 }

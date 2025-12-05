@@ -164,10 +164,10 @@ export interface DriverBasicDetails {
 }
 
 export interface DriverDocuments {
-  profile_image: File | null;
+  profile: File | null;
   aadhar_front: File | null;
   aadhar_back: File | null;
-  pan_card: File | null;
+  pan: File | null;
   driving_license_front: File | null;
   driving_license_back: File | null;
 }

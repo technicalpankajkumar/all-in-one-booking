@@ -13,6 +13,7 @@ import { DriverBasicDetails, DriverDocuments } from "../../data/types";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { addDriver } from "@/api/driver";
 
 const steps = [
   { title: "Basic Details", description: "Personal & contact info" },
@@ -23,10 +24,9 @@ const steps = [
 interface OnBoardDriverProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onComplete?: (data: { basicDetails: DriverBasicDetails; documents: DriverDocuments; carId: string | null }) => void;
 }
 
-export function OnBoardDriver({ open, onOpenChange, onComplete }: OnBoardDriverProps) {
+export function OnBoardDriver({ open, onOpenChange }: OnBoardDriverProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [basicDetails, setBasicDetails] = useState<DriverBasicDetails | null>(null);
   const [documents, setDocuments] = useState<DriverDocuments | null>(null);
@@ -45,11 +45,13 @@ export function OnBoardDriver({ open, onOpenChange, onComplete }: OnBoardDriverP
     toast({ title: "Documents uploaded", description: "Proceed to assign a vehicle" });
   };
 
-  const handleCarSubmit = (carId: string | null) => {
+
+
+  const handleCarSubmit = async(assigned_car_id: string | null) => {
     if (basicDetails && documents) {
       setIsCompleted(true);
-      onComplete?.({ basicDetails, documents, carId });
-      toast({ title: "Registration Complete!", description: "Driver has been successfully onboarded" });
+         
+      await addDriver({...basicDetails,assigned_car_id},documents)
     }
   };
 

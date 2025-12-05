@@ -32,7 +32,7 @@ const basicDetailsSchema = z.object({
   // bank_ifsc: z.string().min(11, "IFSC code is required"),
   // bank_name: z.string().min(2, "Bank name is required"),
   // account_holder_name: z.string().min(2, "Account holder name is required"),
-  upi_id: z.string().optional(),
+  upi_id: z.string().min(5,"UPI Id is required"),
   experience_years: z.string().min(1, "Experience must be positive"),
   languages_known: z.array(z.string()).min(1, "Select at least one language"),
   emergency_contact_name: z.string().min(2, "Emergency contact name is required"),
@@ -329,6 +329,7 @@ export function BasicDetailsForm({ initialData, onSubmit }: BasicDetailsFormProp
           <CustomInput
             id="upi_id"
             label="UPI ID"
+            required
             placeholder="Enter upi id"
             register={register}
             errors={errors}

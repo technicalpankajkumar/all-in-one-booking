@@ -23,6 +23,8 @@ import BaseLayout from "./components/layout/BaseLayout";
 import CabListing from "./pages/Cabs/CabListing";
 import DriverListing from "./pages/drivers/DriverListing";
 import DriverDetailsPage from "./pages/drivers/DriverDetailsPage";
+import PublicRoute from "./PublicRoute";
+import PrivateRoute from "./PrivateRoute";
 
 const queryClient = new QueryClient();
 
@@ -33,10 +35,27 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          {/* PUBLIC ROUTES */}
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
+          {/* PUBLIC SITE ROUTES */}
           <Route element={<BaseLayout />}>
-            <Route path="/" element={<Index/>} />
+            <Route path="/" element={<Index />} />
             <Route path="/cabs" element={<Cabs />} />
             <Route path="/hotels" element={<Hotels />} />
             <Route path="/tour-packages" element={<TourPackage />} />
@@ -45,7 +64,15 @@ const App = () => (
             <Route path="/hotel/:id" element={<HotelDetails />} />
             <Route path="/booking" element={<BookingCab />} />
           </Route>
-          <Route element={<Layout />}>
+
+          {/* PROTECTED DASHBOARD ROUTES */}
+          <Route
+            element={
+              <PrivateRoute>
+                <Layout />
+              </PrivateRoute>
+            }
+          >
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/cabs" element={<CabListing />} />
             <Route path="/dashboard/drivers" element={<DriverListing />} />
@@ -53,7 +80,6 @@ const App = () => (
             <Route path="/dashboard/settings" element={<NotFoundPage />} />
             <Route path="/dashboard/lab-tests" element={<LabTests />} />
             <Route path="/dashboard/lab-tests/:id" element={<LabTestDetail />} />
-            <Route path="/dashboard/*" element={<NotFoundPage />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
