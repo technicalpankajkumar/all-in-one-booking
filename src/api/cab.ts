@@ -65,3 +65,60 @@ export const getCabsListing = async () => {
   }
 };
 
+export const getCabById = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (!token || !refreshToken) {
+      return { error: "You are not logged in." };
+    }
+
+    const res = await fetch(`${API_URL}/cab/${id}`, {
+      method: "GET",
+      headers: {
+        "Authorization": token
+      }
+    });
+
+    const data = await res.json();
+    if(!data.success){
+        toast.error(data.message)
+    }
+    return data.car || [];
+
+  } catch (error) {
+    console.error("Error fetching cabs:", error);
+    throw error;
+  }
+};
+
+
+export const createBooking = async (bookingData) => {
+  try {
+    const token = localStorage.getItem("token");
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (!token || !refreshToken) {
+      return { error: "You are not logged in." };
+    }
+
+    const res = await fetch(`${API_URL}/booking/create`, {
+      method: "POST",
+      headers: {
+        "Authorization": token
+      },
+      body: JSON.stringify(bookingData),
+    });
+
+    const data = await res.json();
+    if(!data.success){
+        toast.error(data.message)
+    }
+    console.log(data,'booking data')
+    return data;
+  } catch (error) {
+    console.log("Create Booking Error:", error);
+    throw error;
+  }
+};

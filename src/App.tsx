@@ -26,6 +26,8 @@ import DriverDetailsPage from "./pages/drivers/DriverDetailsPage";
 import PublicRoute from "./PublicRoute";
 import PrivateRoute from "./PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
+import BookingConfirmation from "./pages/Cabs/booking/BookingConfirmation";
+import PaymentPage from "./pages/Cabs/booking/Payment";
 
 const queryClient = new QueryClient();
 
@@ -64,7 +66,11 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/services" element={<Services />} />
               <Route path="/hotel/:id" element={<HotelDetails />} />
-              <Route path="/booking" element={<BookingCab />} />
+               {/* Booking Routes */}
+            <Route path="/booking/:id" element={<BookingCab />} />
+            <Route path="/booking/:id/payment" element={<PaymentPage />} />
+            <Route path="/booking/:id/confirmation" element={<BookingConfirmation />} />
+                        
             </Route>
 
             {/* PROTECTED DASHBOARD ROUTES */}

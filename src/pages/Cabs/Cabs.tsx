@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CabCard, Cab } from "@/components/CabCard";
 import { CabFilters } from "@/components/CabFilters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Car, MapPin, Clock, DollarSign } from "lucide-react";
-import { cabs as initialCabs } from "../../data/data";
 import heroBg from "@/assets/hero-bg.jpg";
 import sedan1 from "@/assets/sedan-1.jpg";
 import suv1 from "@/assets/suv-1.jpg";
@@ -16,21 +15,32 @@ import { Card } from "@/components/ui/card";
 import Navbar from "@/components/layout/Navbar";
 import HeroSection from "@/components/HeroSection";
 import { SearchBar } from "@/components/SearchBar";
+import { getCabsListing } from "@/api/cab";
 
 const Cabs = () => {
   const navigate = useNavigate();
+  const [initialCabs,setInitialCabs] = useState([])
   const [selectedType, setSelectedType] = useState("All");
   const [sortBy, setSortBy] = useState("price-low");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const listApi = async () => {
+      let data = await getCabsListing();
+      console.log(data,'data')
+      setInitialCabs(data)
+    }
+    useEffect(() => {
+      listApi();
+    }, []);
+
   // Map images to cabs
-  const cabsWithImages = initialCabs.map((cab) => {
+  const cabsWithImages = initialCabs && initialCabs?.map((cab) => {
     let image = sedan1;
-    if (cab.type === "SUV") {
+    if (cab.car_type === "SUV") {
       image = cab.id === "5" ? suv2 : suv1;
-    } else if (cab.type === "Luxury") {
+    } else if (cab.car_type === "Luxury") {
       image = luxury1;
-    } else if (cab.type === "Mini") {
+    } else if (cab.car_type === "Mini") {
       image = mini1;
     }
     return { ...cab, image };
@@ -42,10 +52,10 @@ const Cabs = () => {
 
   // Filter cabs
   let filteredCabs = cabsWithImages.filter((cab) => {
-    const matchesType = selectedType === "All" || cab.type === selectedType;
+    const matchesType = selectedType === "All" || cab.car_type === selectedType;
     const matchesSearch =
-      cab.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      cab.type.toLowerCase().includes(searchQuery.toLowerCase());
+      cab.car_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      cab.car_type.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesType && matchesSearch;
   });
 

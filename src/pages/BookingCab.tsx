@@ -1,8 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import BookingForm from "@/components/CabBookingForm";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/layout/Navbar";
+import { BookingForm } from "./Cabs/booking/BookingForm";
 
 export default function BookingCab() {
   const location = useLocation();
@@ -32,7 +32,7 @@ export default function BookingCab() {
             )}
           </div>
 
-          <BookingForm selectedCab={selectedCab} />
+          <BookingForm/>
         </div>
       </div>
     </div>

@@ -172,3 +172,49 @@ export interface DriverDocuments {
   driving_license_back: File | null;
 }
 
+
+export interface Passenger {
+  name: string;
+  age: number;
+  gender: 'male' | 'female' | 'other';
+}
+
+export interface Booking {
+  id?: string;
+  user_id?: string;
+  car_id: string;
+  driver_id?: string;
+  from_location: string;
+  to_location: string;
+  distance_km: number;
+  total_price: number;
+  booking_time?: Date;
+  travel_date: Date;
+  travel_time?: string;
+  trip_type: 'one_way' | 'round_trip';
+  passengers?: Passenger[];
+  payment_method: 'Cash' | 'UPI' | 'Card';
+  payment_status: 'Paid' | 'Pending';
+  booking_status: 'Confirmed' | 'Cancelled' | 'Completed' | 'Booked';
+}
+
+export interface Transaction {
+  id?: string;
+  booking_id: string;
+  amount: number;
+  status: 'success' | 'failed' | 'pending';
+  payment_gateway?: string;
+  created_at?: Date;
+}
+
+export interface BookingFormData {
+  from_location: string;
+  to_location: string;
+  travel_date: Date | undefined;
+  travel_time: string;
+  trip_type: 'one_way' | 'round_trip';
+  passengers: Passenger[];
+  payment_method: 'Cash' | 'UPI' | 'Card';
+  car_id: string;
+  driver_id?: string;
+}
