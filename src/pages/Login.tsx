@@ -30,7 +30,7 @@ const Login = () => {
     
     let res = await loginUser({login,password},security,setIsLoading)
     if(res.success){
-       toast.success(res.message);
+       toast.success("Login Sucessfull");
        setIsAuthenticated(true);
        navigate("/dashboard");
     }else{
@@ -43,6 +43,9 @@ const Login = () => {
     const { login, password } = loadRememberedData();
     setLogin(login);
     setPassword(password);
+    if(login || password){
+      setSecurity(true)
+    }
   },[])
 
   return (

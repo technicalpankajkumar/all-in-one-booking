@@ -28,6 +28,7 @@ import PrivateRoute from "./PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import BookingConfirmation from "./pages/Cabs/booking/BookingConfirmation";
 import PaymentPage from "./pages/Cabs/booking/Payment";
+import BookingListing from "./pages/Bookings/BookingListing";
 
 const queryClient = new QueryClient();
 
@@ -82,6 +83,7 @@ const App = () => (
               }
             >
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard/bookings" element={<BookingListing />} />
               <Route path="/dashboard/cabs" element={<CabListing />} />
               <Route path="/dashboard/drivers" element={<DriverListing />} />
               <Route path="/dashboard/driver/:id" element={<DriverDetailsPage />} />

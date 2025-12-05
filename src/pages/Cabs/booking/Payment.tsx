@@ -42,7 +42,7 @@ export default function PaymentPage() {
   }, [navigate]);
 
   const handlePayment = async () => {
-    // setIsProcessing(true);
+    setIsProcessing(true);
 
     // Validate based on payment method
     if (bookingData?.payment_method === "Card") {
@@ -58,8 +58,12 @@ export default function PaymentPage() {
         return;
       }
     }
-console.log(bookingData,"booking")
-     await createBooking({...bookingData,car_id:id})
+
+    let res = await createBooking({...bookingData,car_id:id});
+
+    if(res.success){
+       navigate("/cabs")
+    }
 
     // Simulate payment processing
     // setTimeout(() => {
@@ -80,7 +84,7 @@ console.log(bookingData,"booking")
     //   }));
     //   sessionStorage.removeItem("pendingBooking");
 
-    //   setIsProcessing(false);
+      setIsProcessing(false);
     //   toast.success("Payment successful!");
     //   navigate("/booking/confirmation");
     // }, 2000);

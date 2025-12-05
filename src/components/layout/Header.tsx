@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ProfileMenu } from "./partial/ProfileMenu";
 import { NotificationPanel } from "./partial/NotificationPanel";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -12,6 +13,7 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuClick, className }: HeaderProps) {
+  const {user} = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
 

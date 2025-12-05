@@ -34,7 +34,7 @@ export const CabCard = ({ cab }: CabCardProps) => {
           alt={cab.car_name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        {!cab.available && (
+        {!cab.is_available && (
           <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
             <Badge variant="secondary" className="bg-card">
               Not Available
@@ -43,7 +43,7 @@ export const CabCard = ({ cab }: CabCardProps) => {
         )}
         <div className="absolute top-3 right-3 flex gap-2">
           <Badge className="bg-primary text-primary-foreground">
-            {cab.type}
+            {cab.car_type}
           </Badge>
         </div>
       </div>

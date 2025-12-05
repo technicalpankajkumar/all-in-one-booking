@@ -84,18 +84,18 @@ export function BookingForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // if (!formData.from_location || !formData.to_location) {
-    //   toast.error("Please enter pickup and drop locations");
-    //   return;
-    // }
-    // if (!formData.travel_date) {
-    //   toast.error("Please select a travel date");
-    //   return;
-    // }
-    // if (formData.passengers.some((p) => !p.name || p.age <= 0)) {
-    //   toast.error("Please fill all passenger details");
-    //   return;
-    // }
+    if (!formData.from_location || !formData.to_location) {
+      toast.error("Please enter pickup and drop locations");
+      return;
+    }
+    if (!formData.travel_date) {
+      toast.error("Please select a travel date");
+      return;
+    }
+    if (formData.passengers.some((p) => !p.name || p.age <= 0)) {
+      toast.error("Please fill all passenger details");
+      return;
+    }
 
     setIsSubmitting(true);
 

@@ -16,6 +16,7 @@ import Navbar from "@/components/layout/Navbar";
 import HeroSection from "@/components/HeroSection";
 import { SearchBar } from "@/components/SearchBar";
 import { getCabsListing } from "@/api/cab";
+import { toast } from "sonner";
 
 const Cabs = () => {
   const navigate = useNavigate();
@@ -26,8 +27,11 @@ const Cabs = () => {
 
   const listApi = async () => {
       let data = await getCabsListing();
-      console.log(data,'data')
-      setInitialCabs(data)
+      if(data.error){
+        toast.warning(data.error)
+      }else{
+        setInitialCabs(data || [])
+      }
     }
     useEffect(() => {
       listApi();

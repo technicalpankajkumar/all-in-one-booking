@@ -103,14 +103,6 @@ export const createBooking = async (bookingData) => {
       return { error: "You are not logged in." };
     }
 
-    // const res = await fetch(`${API_URL}/booking/create`, {
-    //   method: "POST",
-    //   headers: {
-    //     "Authorization": token
-    //   },
-    //   body: JSON.stringify(bookingData),
-    // });
-
     const res = await fetch(`${API_URL}/booking/create`, {
       method: "POST",
       headers: {
@@ -123,8 +115,10 @@ export const createBooking = async (bookingData) => {
     const data = await res.json();
     if (!data.success) {
       toast.error(data.message)
+    }else{
+      toast.success(data.message);
+      
     }
-    console.log(data, 'booking data')
     return data;
   } catch (error) {
     console.log("Create Booking Error:", error);

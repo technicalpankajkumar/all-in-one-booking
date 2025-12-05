@@ -28,12 +28,11 @@ const languages = [
 
 export function ProfileMenu() {
    const navigate = useNavigate()
-   const { setIsAuthenticated } = useAuth();
+   const { setIsAuthenticated,user } = useAuth();
    const handleLogout = async () => {
    const result = await logoutUser();
  
    if (result.error) {
-     console.error(result.error);
      toast.error(result.error);
    } else {
      setIsAuthenticated(false);
@@ -63,9 +62,9 @@ export function ProfileMenu() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">John Doe</p>
+            <p className="text-sm font-medium leading-none">{user?.name}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              john.doe@example.com
+             {user?.email}
             </p>
           </div>
         </DropdownMenuLabel>

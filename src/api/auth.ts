@@ -90,7 +90,6 @@ export const logoutUser = async () => {
         "Authorization": token, // ⬅ same as backend expects
       },
       body: JSON.stringify({ refresh_token: refreshToken }),
-      credentials: "include" // for clearing cookies if backend sets them
     });
 
     const data = await res.json();

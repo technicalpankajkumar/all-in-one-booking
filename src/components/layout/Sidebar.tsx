@@ -16,8 +16,10 @@ import {
   CarIcon,
   Torus,
   CableCar,
+  BookIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 type SidebarLink = {
   name: string;
@@ -25,20 +27,22 @@ type SidebarLink = {
   icon: React.ElementType;
 };
 
-const mainLinks: SidebarLink[] = [
-  { name: "Dashboard", href: "/dashboard", icon: Home },
-  { name: "Drivers", href: "/dashboard/drivers", icon: CableCar },
-  { name: "Cabs", href: "/dashboard/cabs", icon: CarIcon },
-  { name: "Hotels", href: "/dashboard/hotels", icon: HotelIcon },
-  { name: "Tour Package", href: "/dashboard/tour-package", icon: Torus },
-  { name: "Lab Tests", href: "/dashboard/lab-tests", icon: Bell },
-  { name: "Messages", href: "/dashboard/messages", icon: MessageCircle },
-  { name: "Notifications", href: "/dashboard/notifications", icon: Bell },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
-];
-
 export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const [collapsed, setCollapsed] = useState(false);
+  const {user} = useAuth()
+  const mainLinks: SidebarLink[] = [
+    { name: "Dashboard", href: "/dashboard", icon: Home },
+    { name: "Bookings", href: "/dashboard/bookings", icon: BookIcon },
+     ...(user?.role == "MASTER" || user?.role == "ADMIN" ? [
+    { name: "Drivers", href: "/dashboard/drivers", icon: CableCar },
+    { name: "Cabs", href: "/dashboard/cabs", icon: CarIcon }] : []) ,
+    { name: "Hotels", href: "/dashboard/hotels", icon: HotelIcon },
+    { name: "Tour Package", href: "/dashboard/tour-package", icon: Torus },
+    // { name: "Lab Tests", href: "/dashboard/lab-tests", icon: Bell },
+    { name: "Messages", href: "/dashboard/messages", icon: MessageCircle },
+    { name: "Notifications", href: "/dashboard/notifications", icon: Bell },
+    { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  ];
   const location = useLocation();
 
   const toggleSidebar = () => {

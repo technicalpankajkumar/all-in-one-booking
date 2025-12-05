@@ -3,9 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const {isAuthenticated} = useAuth()
   const location = useLocation();
 
   const navItems = [
@@ -51,14 +53,16 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center gap-3">
+          {!isAuthenticated ? <div className="hidden md:flex items-center gap-3">
             <Button variant="ghost" asChild>
               <Link to="/login">Sign In</Link>
             </Button>
             <Button asChild className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
               <Link to="/register">Register</Link>
             </Button>
-          </div>
+          </div>: <div className="hidden md:flex items-center gap-3"> <Button variant="default" asChild size="sm">
+              <Link to="/dashboard">Dashboard</Link>
+            </Button> </div>}
 
           {/* Mobile Menu Button */}
           <button
@@ -98,7 +102,7 @@ const Navbar = () => {
               {item.name}
             </Link>
           ))}
-          <div className="pt-4 space-y-2 border-t border-border">
+         {!isAuthenticated ? <div className="pt-4 space-y-2 border-t border-border">
             <Button variant="outline" asChild className="w-full">
               <Link to="/login" onClick={() => setIsMenuOpen(false)}>
                 Sign In
@@ -109,7 +113,13 @@ const Navbar = () => {
                 Register
               </Link>
             </Button>
-          </div>
+          </div>: <div className="pt-4 space-y-2 border-t border-border">
+            <Button variant="default" asChild className="w-full bg-gradient-to-r from-primary to-accent" size="sm">
+              <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                Dashboard
+              </Link>
+            </Button>
+          </div>}
         </div>
       </div>
     </nav>
