@@ -13,7 +13,7 @@ export const addCab = async (cabData, images) => {
         formData.append("images", file); // fieldname matches backend: 'images'
       });
     }
-     const token = localStorage.getItem("token"); 
+    const token = localStorage.getItem("token");
     const refreshToken = localStorage.getItem("refreshToken");
 
     if (!token || !refreshToken) {
@@ -54,8 +54,8 @@ export const getCabsListing = async () => {
     });
 
     const data = await res.json();
-    if(!data.success){
-        toast.error(data.message)
+    if (!data.success) {
+      toast.error(data.message)
     }
     return data.cars || [];
 
@@ -82,8 +82,8 @@ export const getCabById = async (id) => {
     });
 
     const data = await res.json();
-    if(!data.success){
-        toast.error(data.message)
+    if (!data.success) {
+      toast.error(data.message)
     }
     return data.car || [];
 
@@ -103,19 +103,28 @@ export const createBooking = async (bookingData) => {
       return { error: "You are not logged in." };
     }
 
+    // const res = await fetch(`${API_URL}/booking/create`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Authorization": token
+    //   },
+    //   body: JSON.stringify(bookingData),
+    // });
+
     const res = await fetch(`${API_URL}/booking/create`, {
       method: "POST",
       headers: {
-        "Authorization": token
+        "Authorization": token,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(bookingData),
     });
 
     const data = await res.json();
-    if(!data.success){
-        toast.error(data.message)
+    if (!data.success) {
+      toast.error(data.message)
     }
-    console.log(data,'booking data')
+    console.log(data, 'booking data')
     return data;
   } catch (error) {
     console.log("Create Booking Error:", error);
