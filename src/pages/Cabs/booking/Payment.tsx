@@ -18,10 +18,13 @@ import {
   Car,
   CheckCircle2,
   Clock,
-  ArrowLeft
+  ArrowLeft,
+  MoveRight,
+  TicketCheck
 } from "lucide-react";
 import { BookingFormData } from "../../../data/types";
 import { createBooking } from "@/api/cab";
+import { CustomInput } from "@/components/custom-ui";
 
 export default function PaymentPage() {
   const navigate = useNavigate();
@@ -29,7 +32,7 @@ export default function PaymentPage() {
   const [bookingData, setBookingData] = useState<BookingFormData & { total_price: number; distance_km: number; travel_time: string } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [cardDetails, setCardDetails] = useState({ number: "", expiry: "", cvv: "" });
-  const [upiId, setUpiId] = useState("");
+  const [upiId, setUpiId] = useState("pankajkumar@upi.com");
 
   useEffect(() => {
     const storedData = sessionStorage.getItem("pendingBooking");
@@ -40,7 +43,7 @@ export default function PaymentPage() {
       navigate(`/booking/${id}/confirmation`)
     }
   }, [navigate]);
-
+console.log(bookingData,"bookingData")
   const handlePayment = async () => {
     setIsProcessing(true);
 
@@ -126,72 +129,120 @@ export default function PaymentPage() {
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Booking Summary */}
           <Card>
-            <CardHeader>
-              <CardTitle>Booking Summary</CardTitle>
+            <CardHeader className="p-6 mb-2">
+              <CardTitle className="flex gap-2 items-center"><TicketCheck className="h-7 w-7" /> Booking Summary</CardTitle>
               <CardDescription>Review your trip details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-2">
                 <MapPin className="h-5 w-5 text-primary mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">Route</p>
-                  <p className="font-medium">{bookingData.from_location}</p>
-                  <p className="text-muted-foreground">→</p>
-                  <p className="font-medium">{bookingData.to_location}</p>
+                <div className="flex gap-4 items-center">
+                  <p className="font-semibold text-muted-foreground">Route</p>
+                  <p className="font-sm">{bookingData.from_location}</p>
+                  <p className="text-muted-foreground"><MoveRight/></p>
+                  <p className="font-sm">{bookingData.to_location}</p>
                 </div>
               </div>
 
               <Separator />
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* <div className="grid grid-cols-2 gap-4"> */}
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Date</p>
-                    <p className="font-medium">
-                      {bookingData.travel_date && format(new Date(bookingData.travel_date), "PPP")}
+                  <Calendar className="h-5 w-5 text-primary mt-0.5" />
+                  {/* <div> */}
+                    <p className="text-base font-semibold text-muted-foreground">Date</p>
+                    <p className="">
+                      {`${bookingData.travel_date && format(new Date(bookingData.travel_date), "PPP")}`}
                     </p>
-                  </div>
+                    <p className="flex gap-2">
+                      <span className="text-base font-semibold text-muted-foreground">Time</span>
+                      {bookingData.pickup_time}
+                    </p>
+                  {/* </div> */}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Duration</p>
-                    <p className="font-medium">{bookingData.travel_time}</p>
-                  </div>
+                  <Clock className="h-5 w-5 text-primary mt-0.5" />
+                  {/* <div> */}
+                    <p className="text-base font-semibold text-muted-foreground">Duration</p>
+                    <p className=" text-center">{bookingData.travel_time || "00:00"}</p>
+                  {/* </div> */}
                 </div>
-              </div>
+              {/* </div> */}
 
               <Separator />
 
               <div className="flex items-center gap-2">
-                <Car className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Trip Type</p>
+                <Car className="h-5 w-5 text-primary mt-0.5" />
+                <div className="flex gap-2">
+                  <p className="text-sm font-semibold text-muted-foreground">Trip Type</p>
                   <Badge variant="secondary">
-                    {bookingData.trip_type === "one_way" ? "One Way" : "Round Trip"}
+                    {bookingData.trip_type === "One Way" ? "One Way" : "Round Trip"}
                   </Badge>
                 </div>
               </div>
-
+              <Separator />
               <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Passengers</p>
-                  <p className="font-medium">{bookingData.passengers.length} passenger(s)</p>
+                <Users className="h-5 w-5 text-primary mt-0.5" />
+                <div className="flex-1 gap-2">
+                  <p className="text-sm font-semibold text-muted-foreground">Passengers</p>
+                  <p className="">{bookingData.passengers.length} passenger's</p>
                 </div>
               </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full">
+                    <thead className="bg-gray-50 text-slate-500 font-light">
+                      <tr className="*:font-semibold *:text-sm">
+                        <th className="px-2 py-1 ">Name</th>
+                        <th className="px-2 py-1">Age</th>
+                        <th className="px-2 py-1">Gender</th>
+                      </tr>
+                    </thead>
 
-              <Separator />
-
-              <div className="bg-primary/5 rounded-lg p-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Distance</span>
-                  <span>{bookingData.distance_km} km</span>
+                    <tbody>
+                      {bookingData?.passengers?.map((res,idx)=> {
+                         return <tr key={idx} className="border-b *:text-sm text-center hover:bg-gray-50 md:table-row block">
+                        <td className="px-4 py-1 border md:table-cell block md:border-0"
+                            data-label="Name">
+                          {res.name}
+                        </td>
+                        <td className="px-4 py-1 border md:table-cell block md:border-0"
+                            data-label="Age">
+                          {res.age}
+                        </td>
+                        <td className="px-4 py-1 border md:table-cell block md:border-0"
+                            data-label="Gender">
+                          {res.gender}
+                        </td>
+                      </tr>
+                      })}
+                    </tbody>
+                  </table>
                 </div>
-                <div className="flex justify-between items-center mt-2">
-                  <span className="font-semibold">Total Amount</span>
-                  <span className="text-2xl font-bold text-primary">₹{bookingData.total_price}</span>
+
+              <div className="bg-gray-100 rounded-sm p-4 *:text-sm space-y-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">Base Fare :</span>
+                  <span>{bookingData.distance_km}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">Distance Charge :</span>
+                  <span>{bookingData.distance_km}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">Duration Charge :</span>
+                  <span>{bookingData.distance_km}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">Waiting Charge :</span>
+                  <span>{bookingData.distance_km}</span>
+                </div>
+                 <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">Driver Late Discount :</span>
+                  <span>{bookingData.distance_km}</span>
+                </div>
+                <div className="flex justify-between items-center mt-3 border-0 border-t-2 py-1">
+                  <span className="font-semibold text-base">Total Amount</span>
+                  <span className="text-base font-bold text-primary">₹{bookingData.total_price || "9,999"}</span>
                 </div>
               </div>
             </CardContent>
@@ -199,11 +250,11 @@ export default function PaymentPage() {
 
           {/* Payment Section */}
           <Card>
-            <CardHeader>
+            <CardHeader className="p-6 mb-2">
               <CardTitle className="flex items-center gap-2">
-                {bookingData.payment_method === "Card" && <CreditCard className="h-5 w-5" />}
-                {bookingData.payment_method === "UPI" && <Smartphone className="h-5 w-5" />}
-                {bookingData.payment_method === "Cash" && <Banknote className="h-5 w-5" />}
+                {bookingData.payment_method === "Card" && <CreditCard className="h-7 w-7" />}
+                {bookingData.payment_method === "UPI" && <Smartphone className="h-7 w-7" />}
+                {bookingData.payment_method === "Cash" && <Banknote className="h-7 w-7" />}
                 Pay with {bookingData.payment_method}
               </CardTitle>
               <CardDescription>
@@ -252,13 +303,24 @@ export default function PaymentPage() {
               {bookingData.payment_method === "UPI" && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="upiId">UPI ID</Label>
-                    <Input
-                      id="upiId"
-                      placeholder="yourname@upi"
-                      value={upiId}
-                      onChange={(e) => setUpiId(e.target.value)}
-                    />
+                    <CustomInput
+                     label="UPI ID"
+                     id={'upiId'}
+                     placeholder="demo@upi.com"
+                     register={(e)=> ({
+                       onChange:(e) => setUpiId(e.target.value)
+                     })}
+                     disabled
+                     />
+                     <CustomInput
+                     label="Transaction ID"
+                     id={'transaction_id'}
+                     placeholder="Enter transaction ID"
+                     register={(e)=> ({
+                       onChange:(e) => setUpiId(e.target.value)
+                     })}
+                     required
+                     />
                   </div>
                   <div className="bg-muted/50 rounded-lg p-4 text-center">
                     <p className="text-sm text-muted-foreground mb-2">Or scan QR code</p>
@@ -296,17 +358,28 @@ export default function PaymentPage() {
                 ) : (
                   <>
                     <CheckCircle2 className="h-4 w-4 mr-2" />
-                    {bookingData.payment_method === "Cash" ? "Confirm Booking" : `Pay ₹${bookingData.total_price}`}
+                    {bookingData.payment_method === "Cash" ? "Confirm Booking" : `Pay ₹ ${bookingData.total_price || "0,000.00"}`}
                   </>
                 )}
               </Button>
-              {bookingData.payment_method !== "Cash" && (
-                <Button 
+              {
+                bookingData.payment_method === "UPI" && (
+                  <Button 
                   variant="outline" 
                   className="w-full"
                   onClick={handlePayLater}
+                  >
+                  Partial Confirm with Pay 500
+                </Button>
+                )
+              }
+              {bookingData.payment_method !== "Cash" && (
+                <Button 
+                  variant="secondary" 
+                  className="w-full"
+                  onClick={handlePayLater}
                 >
-                  Pay Later (Book Now)
+                  Pay Later
                 </Button>
               )}
             </CardFooter>

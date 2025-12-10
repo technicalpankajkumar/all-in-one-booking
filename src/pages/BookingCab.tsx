@@ -24,7 +24,7 @@ export default function BookingCab() {
 
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-2 gradient-text">Complete Your Booking</h1>
+            <h1 className="text-4xl font-bold mb-2 text-primary">Book Cab For Trip</h1>
             {selectedCab && (
               <p className="text-muted-foreground">
                 {selectedCab.name} - {selectedCab.type} | Starting at ₹{selectedCab.price}

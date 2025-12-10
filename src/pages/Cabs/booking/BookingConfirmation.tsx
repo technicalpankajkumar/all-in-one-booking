@@ -48,7 +48,7 @@ export default function BookingConfirmation() {
     // }
   }, [navigate]);
 
-  if (!booking) {
+  if (booking) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
@@ -56,7 +56,7 @@ export default function BookingConfirmation() {
     );
   }
 
-  const isPaid = booking.payment_status === "Paid";
+  const isPaid = booking?.payment_status === "Paid";
 
   return (
     <div className="min-h-screen bg-background">
@@ -90,7 +90,7 @@ export default function BookingConfirmation() {
               <div>
                 <p className="font-medium">Payment Pending</p>
                 <p className="text-sm text-muted-foreground">
-                  Please pay ₹{booking.total_price} via {booking.payment_method} to confirm your booking.
+                  Please pay ₹{booking?.total_price} via {booking?.payment_method} to confirm your booking.
                 </p>
               </div>
             </CardContent>
@@ -103,11 +103,11 @@ export default function BookingConfirmation() {
             <div className="flex items-center justify-between">
               <CardTitle>Booking Details</CardTitle>
               <div className="flex gap-2">
-                <Badge variant={booking.booking_status === "Confirmed" ? "default" : "secondary"}>
-                  {booking.booking_status}
+                <Badge variant={booking?.booking_status === "Confirmed" ? "default" : "secondary"}>
+                  {booking?.booking_status}
                 </Badge>
                 <Badge variant={isPaid ? "default" : "outline"} className={isPaid ? "bg-green-500" : ""}>
-                  {booking.payment_status}
+                  {booking?.payment_status}
                 </Badge>
               </div>
             </div>
@@ -119,9 +119,9 @@ export default function BookingConfirmation() {
               <div className="flex-1">
                 <p className="text-sm text-muted-foreground">Route</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="font-medium">{booking.from_location}</span>
+                  <span className="font-medium">{booking?.from_location}</span>
                   <span className="text-muted-foreground">→</span>
-                  <span className="font-medium">{booking.to_location}</span>
+                  <span className="font-medium">{booking?.to_location}</span>
                 </div>
               </div>
             </div>
@@ -135,7 +135,7 @@ export default function BookingConfirmation() {
                 <div>
                   <p className="text-sm text-muted-foreground">Travel Date</p>
                   <p className="font-medium">
-                    {booking.travel_date && format(new Date(booking.travel_date), "PPP")}
+                    {booking?.travel_date && format(new Date(booking?.travel_date), "PPP")}
                   </p>
                 </div>
               </div>
@@ -143,7 +143,7 @@ export default function BookingConfirmation() {
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Duration</p>
-                  <p className="font-medium">{booking.travel_time}</p>
+                  <p className="font-medium">{booking?.travel_time}</p>
                 </div>
               </div>
             </div>
@@ -154,10 +154,10 @@ export default function BookingConfirmation() {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Users className="h-4 w-4 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Passengers ({booking.passengers.length})</p>
+                <p className="text-sm text-muted-foreground">Passengers ({booking?.passengers?.length})</p>
               </div>
               <div className="grid gap-2">
-                {booking.passengers.map((passenger, index) => (
+                {booking && booking?.passengers?.map((passenger, index) => (
                   <div key={index} className="flex items-center justify-between text-sm bg-muted/50 rounded-lg px-3 py-2">
                     <span className="font-medium">{passenger.name}</span>
                     <span className="text-muted-foreground">
@@ -175,12 +175,12 @@ export default function BookingConfirmation() {
               <CreditCard className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Payment Method</p>
-                <p className="font-medium">{booking.payment_method}</p>
+                <p className="font-medium">{booking?.payment_method}</p>
               </div>
             </div>
 
             {/* Transaction Details */}
-            {booking.transaction && (
+            {booking?.transaction && (
               <>
                 <Separator />
                 <div className="bg-green-500/10 rounded-lg p-4">
@@ -188,17 +188,17 @@ export default function BookingConfirmation() {
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>Transaction ID</span>
-                      <span className="font-mono">{booking.transaction.booking_id}</span>
+                      <span className="font-mono">{booking?.transaction?.booking_id}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Status</span>
                       <Badge variant="default" className="bg-green-500">
-                        {booking.transaction.status}
+                        {booking?.transaction?.status}
                       </Badge>
                     </div>
                     <div className="flex justify-between">
                       <span>Date</span>
-                      <span>{format(new Date(booking.transaction.created_at), "PPP p")}</span>
+                      <span>{format(new Date(booking?.transaction?.created_at), "PPP p")}</span>
                     </div>
                   </div>
                 </div>
@@ -212,9 +212,9 @@ export default function BookingConfirmation() {
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Amount</p>
-                  <p className="text-sm text-muted-foreground">{booking.distance_km} km × rate</p>
+                  <p className="text-sm text-muted-foreground">{booking?.distance_km} km × rate</p>
                 </div>
-                <span className="text-3xl font-bold text-primary">₹{booking.total_price}</span>
+                <span className="text-3xl font-bold text-primary">₹{booking?.total_price}</span>
               </div>
             </div>
           </CardContent>

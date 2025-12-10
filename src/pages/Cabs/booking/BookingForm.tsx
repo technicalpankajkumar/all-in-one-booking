@@ -1,41 +1,31 @@
+import { getCabById } from "@/api/cab";
+import { CustomInput, CustomSelect } from "@/components/custom-ui";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { CreditCard, MapPin, Plus, Trash2, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { CalendarIcon, MapPin, Users, Plus, Trash2, Car, CreditCard } from "lucide-react";
-import { BookingFormData, Passenger } from "../../../data/types";
 import { toast } from "sonner";
-import { CustomInput, CustomSelect } from "@/components/custom-ui";
-import { getCabById } from "@/api/cab";
-
-// Mock data for cars
-const mockCars = [
-  { id: "car1", name: "Toyota Innova", price_per_km: 12 },
-  { id: "car2", name: "Swift Dzire", price_per_km: 8 },
-  { id: "car3", name: "Honda City", price_per_km: 10 },
-];
+import { BookingFormData, Passenger } from "../../../data/types";
 
 export function BookingForm() {
   const navigate = useNavigate();
   const {id} = useParams();
   const [carDetails,setCardDetails] = useState({})
+  const [fareResult,setFareResult] = useState({})
   const [formData, setFormData] = useState<BookingFormData>({
     from_location: "",
     to_location: "",
     travel_date: undefined,
-    trip_type: "one_way",
-    travel_time:"",
+    trip_type: "One Way",
     passengers: [{ name: "", age: 0, gender: "male" }],
     payment_method: "Cash",
-    car_id: "",
+    distance_km:0,
+    waiting_min:0,
+    driver_late_min:0,
+    pickup_time:"",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -58,28 +48,19 @@ export function BookingForm() {
       toast.error("Maximum 6 passengers allowed");
     }
   };
-
   const removePassenger = (index: number) => {
     if (formData.passengers.length > 1) {
       const newPassengers = formData.passengers.filter((_, i) => i !== index);
       setFormData({ ...formData, passengers: newPassengers });
     }
   };
-
   const updatePassenger = (index: number, field: keyof Passenger, value: string | number) => {
     const newPassengers = [...formData.passengers];
     newPassengers[index] = { ...newPassengers[index], [field]: value };
     setFormData({ ...formData, passengers: newPassengers });
   };
 
-  const calculatePrice = () => {
-    const selectedCar = mockCars.find((c) => c.id === formData.car_id);
-    if (!selectedCar) return 0;
-    const baseDistance = 100; // Mock distance
-    const multiplier = formData.trip_type === "round_trip" ? 2 : 1;
-    return baseDistance * selectedCar.price_per_km * multiplier;
-  };
-  console.log(carDetails)
+  console.log(carDetails,"card Details")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,12 +83,9 @@ export function BookingForm() {
     // Simulate API call
     const bookingData = {
       ...formData,
-      distance_km: 100, // Mock distance
-    //   total_price: calculatePrice(),
-      total_price:carDetails?.base_price || 0,
-      booking_status: "Booked",
-      payment_status: "Pending",
-      travel_time: "3 hr 25 min", // Mock travel time
+      driver_id:carDetails?.driver?.id,
+      car_id:carDetails?.id,
+      fare_result:fareResult,
     };
 
     // Store booking data in sessionStorage for payment page
@@ -121,6 +99,7 @@ export function BookingForm() {
   };
 
   const handleOnChange=(e)=>{
+    // console.log(e.target.value)
     setFormData({ ...formData, [e.target.id]: e.target.value })
   }
 
@@ -130,7 +109,7 @@ export function BookingForm() {
       {/* Location Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 pt-2 mb-4">
+          <CardTitle className="flex items-center gap-2 pt-4 mb-4">
             <MapPin className="h-5 w-5 text-primary" />
             Trip Details
           </CardTitle>
@@ -163,19 +142,31 @@ export function BookingForm() {
                     id="travel_date"
                     label="Pick a date"
                     required
-                    type="date"
+                    type="datetime-local"
                     value={formData.travel_date}
                     register={()=>({
                         onChange:handleOnChange
                     })}
                 />
                 <CustomInput
-                    id="travel_time"
-                    label="Travel Time"
+                    id="pickup_time"
+                    label="Pickup Time"
                     required
                     type="time"
-                    placeholder="Choose travel time"
-                    value={formData.travel_time}
+                    placeholder="Choose pickup time"
+                    value={formData.pickup_time}
+                    register={()=>({
+                        onChange:handleOnChange
+                    })}
+                    errors={{}}
+                />
+                <CustomInput
+                    id="distance_km"
+                    label="Total Distance In (KM)"
+                    required
+                    type="number"
+                    placeholder="Enter distance"
+                    value={formData.distance_km}
                     register={()=>({
                         onChange:handleOnChange
                     })}
@@ -186,8 +177,8 @@ export function BookingForm() {
                     label="Trip Type"
                     required
                     items={[
-                        { value: "one_way", label: "On Way" },
-                        { value: "round_trip", label: "Round Trip" },
+                        { value: "One Way", label: "One Way" },
+                        { value: "Round Trip", label: "Round Trip" },
                     ]}
                     setValue={(name,value)=>{
                         setFormData({ ...formData, trip_type: value })
@@ -201,7 +192,7 @@ export function BookingForm() {
       {/* Passengers Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 pt-2 mb-4">
+          <CardTitle className="flex items-center gap-2 pt-4 mb-4">
             <Users className="h-5 w-5 text-primary" />
             Passengers
           </CardTitle>

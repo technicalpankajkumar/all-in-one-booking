@@ -23,7 +23,7 @@ export const CustomInput = ({
       )}
 
       {/* Input container for prefix & postfix */}
-      <div className="flex items-center gap-2 border rounded px-2 bg-background">
+      <div className="flex items-center gap-2 border rounded-sm px-4 bg-background">
         
         {/* Prefix Icon */}
         {prefix && <span className="text-muted-foreground">{prefix}</span>}

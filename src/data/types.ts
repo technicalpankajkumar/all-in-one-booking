@@ -211,10 +211,11 @@ export interface BookingFormData {
   from_location: string;
   to_location: string;
   travel_date: Date | undefined;
-  travel_time: string;
-  trip_type: 'one_way' | 'round_trip';
+  trip_type: 'One Way' | 'Round Trip';
   passengers: Passenger[];
   payment_method: 'Cash' | 'UPI' | 'Card';
-  car_id: string;
-  driver_id?: string;
+  distance_km:number;
+  pickup_time:string;
+  waiting_min:number;
+  driver_late_min:number;
 }
