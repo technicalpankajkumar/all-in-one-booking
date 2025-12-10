@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, Users, Briefcase, Wind } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 export interface Cab {
   id: string;
@@ -26,15 +27,16 @@ interface CabCardProps {
 
 export const CabCard = ({ cab }: CabCardProps) => {
   const navigate = useNavigate();
+  const {user} = useAuth()
   return (
     <Card className="group overflow-hidden bg-card border-border shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
       <div className="relative overflow-hidden h-48 bg-muted">
         <img
           src={API_URL+cab?.images?.find(res => res.is_main == true)?.image_url}
-          alt={cab.car_name}
+          alt={cab?.car_name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        {!cab.is_available && (
+        {!cab?.is_available && (
           <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
             <Badge variant="secondary" className="bg-card">
               Not Available
@@ -43,7 +45,7 @@ export const CabCard = ({ cab }: CabCardProps) => {
         )}
         <div className="absolute top-3 right-3 flex gap-2">
           <Badge className="bg-primary text-primary-foreground">
-            {cab.car_type}
+            {cab?.car_type}
           </Badge>
         </div>
       </div>
@@ -108,7 +110,7 @@ export const CabCard = ({ cab }: CabCardProps) => {
             <div className="text-xs text-muted-foreground">per trip</div>
           </div>
           <Button
-            onClick={() => navigate(`/booking/${cab.id}`)}
+            onClick={() => user?.token ? navigate(`/booking/${cab.id}`) : navigate("/login")}
             disabled={!cab.is_available}
             className="bg-primary cursor-pointer"
           >

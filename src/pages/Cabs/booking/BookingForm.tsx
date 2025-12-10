@@ -9,10 +9,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { BookingFormData, Passenger } from "../../../data/types";
+import { useAuth } from "@/context/AuthContext";
 
 export function BookingForm() {
   const navigate = useNavigate();
   const {id} = useParams();
+  const {user} = useAuth();
   const [carDetails,setCardDetails] = useState({})
   const [fareResult,setFareResult] = useState({})
   const [formData, setFormData] = useState<BookingFormData>({
@@ -91,11 +93,15 @@ export function BookingForm() {
     // Store booking data in sessionStorage for payment page
     sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      toast.success("Booking created! Redirecting to payment...");
-      navigate(`/booking/${id}/payment`);
-    }, 1000);
+    if(user?.role != "USER"){
+      setTimeout(() => {
+        setIsSubmitting(false);
+        toast.success("Cab Booked! Redirecting to payment...");
+        navigate(`/booking/${id}/payment`);
+      }, 1000);
+    }else{
+      toast.success("Cab Booked! Redirecting to home...");
+    }
   };
 
   const handleOnChange=(e)=>{
@@ -308,12 +314,12 @@ export function BookingForm() {
       </Card>
 
       {/* Price Summary */}
-      {formData.car_id && (
+      {formData?.car_id && (
         <Card className="bg-primary/5 border-primary/20">
           <CardContent className="pt-6">
             <div className="flex justify-between items-center text-lg">
               <span className="font-medium">Estimated Total:</span>
-              <span className="text-2xl font-bold text-primary">₹{calculatePrice()}</span>
+              <span className="text-2xl font-bold text-primary">₹ 0</span>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
               Based on estimated distance of 100 km

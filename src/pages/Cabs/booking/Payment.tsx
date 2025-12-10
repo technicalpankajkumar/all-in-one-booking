@@ -150,7 +150,7 @@ console.log(bookingData,"bookingData")
                 <div className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-primary mt-0.5" />
                   {/* <div> */}
-                    <p className="text-base font-semibold text-muted-foreground">Date</p>
+                    <p className="text-base font-semibold text-muted-foreground">Travel Date</p>
                     <p className="">
                       {`${bookingData.travel_date && format(new Date(bookingData.travel_date), "PPP")}`}
                     </p>
@@ -207,7 +207,7 @@ console.log(bookingData,"bookingData")
                         </td>
                         <td className="px-4 py-1 border md:table-cell block md:border-0"
                             data-label="Age">
-                          {res.age}
+                          {res.age} yrs
                         </td>
                         <td className="px-4 py-1 border md:table-cell block md:border-0"
                             data-label="Gender">

@@ -14,7 +14,8 @@ import {
   CreditCard,
   AlertCircle,
   Home,
-  Download
+  Download,
+  MoveRight
 } from "lucide-react";
 import { BookingFormData } from "../../../data/types";
 
@@ -56,20 +57,20 @@ export default function BookingConfirmation() {
     );
   }
 
-  const isPaid = booking?.payment_status === "Paid";
+  const isPaid = true || booking?.payment_status === "Paid";
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container max-w-2xl py-8 px-4">
+    <div className="min-h-screen bg-background flex items-end">
+      <div className="container max-w-2xl py-8 px-4 ">
         {/* Status Header */}
-        <div className="text-center mb-8">
+        {/* <div className="text-center mb-8 bg-white p-4 rounded-lg shadow">
           {isPaid ? (
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/10 mb-4">
-              <CheckCircle2 className="h-10 w-10 text-green-500" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/10 mb-4">
+              <CheckCircle2 className="h-6 w-6 text-green-500" />
             </div>
           ) : (
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-yellow-500/10 mb-4">
-              <Clock className="h-10 w-10 text-yellow-500" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-500/10 mb-4">
+              <Clock className="h-6 w-6 text-yellow-500" />
             </div>
           )}
           <h1 className="text-3xl font-bold">
@@ -80,10 +81,10 @@ export default function BookingConfirmation() {
               ? "Your trip has been successfully booked and paid for." 
               : "Your booking is confirmed. Please complete the payment before your trip."}
           </p>
-        </div>
+        </div> */}
 
         {/* Payment Pending Alert */}
-        {!isPaid && (
+        {/* {!isPaid && (
           <Card className="mb-6 border-yellow-500/50 bg-yellow-500/5">
             <CardContent className="flex items-center gap-4 py-4">
               <AlertCircle className="h-6 w-6 text-yellow-500 flex-shrink-0" />
@@ -95,11 +96,11 @@ export default function BookingConfirmation() {
               </div>
             </CardContent>
           </Card>
-        )}
+        )} */}
 
         {/* Booking Details Card */}
-        <Card>
-          <CardHeader>
+        <Card className="shadow-lg">
+          <CardHeader className="p-6">
             <div className="flex items-center justify-between">
               <CardTitle>Booking Details</CardTitle>
               <div className="flex gap-2">
@@ -114,35 +115,33 @@ export default function BookingConfirmation() {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Route */}
-            <div className="flex items-start gap-3">
-              <MapPin className="h-5 w-5 text-primary mt-0.5" />
-              <div className="flex-1">
-                <p className="text-sm text-muted-foreground">Route</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="font-medium">{booking?.from_location}</span>
-                  <span className="text-muted-foreground">→</span>
-                  <span className="font-medium">{booking?.to_location}</span>
+            <div className="flex items-start gap-2">
+                <MapPin className="h-5 w-5 text-primary mt-0.5" />
+                <div className="flex gap-4 items-center">
+                  <p className="font-semibold text-muted-foreground">Route</p>
+                  <p className="font-sm">{booking?.from_location}</p>
+                  <p className="text-muted-foreground"><MoveRight/></p>
+                  <p className="font-sm">{booking?.to_location}</p>
                 </div>
               </div>
-            </div>
 
             <Separator />
 
             {/* Trip Info */}
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <Calendar className="h-5 w-5 text-primary mt-0.5" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Travel Date</p>
+                  <p className="text-base font-semibold text-muted-foreground">Travel Date</p>
                   <p className="font-medium">
                     {booking?.travel_date && format(new Date(booking?.travel_date), "PPP")}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <Clock className="h-5 w-5 text-primary mt-0.5" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Duration</p>
+                  <p className="text-base font-semibold text-muted-foreground">Duration</p>
                   <p className="font-medium">{booking?.travel_time}</p>
                 </div>
               </div>
@@ -151,30 +150,51 @@ export default function BookingConfirmation() {
             <Separator />
 
             {/* Passengers */}
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Passengers ({booking?.passengers?.length})</p>
-              </div>
-              <div className="grid gap-2">
-                {booking && booking?.passengers?.map((passenger, index) => (
-                  <div key={index} className="flex items-center justify-between text-sm bg-muted/50 rounded-lg px-3 py-2">
-                    <span className="font-medium">{passenger.name}</span>
-                    <span className="text-muted-foreground">
-                      {passenger.age} yrs, {passenger.gender}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <div className="flex items-center gap-2">
+                            <Users className="h-5 w-5 text-primary mt-0.5" />
+                            <div className="flex-1 gap-2">
+                              <p className="text-base font-semibold text-muted-foreground">Passengers</p>
+                              <p className="">{booking?.passengers?.length} passenger's</p>
+                            </div>
+                          </div>
+                            <div className="overflow-x-auto">
+                              <table className="min-w-full">
+                                <thead className="bg-gray-50 text-slate-500 font-light">
+                                  <tr className="*:font-semibold *:text-sm">
+                                    <th className="px-2 py-1 ">Name</th>
+                                    <th className="px-2 py-1">Age</th>
+                                    <th className="px-2 py-1">Gender</th>
+                                  </tr>
+                                </thead>
+            
+                                <tbody>
+                                  {booking?.passengers?.map((res,idx)=> {
+                                     return <tr key={idx} className="border-b *:text-sm text-center hover:bg-gray-50 md:table-row block">
+                                    <td className="px-4 py-1 border md:table-cell block md:border-0"
+                                        data-label="Name">
+                                      {res.name}
+                                    </td>
+                                    <td className="px-4 py-1 border md:table-cell block md:border-0"
+                                        data-label="Age">
+                                      {res.age} yrs
+                                    </td>
+                                    <td className="px-4 py-1 border md:table-cell block md:border-0"
+                                        data-label="Gender">
+                                      {res.gender}
+                                    </td>
+                                  </tr>
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
 
             <Separator />
 
             {/* Payment Info */}
             <div className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4 text-muted-foreground" />
+              <CreditCard className="h-5 w-5 text-primary mt-0.5" />
               <div>
-                <p className="text-sm text-muted-foreground">Payment Method</p>
+                <p className="text-base font-semibold text-muted-foreground">Payment Method</p>
                 <p className="font-medium">{booking?.payment_method}</p>
               </div>
             </div>
@@ -184,7 +204,7 @@ export default function BookingConfirmation() {
               <>
                 <Separator />
                 <div className="bg-green-500/10 rounded-lg p-4">
-                  <p className="text-sm text-muted-foreground mb-2">Transaction Details</p>
+                  <p className="text-base font-semibold text-muted-foreground">Transaction Details</p>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span>Transaction ID</span>
@@ -208,7 +228,7 @@ export default function BookingConfirmation() {
             <Separator />
 
             {/* Total */}
-            <div className="bg-primary/5 rounded-lg p-4">
+            {/* <div className="bg-primary/5 rounded-lg p-4">
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Amount</p>
@@ -216,7 +236,33 @@ export default function BookingConfirmation() {
                 </div>
                 <span className="text-3xl font-bold text-primary">₹{booking?.total_price}</span>
               </div>
-            </div>
+            </div> */}
+            <div className="bg-gray-50 rounded-sm p-4 *:text-sm space-y-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">Base Fare :</span>
+                  <span>{booking?.distance_km || "0,00"} (km × rate)</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">Distance Charge :</span>
+                  <span>{booking?.distance_km || "0,00"} (km × rate)</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">Duration Charge :</span>
+                  <span>{booking?.distance_km || "0,00"} (km × rate)</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">Waiting Charge :</span>
+                  <span>{booking?.distance_km || "0,00"} (km × rate)</span>
+                </div>
+                 <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">Driver Late Discount :</span>
+                  <span>{booking?.distance_km || "0,00"} (km × rate)</span>
+                </div>
+                <div className="flex justify-between items-center mt-3 border-0 border-t-2 py-1">
+                  <span className="font-semibold text-base">Total Amount</span>
+                  <span className="text-base font-bold text-primary">₹{booking?.total_price || "9,999"}</span>
+                </div>
+              </div>
           </CardContent>
         </Card>
 
