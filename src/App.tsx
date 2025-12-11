@@ -29,6 +29,8 @@ import { AuthProvider } from "./context/AuthContext";
 import BookingConfirmation from "./pages/Cabs/booking/BookingConfirmation";
 import PaymentPage from "./pages/Cabs/booking/Payment";
 import BookingListing from "./pages/Bookings/BookingListing";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +39,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+       <Provider store={store}>
       <AuthProvider>
         <BrowserRouter>
           <Routes>
@@ -96,6 +99,7 @@ const App = () => (
           </Routes>
         </BrowserRouter>
       </AuthProvider>
+      </Provider>
     </TooltipProvider>
   </QueryClientProvider>
 );

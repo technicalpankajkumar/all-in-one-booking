@@ -1,10 +1,16 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
+import { useSelector } from "react-redux";
+import type {RootState} from './app/store'
+interface Props {
+  children: JSX.Element;
+}
 
-const PrivateRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+const PrivateRoute: React.FC<Props> = ({ children }) => {
+  const { user } = useAuth();
+  // const token = useSelector((state: RootState) => state.auth.accessToken);
 
-  if (!isAuthenticated) {
+  if (!user.accessToken) {
     return <Navigate to="/login" replace />;
   }
 

@@ -1,48 +1,57 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useLoginMutation } from "@/app/services/authApi";
+import travelHero from "@/assets/travel-hero.jpg";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
-import { toast } from "sonner";
-import travelHero from "@/assets/travel-hero.jpg";
 import { loadRememberedData } from "@/lib/encrypt";
-import { loginUser } from "@/api/auth";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useAuth } from "@/context/AuthContext";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { encryptText } from "@/lib/encrypt";
 
 const Login = () => {
-  const { setIsAuthenticated } = useAuth();
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [login, { isLoading }] = useLoginMutation();
+  const [formValue,setFormValue] = useState({
+    login:"",
+    password:""
+  })
   const [security,setSecurity] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // save remember password
+    if (security) {
+          localStorage.setItem("remember_email", formValue.login);
+          localStorage.setItem("remember_password", encryptText(formValue.password));
+        } else {
+          localStorage.removeItem("remember_email");
+          localStorage.removeItem("remember_password");
+    }
     
-    if (!login || !password) {
+    if (!formValue.password || !formValue.login) {
       toast.error("Please fill in all fields");
       return;
     }
+    try{
+      const res = await login(formValue).unwrap();
 
-    setIsLoading(true);
-    
-    let res = await loginUser({login,password},security,setIsLoading)
-    if(res.success){
-       toast.success("Login Sucessfull");
-       setIsAuthenticated(true);
-       navigate("/dashboard");
-    }else{
-      toast.error(res.message || res.error)
+    if(res?.success){
+      toast.success("Login Sucessfull");
+      navigate("/dashboard");
+    }
+    }catch(err){
+        toast.error(err?.data?.message || err?.data?.error)
     }
   };
 
 
   useEffect(()=>{
     const { login, password } = loadRememberedData();
-    setLogin(login);
-    setPassword(password);
+    setFormValue(pre => ({...pre,password,login}));
     if(login || password){
       setSecurity(true)
     }
@@ -81,8 +90,8 @@ const Login = () => {
                 id="login"
                 type="login"
                 placeholder="your@login.com"
-                value={login}
-                onChange={(e) => setLogin(e.target.value)}
+                value={formValue.login}
+                onChange={(e) => setFormValue(pre => ({...pre,login:e.target.value}))}
                 className="h-11"
                 required
               />
@@ -94,8 +103,8 @@ const Login = () => {
                 id="password"
                 type="password"
                 placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formValue.password}
+                onChange={(e) => setFormValue(pre => ({...pre,password:e.target.value}))}
                 className="h-11"
                 required
               />

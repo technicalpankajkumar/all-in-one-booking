@@ -1,15 +1,19 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useRegisterMutation, useVerificationMutation } from "@/app/services/authApi";
+import travelHero from "@/assets/travel-hero.jpg";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import travelHero from "@/assets/travel-hero.jpg";
-import { registerUser, verificationUser } from "@/api/auth";
 
 const Register = () => {
+  const [register, { isLoading }] = useRegisterMutation();
+  const [verification, { isLoading: isVerificationLoading }] = useVerificationMutation();
+  const [completeRegister, setCompleteRegister] = useState(true);
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,13 +22,11 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
-  const [formData2,setFormData2] = useState({
-    code:"",
-    token:""
+  const [formData2, setFormData2] = useState({
+    code: "",
+    token: ""
   })
-  const [isLoading, setIsLoading] = useState(false);
-  const [completeRegister,setCompleteRegister] = useState(true);
-  const navigate = useNavigate()
+
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -34,7 +36,7 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!formData.name || !formData.email || !formData.mobile) {
       toast.error("Please fill in all fields");
@@ -47,28 +49,30 @@ const Register = () => {
       return;
     }
 
-    setIsLoading(true);
-    
-    const result = await registerUser(formData,setIsLoading);
-    if(result.success){
-      toast.success(result.message)
+
+    const res = await register(formData);
+    if (res.data.success) {
+      toast.success(res?.data?.message || "Please check your email to verify email before complate registeration !");
       setCompleteRegister(false)
       setFormData2({
-        code:"",
-        token:result.token
+        code: "",
+        token: res.data.token
       })
-    }else{
-      toast.error(result.message || "Please check your email to verify email before complate registeration");
+    } else {
+      toast.error(res?.error?.data?.message)
     }
   };
-  const finalSubmit = async (e:React.FormEvent) =>{
+
+  const finalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-   let res = await verificationUser(formData2,setIsLoading)
-    if(res.success){
+    let res = await verification(formData2);
+
+    if (res.data.success) {
+      toast.success(res.data.message || "Congrats please check your email for password");
       navigate("/login");
       setCompleteRegister(true);
-    }else {
-       toast.error(res.message)
+    } else {
+      toast.error(res?.error?.data?.message)
     }
   }
 
@@ -77,9 +81,9 @@ const Register = () => {
       {/* Left side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-accent/90 to-primary/80 z-10" />
-        <img 
-          src={travelHero} 
-          alt="Travel destination" 
+        <img
+          src={travelHero}
+          alt="Travel destination"
           className="object-cover w-full h-full"
         />
         <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-white p-12">
@@ -98,7 +102,7 @@ const Register = () => {
             <p className="text-muted-foreground">Start exploring the world today</p>
           </div>
 
-         { completeRegister ? <form onSubmit={handleSubmit} className="space-y-5">
+          {completeRegister ? <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <Input
@@ -138,7 +142,7 @@ const Register = () => {
               />
             </div>
 
-           {/*<div className="space-y-2">
+            {/*<div className="space-y-2">
               <Label htmlFor="profession">Profession</Label>
               <Select onValueChange={(value) => handleChange("profession", value)}>
                 <SelectTrigger className="h-11">
@@ -156,10 +160,10 @@ const Register = () => {
               </Select>
             </div> */}
 
-           
 
-            <Button 
-              type="submit" 
+
+            <Button
+              type="submit"
               className="w-full h-11 text-base font-semibold"
               disabled={isLoading}
             >
@@ -174,27 +178,27 @@ const Register = () => {
             </div>
           </form>
 
-          :<form onSubmit={finalSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="code">Enter Verification Code</Label>
-              <Input
-                id="code"
-                type="text"
-                placeholder="Enter verification code"
-                value={formData2.code}
-                onChange={(e) => handleChange2("code", e.target.value)}
-                className="h-11"
-                required
-              />
-            </div>
-            <Button 
-              type="submit" 
-              className="w-full h-11 text-base font-semibold"
-              disabled={isLoading}
-            >
-              {isLoading ? "Verifying Account..." : "Verify Account"}
-            </Button>
-          </form>}
+            : <form onSubmit={finalSubmit} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="code">Enter Verification Code</Label>
+                <Input
+                  id="code"
+                  type="text"
+                  placeholder="Enter verification code"
+                  value={formData2.code}
+                  onChange={(e) => handleChange2("code", e.target.value)}
+                  className="h-11"
+                  required
+                />
+              </div>
+              <Button
+                type="submit"
+                className="w-full h-11 text-base font-semibold"
+                disabled={isVerificationLoading}
+              >
+                {isVerificationLoading ? "Verifying Account..." : "Verify Account"}
+              </Button>
+            </form>}
         </Card>
       </div>
     </div>

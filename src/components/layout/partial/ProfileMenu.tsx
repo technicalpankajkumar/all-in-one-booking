@@ -1,4 +1,5 @@
-import { User, Settings, HelpCircle, LogOut, Globe } from "lucide-react";
+import { useLogoutMutation } from "@/app/services/authApi";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,36 +13,30 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useNavigate } from "react-router-dom";
-import { logoutUser } from "@/api/auth";
-import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { Globe, HelpCircle, LogOut, Settings, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const languages = [
-  { code: "en", name: "English" },
-  { code: "es", name: "Español" },
-  { code: "fr", name: "Français" },
-  { code: "de", name: "Deutsch" },
-  { code: "ja", name: "日本語" },
+  { code: "en", name: "English" }
 ];
 
 export function ProfileMenu() {
-   const navigate = useNavigate()
-   const { setIsAuthenticated,user } = useAuth();
-   const handleLogout = async () => {
-   const result = await logoutUser();
- 
-   if (result.error) {
-     toast.error(result.error);
-   } else {
-     setIsAuthenticated(false);
-     toast.success("Logged out successfully");
- 
-     // Redirect to login
-     navigate("/login");
-   }
- };
+  const navigate = useNavigate()
+  const [logout] = useLogoutMutation();
+  const { user, uiSignOut } = useAuth();
+
+  const handleLogout = async () => {
+    const result = await logout({ refresh_token: user.refreshToken });
+
+    if (result.data.success) {
+      toast.success("Logged out successfully")
+      uiSignOut();
+      // Redirect to login
+      navigate("/login");
+    }
+  };
 
   const handleLanguageChange = (language: string) => {
     toast.success(`Language set to ${language}`)
@@ -64,7 +59,7 @@ export function ProfileMenu() {
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{user?.name}</p>
             <p className="text-xs leading-none text-muted-foreground">
-             {user?.email}
+              {user?.email}
             </p>
           </div>
         </DropdownMenuLabel>
