@@ -33,7 +33,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const mainLinks: SidebarLink[] = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
     { name: "Bookings", href: "/dashboard/bookings", icon: BookIcon },
-     ...(user?.role == "MASTER" || user?.role == "ADMIN" ? [
+     ...(user.user?.role == "MASTER" || user?.user?.role == "ADMIN" ? [
     { name: "Drivers", href: "/dashboard/drivers", icon: CableCar },
     { name: "Cabs", href: "/dashboard/cabs", icon: CarIcon }] : []) ,
     { name: "Hotels", href: "/dashboard/hotels", icon: HotelIcon },

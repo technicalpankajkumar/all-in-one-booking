@@ -82,7 +82,7 @@ export function DynamicTable<T>({
           </TableHeader>
 
           <TableBody>
-            {data.length === 0 ? (
+            {data?.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
@@ -92,7 +92,7 @@ export function DynamicTable<T>({
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((row: any, idx) => (
+              (data?.length > 0) && data?.map((row: any, idx) => (
                 <TableRow key={idx} className="hover:bg-muted/20">
                   {columns.map((col) => (
                     <TableCell

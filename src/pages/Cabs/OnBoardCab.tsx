@@ -1,4 +1,5 @@
 import { addCab } from "@/api/cab";
+import { useGetCabFeaturesQuery } from "@/app/services/cabApi";
 import { CustomCheckBoxGroup, CustomInput, CustomSelect, CustomTextarea } from "@/components/custom-ui";
 import { ImageFile, MultiImageUploader } from "@/components/custom-ui/MultiImageUploader";
 import { Button } from "@/components/ui/button";
@@ -6,18 +7,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { WORLD_CAR_TYPES } from "@/data/listConstant";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-const FEATURES = [
-    { key: "ac", label: "A/C" },
-    { key: "gps", label: "GPS Navigation" },
-    { key: "music_system", label: "Music System" },
-    { key: "automatic_transmission", label: "Automatic Transmission" },
-] as const;
+// const FEATURES = [
+//     { key: "AC", label: "A/C" },
+//     { key: "GPS", label: "GPS Navigation" },
+//     { key: "Music System", label: "Music System" },
+//     { key: "Automatic Transmission", label: "Automatic Transmission" },
+// ] as const;
 
 const carFormSchema = z.object({
     car_name: z.string().min(2, "Car name must be at least 2 characters").max(100),
@@ -33,12 +35,7 @@ const carFormSchema = z.object({
     }),
     description: z.string().max(500, "Description must be less than 500 characters").optional(),
     is_available: z.boolean().default(true),
-    features: z.object({
-        ac: z.boolean().default(false),
-        gps: z.boolean().default(false),
-        music_system: z.boolean().default(false),
-        automatic_transmission: z.boolean().default(false),
-    })
+    feature_ids: z.array(z.string()).default([]),
 });
 
 type CarFormValues = z.infer<typeof carFormSchema>;
@@ -50,6 +47,11 @@ interface PackageBookingModalProps {
 
 const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
     const [uploadedImages, setUploadedImages] = useState<ImageFile[]>([]);
+    const [search, setSearch] = useState("");
+    const [type, setType] = useState("");
+    const {data,isLoading} = useGetCabFeaturesQuery({
+        search,type
+    });
     const {
         register,
         handleSubmit,
@@ -69,12 +71,7 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
             price_unit: undefined,
             description: "",
             is_available: true,
-            features: {
-                ac: false,
-                gps: false,
-                music_system: false,
-                automatic_transmission: false
-            }
+            feature_ids:[]
         },
     });
 
@@ -89,7 +86,7 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
             toast.error(res.message)
         }
     }
-
+console.log(data,'data')
     return (
         <Dialog open={isOpen} onOpenChange={() => onClose(false)}>
             <DialogContent className="max-w-2xl max-h-[96vh] p-0 flex flex-col">
@@ -128,15 +125,11 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                                         id="car_type"
                                         label="Car Type"
                                         required
-
-                                        items={[
-                                            { value: "Sedan", label: "Sedan" },
-                                            { value: "Mini", label: "Mini" },
-                                            { value: "SUV", label: "SUV" },
-                                        ]}
+                                        items={WORLD_CAR_TYPES}
                                         setValue={setValue}
                                         value={watch("car_type")}
                                         errors={errors}
+                                        searchable
                                     />
                                     <CustomSelect
                                         id="fuel_type"
@@ -223,12 +216,26 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent >
-                                <CustomCheckBoxGroup
+                                <CustomSelect
+                                    id="feature_ids"
+                                    label="Feature's"
+                                    required
+                                    items={data?.data?.map(res => ({label:res.name,value:res.id}))}
+                                    setValue={setValue}
+                                    errors={errors}
+                                    searchable
+                                    multi
+                                    multiValues={watch("feature_ids") || []}                                
+                                    // onSearch={(txt) => setSearch(txt)}   // Debounced API search
+                                    loading={isLoading} 
+                                />
+                                {/* Sepreded mutli checkbox */}
+                                {/* <CustomCheckBoxGroup
                                     watch={watch}
                                     setValue={setValue}
                                     errors={errors}
                                     featureList={FEATURES}
-                                />
+                                /> */}
                             </CardContent>
                         </Card>
                         <Card>

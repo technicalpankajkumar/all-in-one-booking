@@ -3,8 +3,8 @@ import { baseApi } from "./baseApi";
 export const cabApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCabs: builder.query<any, void>({
-      query: () => ({ url: "/cab", method: "GET" }),
-      providesTags: ["Driver"],
+      query: () => ({ url: "/cab/get", method: "GET" }),
+      providesTags: ["Cab"],
     }),
     getCabById: builder.query<any, string>({
       query: (id) => ({ url: `/driver/${id}`, method: "GET" }),
@@ -12,17 +12,32 @@ export const cabApi = baseApi.injectEndpoints({
     }),
     createCab:builder.mutation({
       query:(payload)=> ({ url:"/cab/create", method:"POST", body:payload}),
-      invalidatesTags:["Driver"]
+      invalidatesTags:["Cab"]
     }),
     updateCab: builder.mutation({
       query: ({id,payload}) => ({ url: `/cab/update/${id}`, method: "PUT", body:payload }),
-      invalidatesTags: ["Driver"],
+      invalidatesTags: ["Cab"],
     }),
     deleteCab: builder.mutation({
       query: ({id}) => ({ url: `/cab/delete/${id}`, method: "DELETE"}),
-      invalidatesTags: ["Driver"],
+      invalidatesTags: ["Cab"],
+    }),
+    getCabFeatures: builder.query({
+      query: ({ search, limit, page, type }) => {
+        const params = new URLSearchParams();
+
+        if (search) params.append("search", search);
+        if (limit) params.append("limit", limit);
+        if (page) params.append("page", page);
+        if (type) params.append("type", type);
+
+        return {
+          url: `/cab/feature/get?${params.toString()}`,
+          method: "GET",
+        };
+      },
     }),
   }),
 });
 
-export const {useGetCabsQuery, useGetCabByIdQuery, useCreateCabMutation, useUpdateCabMutation, useDeleteCabMutation} = cabApi;
+export const {useGetCabsQuery, useGetCabByIdQuery, useCreateCabMutation, useUpdateCabMutation, useDeleteCabMutation, useGetCabFeaturesQuery} = cabApi;
