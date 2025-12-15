@@ -1,6 +1,7 @@
 import { addCab } from "@/api/cab";
 import { useGetCabFeaturesQuery } from "@/app/services/cabApi";
 import { CustomCheckBoxGroup, CustomInput, CustomSelect, CustomTextarea } from "@/components/custom-ui";
+import { CustomSelectOption } from "@/components/custom-ui/CustomSelectOption";
 import { ImageFile, MultiImageUploader } from "@/components/custom-ui/MultiImageUploader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,8 +9,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { WORLD_CAR_TYPES } from "@/data/listConstant";
+import { debounce } from "@/helper/debounde";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -50,7 +52,7 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
     const [search, setSearch] = useState("");
     const [type, setType] = useState("");
     const {data,isLoading} = useGetCabFeaturesQuery({
-        search,type
+        search,type,limit:30
     });
     const {
         register,
@@ -86,7 +88,18 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
             toast.error(res.message)
         }
     }
-console.log(data,'data')
+    const debouncedSearch = useMemo(
+        () =>
+        debounce((value) => {
+            setSearch(value);
+        }, 500),
+        []
+    );
+
+    const onSearch = (e) => {
+        debouncedSearch(e);
+    };
+  
     return (
         <Dialog open={isOpen} onOpenChange={() => onClose(false)}>
             <DialogContent className="max-w-2xl max-h-[96vh] p-0 flex flex-col">
@@ -216,18 +229,18 @@ console.log(data,'data')
                                 </CardTitle>
                             </CardHeader>
                             <CardContent >
-                                <CustomSelect
-                                    id="feature_ids"
-                                    label="Feature's"
-                                    required
-                                    items={data?.data?.map(res => ({label:res.name,value:res.id}))}
-                                    setValue={setValue}
-                                    errors={errors}
+                                <CustomSelectOption
+                                    mode="multiple"
+                                    size="md"
                                     searchable
-                                    multi
-                                    multiValues={watch("feature_ids") || []}                                
-                                    // onSearch={(txt) => setSearch(txt)}   // Debounced API search
-                                    loading={isLoading} 
+                                    showChips
+                                    allowClear
+                                    groupBy="category"
+                                    options={data?.data?.map(res => ({label:res.name,value:res.id,category: res.category}))}
+                                    value={watch("feature_ids")}
+                                    onChange={(v) => setValue('feature_ids',v)}
+                                    placeholder="Select Features"
+                                    onSearch={onSearch}
                                 />
                                 {/* Sepreded mutli checkbox */}
                                 {/* <CustomCheckBoxGroup

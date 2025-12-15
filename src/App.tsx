@@ -31,6 +31,11 @@ import PaymentPage from "./pages/Cabs/booking/Payment";
 import BookingListing from "./pages/Bookings/BookingListing";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
+import CustomeSelectOptionFullDemoIndex from "./docs/CustomSelectOption/CustomeSelectOptionFullDemoIndex";
+import DocumentationPage from "./docs/CustomSelectOption";
+import ExamplesPage from "./docs/CustomSelectOption/Example";
+import DocsPage from "./docs/CustomSelectOption/docs";
+import TreeExamplesPage from "./docs/CustomSelectOption/TreeExample";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +66,13 @@ const App = () => (
                 </PublicRoute>
               }
             />
+            {/* docs route */}
+            <Route path="/documentation" element={<DocumentationPage/>}/>
+            <Route path="/examples" element={<ExamplesPage/>}/>
+            <Route path="/full-example" element={<CustomeSelectOptionFullDemoIndex/>}/>
+            <Route path="/docs" element={<DocsPage/>}/>
+            <Route path="/tree-example" element={<TreeExamplesPage/>}/>
+            
             {/* PUBLIC SITE ROUTES */}
             <Route element={<BaseLayout />}>
               <Route path="/" element={<Index />} />
