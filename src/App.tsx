@@ -36,6 +36,7 @@ import DocumentationPage from "./docs/CustomSelectOption";
 import ExamplesPage from "./docs/CustomSelectOption/Example";
 import DocsPage from "./docs/CustomSelectOption/docs";
 import TreeExamplesPage from "./docs/CustomSelectOption/TreeExample";
+import Index2 from "./docs/CustomSelectOption/index2";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ const App = () => (
             <Route path="/full-example" element={<CustomeSelectOptionFullDemoIndex/>}/>
             <Route path="/docs" element={<DocsPage/>}/>
             <Route path="/tree-example" element={<TreeExamplesPage/>}/>
+            <Route path="/docs-2" element={<Index2/>}/>
             
             {/* PUBLIC SITE ROUTES */}
             <Route element={<BaseLayout />}>
