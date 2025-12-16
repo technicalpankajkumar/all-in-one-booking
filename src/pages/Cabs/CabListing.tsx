@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card"
 import { useState } from "react"
 import CabTable from "./CabTable"
 import OnBoardCab from "./OnBoardCab"
+import { useDeleteCabMutation } from "@/app/services/cabApi"
 
 
 const CabListing = () => {
@@ -11,10 +12,11 @@ const CabListing = () => {
   const [deleteId, setDeleteId] = useState('')
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteCab] = useDeleteCabMutation()
 
     const onHandleDelete = async () => {
       setIsDeleting(true)
-      // await (deleteId);
+      await deleteCab(deleteId);
       setIsDeleting(false)
     }
 

@@ -1,5 +1,5 @@
 import { addCab } from "@/api/cab";
-import { useGetCabFeaturesQuery } from "@/app/services/cabApi";
+import { useCreateCabMutation, useGetCabFeaturesQuery } from "@/app/services/cabApi";
 import { CustomCheckBoxGroup, CustomInput, CustomSelect, CustomTextarea } from "@/components/custom-ui";
 import { CustomSelectOption } from "@/components/custom-ui/CustomSelectOption";
 import { ImageFile, MultiImageUploader } from "@/components/custom-ui/MultiImageUploader";
@@ -25,9 +25,7 @@ import * as z from "zod";
 
 const carFormSchema = z.object({
     car_name: z.string().min(2, "Car name must be at least 2 characters").max(100),
-    car_type: z.enum(["Mini", "Sedan", "SUV"], {
-        required_error: "Please select a car type",
-    }),
+    car_type: z.string().nonempty("Please select a car type"),
     fuel_type: z.string().optional(),
     seat_capacity: z.coerce.number().int().min(1, "Must be at least 1").max(50, "Maximum 50 seats"),
     bag_capacity: z.coerce.number().int().min(0, "Cannot be negative").max(20, "Maximum 20 bags"),
@@ -49,9 +47,10 @@ interface PackageBookingModalProps {
 
 const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
     const [uploadedImages, setUploadedImages] = useState<ImageFile[]>([]);
+    const [createCab,{ isLoading }] = useCreateCabMutation()
     const [search, setSearch] = useState("");
     const [type, setType] = useState("");
-    const {data,isLoading} = useGetCabFeaturesQuery({
+    const {data,isLoading:isFeatureLoading} = useGetCabFeaturesQuery({
         search,type,limit:30
     });
     const {
@@ -78,14 +77,27 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
     });
 
     async function onSubmit(data: CarFormValues) {
-        const res = await addCab(data, uploadedImages?.map(res => res.file));
-        if (res.success) {
-            toast.success("Cab Added Successfully!")
-            onClose(false)
-            setUploadedImages([])
-            reset();
-        } else {
-            toast.error(res.message)
+        try{
+            const formData = new FormData();
+                  formData.append("data", JSON.stringify(data));
+
+            let Images = uploadedImages?.map(res => res.file);
+            if (Images && Images.length > 0) {
+                Images.forEach((file) => {
+                    formData.append("images", file);
+                });
+            }
+          let res =  await createCab(formData);
+          if (res?.data?.success) {
+              toast.success("Cab Added Successfully!")
+              onClose(false)
+              setUploadedImages([])
+              reset();
+          } else if(!res?.error?.data?.success){
+              toast.error(res?.error?.data?.message)
+          }
+        }catch(e){
+            toast.error(e)
         }
     }
     const debouncedSearch = useMemo(
@@ -99,7 +111,7 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
     const onSearch = (e) => {
         debouncedSearch(e);
     };
-  
+  console.log(isFeatureLoading,"=isFeatureLoading")
     return (
         <Dialog open={isOpen} onOpenChange={() => onClose(false)}>
             <DialogContent className="max-w-2xl max-h-[96vh] p-0 flex flex-col">
@@ -241,6 +253,7 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                                     onChange={(v) => setValue('feature_ids',v)}
                                     placeholder="Select Features"
                                     onSearch={onSearch}
+                                    
                                 />
                                 {/* Sepreded mutli checkbox */}
                                 {/* <CustomCheckBoxGroup

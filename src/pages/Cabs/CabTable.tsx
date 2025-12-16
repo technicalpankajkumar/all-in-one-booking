@@ -5,7 +5,15 @@ import { useState } from "react";
 const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 
 const CabTable = ({ onDelete,onEdit }) => {  
-  const { data, refetch, isLoading } = useGetCabsQuery();
+  const [filters, setFilters] = useState({
+  page: 1,
+  limit: 10,
+  search: "",
+  car_type: "",
+  sortBy: "car_name",
+  sortOrder: "asc",
+});
+  const { data, refetch, isLoading } = useGetCabsQuery(filters);
 
 
   const columns = [
@@ -59,6 +67,7 @@ const CabTable = ({ onDelete,onEdit }) => {
       data={data?.data?.cars}
       columns={columns}
       totalItems={data?.data?.total}
+      onPageChange={(e)=>setFilters(pre => ({...pre,page:e}))}
     />
   );
 };

@@ -8,50 +8,50 @@ export const WORLD_CAR_TYPES = [
   { label: "Liftback", value: "LIFTBACK" },
   { label: "Fastback", value: "FASTBACK" },
   { label: "Microcar", value: "MICROCAR" },
-  { label: "City Car", value: "CITY_CAR" },
+  { label: "City Car", value: "CITY CAR" },
   { label: "Compact Car", value: "COMPACT" },
-  { label: "Full-Size Car", value: "FULL_SIZE" },
+  { label: "Full-Size Car", value: "FULL SIZE" },
 
   // 🚙 SUVs & Off-Road
   { label: "SUV", value: "SUV" },
-  { label: "Compact SUV", value: "COMPACT_SUV" },
-  { label: "Mid-Size SUV", value: "MID_SIZE_SUV" },
-  { label: "Full-Size SUV", value: "FULL_SIZE_SUV" },
+  { label: "Compact SUV", value: "COMPACT SUV" },
+  { label: "Mid-Size SUV", value: "MID SIZE SUV" },
+  { label: "Full-Size SUV", value: "FULL SIZE SUV" },
   { label: "Crossover (CUV)", value: "CROSSOVER" },
-  { label: "Off-Road Vehicle", value: "OFF_ROAD" },
-  { label: "4x4", value: "FOUR_WHEEL_DRIVE" },
+  { label: "Off-Road Vehicle", value: "OFF ROAD" },
+  { label: "4x4", value: "FOUR WHEEL DRIVE" },
 
   // 🚐 Vans, MPVs, Minivans
   { label: "MPV (Multi-Purpose Vehicle)", value: "MPV" },
   { label: "Minivan", value: "MINIVAN" },
   { label: "Van", value: "VAN" },
-  { label: "Cargo Van", value: "CARGO_VAN" },
-  { label: "Passenger Van", value: "PASSENGER_VAN" },
+  { label: "Cargo Van", value: "CARGO VAN" },
+  { label: "Passenger Van", value: "PASSENGER VAN" },
 
   // 🚛 Pickup Trucks & Utility
   { label: "Pickup Truck", value: "PICKUP" },
-  { label: "Compact Pickup", value: "COMPACT_PICKUP" },
-  { label: "Full-Size Pickup", value: "FULL_SIZE_PICKUP" },
-  { label: "Chassis Cab", value: "CHASSIS_CAB" },
+  { label: "Compact Pickup", value: "COMPACT PICKUP" },
+  { label: "Full-Size Pickup", value: "FULL SIZE PICKUP" },
+  { label: "Chassis Cab", value: "CHASSIS CAB" },
   { label: "Ute", value: "UTE" }, // Australia
 
   // 🚚 Trucks
-  { label: "Light Truck", value: "LIGHT_TRUCK" },
-  { label: "Medium Truck", value: "MEDIUM_TRUCK" },
-  { label: "Heavy Duty Truck", value: "HEAVY_TRUCK" },
-  { label: "Semi Truck / Tractor Trailer", value: "SEMI_TRUCK" },
-  { label: "Dump Truck", value: "DUMP_TRUCK" },
-  { label: "Box Truck", value: "BOX_TRUCK" },
-  { label: "Flatbed Truck", value: "FLATBED_TRUCK" },
-  { label: "Refrigerated Truck", value: "REEFER_TRUCK" },
+  { label: "Light Truck", value: "LIGHT TRUCK" },
+  { label: "Medium Truck", value: "MEDIUM TRUCK" },
+  { label: "Heavy Duty Truck", value: "HEAVY TRUCK" },
+  { label: "Semi Truck / Tractor Trailer", value: "SEMI TRUCK" },
+  { label: "Dump Truck", value: "DUMP TRUCK" },
+  { label: "Box Truck", value: "BOX TRUCK" },
+  { label: "Flatbed Truck", value: "FLATBED TRUCK" },
+  { label: "Refrigerated Truck", value: "REEFER TRUCK" },
 
   // 🚌 Buses
   { label: "Minibus", value: "MINIBUS" },
-  { label: "Midi Bus", value: "MIDI_BUS" },
-  { label: "Coach Bus", value: "COACH_BUS" },
-  { label: "City Bus", value: "CITY_BUS" },
-  { label: "Double Decker Bus", value: "DOUBLE_DECKER" },
-  { label: "School Bus", value: "SCHOOL_BUS" },
+  { label: "Midi Bus", value: "MIDI BUS" },
+  { label: "Coach Bus", value: "COACH BUS" },
+  { label: "City Bus", value: "CITY BUS" },
+  { label: "Double Decker Bus", value: "DOUBLE DECKER" },
+  { label: "School Bus", value: "SCHOOL BUS" },
 
   // 🚖 Taxi / Fleet / Commercial
   { label: "Taxi", value: "TAXI" },
@@ -64,11 +64,11 @@ export const WORLD_CAR_TYPES = [
   { label: "Sports Car", value: "SPORTS_CAR" },
   { label: "Supercar", value: "SUPERCAR" },
   { label: "Hypercar", value: "HYPERCAR" },
-  { label: "Luxury Sedan", value: "LUXURY_SEDAN" },
-  { label: "Luxury SUV", value: "LUXURY_SUV" },
-  { label: "Grand Tourer (GT)", value: "GRAND_TOURER" },
+  { label: "Luxury Sedan", value: "LUXURY SEDAN" },
+  { label: "Luxury SUV", value: "LUXURY SUV" },
+  { label: "Grand Tourer (GT)", value: "GRAND TOURER" },
   { label: "Roadster", value: "ROADSTER" },
-  { label: "Muscle Car", value: "MUSCLE_CAR" },
+  { label: "Muscle Car", value: "MUSCLE CAR" },
 
   // 🚜 Agriculture / Construction
   { label: "Tractor", value: "TRACTOR" },
@@ -87,19 +87,19 @@ export const WORLD_CAR_TYPES = [
   // 🛻 Specialty / Rare Body Types
   { label: "Targa Top", value: "TARGA" },
   { label: "Landaulet", value: "LANDAULET" },
-  { label: "Shooting Brake", value: "SHOOTING_BRAKE" },
+  { label: "Shooting Brake", value: "SHOOTING BRAKE" },
   { label: "Barchetta", value: "BARCHETTA" },
   { label: "Speedster", value: "SPEEDSTER" },
-  { label: "Kit Car", value: "KIT_CAR" },
+  { label: "Kit Car", value: "KIT CAR" },
   { label: "Replica Car", value: "REPLICA" },
 
   // 🚒 Emergency Vehicles
-  { label: "Fire Truck", value: "FIRE_TRUCK" },
-  { label: "Police Car", value: "POLICE_CAR" },
-  { label: "Rescue Vehicle", value: "RESCUE_VEHICLE" },
+  { label: "Fire Truck", value: "FIRE RUCK" },
+  { label: "Police Car", value: "POLICE CAR" },
+  { label: "Rescue Vehicle", value: "RESCUE VEHICLE" },
 
   // 🚛 Mobility / Other
-  { label: "Golf Cart", value: "GOLF_CART" },
+  { label: "Golf Cart", value: "GOLF CART" },
   { label: "ATV", value: "ATV" },
   { label: "UTV", value: "UTV" },
   { label: "Snowmobile", value: "SNOWMOBILE" },
