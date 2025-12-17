@@ -12,8 +12,11 @@ export const CustomInput = ({
   className = "",
   prefix = null,
   postfix = null,
+  objId,
   ...rest
 }) => {
+  const fieldName = objId ? `${objId}.${id}` : id;
+
   return (
     <div className="space-y-1">
       {label && (
@@ -34,7 +37,7 @@ export const CustomInput = ({
           type={type}
           placeholder={placeholder}
           className={`border-0 shadow-none ${prefix ? 'ps-4' :'px-0'} focus-visible:ring-0 ${className}`}
-          {...register(id)}
+          {...register(fieldName)}
           {...rest}
         />
 
@@ -45,6 +48,9 @@ export const CustomInput = ({
       {/* Error */}
       {errors?.[id] && (
         <p className="text-xs text-destructive">{errors[id]?.message}</p>
+      )}
+      {errors?.[objId]?.[id] && (
+        <p className="text-xs text-destructive">{errors?.[objId]?.[id]?.message}</p>
       )}
     </div>
   );

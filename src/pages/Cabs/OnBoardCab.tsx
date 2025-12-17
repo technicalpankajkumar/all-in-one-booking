@@ -24,19 +24,68 @@ import * as z from "zod";
 // ] as const;
 
 const carFormSchema = z.object({
-    car_name: z.string().min(2, "Car name must be at least 2 characters").max(100),
+    car_name: z
+        .string()
+        .min(2, "Car name must be at least 2 characters")
+        .max(100),
     car_type: z.string().nonempty("Please select a car type"),
-    fuel_type: z.string().optional(),
-    seat_capacity: z.coerce.number().int().min(1, "Must be at least 1").max(50, "Maximum 50 seats"),
-    bag_capacity: z.coerce.number().int().min(0, "Cannot be negative").max(20, "Maximum 20 bags"),
+    fuel_type: z.string().nonempty("Please select a fuel type"),
+    seat_capacity: z.coerce
+        .number()
+        .int()
+        .min(1, "Must be at least 1")
+        .max(50, "Maximum 50 seats"),
+    bag_capacity: z.coerce
+        .number()
+        .int()
+        .min(0, "Cannot be negative")
+        .max(20, "Maximum 20 bags"),
     base_price: z.coerce.number().positive("Price must be positive"),
-    price_unit: z.enum(["per_trip", "per_km", "per_day"], {
-        required_error: "Please select a price unit",
-    }),
-    description: z.string().max(500, "Description must be less than 500 characters").optional(),
+    description: z
+        .string()
+        .max(500, "Description must be less than 500 characters")
+        .optional(),
     is_available: z.boolean().default(true),
     feature_ids: z.array(z.string()).default([]),
-});
+    // 🔽 ADD THIS
+    fare_rules: z.object({
+        base_fare: z.coerce
+            .number()
+            .min(1, "Base fare must be ≥ 0"),
+        minimum_fare: z.coerce
+            .number()
+            .min(0, "Minimum fare must be ≥ 0"),
+        night_multiplier: z.coerce
+            .number()
+            .min(1, "Night multiplier must be ≥ 1"),
+        late_compensation_per_min: z.coerce
+            .number()
+            .min(0, "Late compensation must be ≥ 0"),
+        waiting_charge_per_min: z.coerce
+            .number()
+            .min(0, "Waiting charge must be ≥ 0"),
+        price_per_min: z.coerce
+            .number()
+            .min(0, "Price per minute must be ≥ 0"),
+        price_per_km: z.coerce
+            .number()
+            .min(0, "Price per km must be ≥ 0"),
+        night_start: z
+            .string()
+            .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:mm)"),
+        night_end: z
+            .string()
+            .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:mm)"),
+    }),
+})
+    .refine(
+        (data) =>
+            data.fare_rules.night_start !== data.fare_rules.night_end,
+        {
+            message: "Night start and end time cannot be the same",
+            path: ["fare_rules", "night_end"],
+        }
+    );
 
 type CarFormValues = z.infer<typeof carFormSchema>;
 
@@ -47,11 +96,11 @@ interface PackageBookingModalProps {
 
 const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
     const [uploadedImages, setUploadedImages] = useState<ImageFile[]>([]);
-    const [createCab,{ isLoading }] = useCreateCabMutation()
+    const [createCab, { isLoading }] = useCreateCabMutation()
     const [search, setSearch] = useState("");
     const [type, setType] = useState("");
-    const {data,isLoading:isFeatureLoading} = useGetCabFeaturesQuery({
-        search,type,limit:30
+    const { data, isLoading: isFeatureLoading } = useGetCabFeaturesQuery({
+        search, type, limit: 30
     });
     const {
         register,
@@ -59,6 +108,7 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
         setValue,
         watch,
         reset,
+        getValues,
         formState: { errors },
     } = useForm<CarFormValues>({
         resolver: zodResolver(carFormSchema),
@@ -69,17 +119,28 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
             seat_capacity: 4,
             bag_capacity: 2,
             base_price: 0,
-            price_unit: undefined,
+            // price_unit: undefined,
             description: "",
             is_available: true,
-            feature_ids:[]
+            feature_ids: [],
+            fare_rules: {
+                base_fare: 0,
+                night_multiplier: 0,
+                minimum_fare: 0,
+                late_compensation_per_min: 0,
+                waiting_charge_per_min: 0,
+                price_per_min: 0,
+                price_per_km: 0,
+                night_start: "21:00",
+                night_end: "05:00"
+            }
         },
     });
 
     async function onSubmit(data: CarFormValues) {
-        try{
+        try {
             const formData = new FormData();
-                  formData.append("data", JSON.stringify(data));
+            formData.append("data", JSON.stringify(data));
 
             let Images = uploadedImages?.map(res => res.file);
             if (Images && Images.length > 0) {
@@ -87,31 +148,31 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                     formData.append("images", file);
                 });
             }
-          let res =  await createCab(formData);
-          if (res?.data?.success) {
-              toast.success("Cab Added Successfully!")
-              onClose(false)
-              setUploadedImages([])
-              reset();
-          } else if(!res?.error?.data?.success){
-              toast.error(res?.error?.data?.message)
-          }
-        }catch(e){
+            let res = await createCab(formData);
+            if (res?.data?.success) {
+                toast.success("Cab Added Successfully!")
+                onClose(false)
+                setUploadedImages([])
+                reset();
+            } else if (!res?.error?.data?.success) {
+                toast.error(res?.error?.data?.message)
+            }
+        } catch (e) {
             toast.error(e)
         }
     }
     const debouncedSearch = useMemo(
         () =>
-        debounce((value) => {
-            setSearch(value);
-        }, 500),
+            debounce((value) => {
+                setSearch(value);
+            }, 500),
         []
     );
 
     const onSearch = (e) => {
         debouncedSearch(e);
     };
-  console.log(isFeatureLoading,"=isFeatureLoading")
+    console.log(errors, "=errors")
     return (
         <Dialog open={isOpen} onOpenChange={() => onClose(false)}>
             <DialogContent className="max-w-2xl max-h-[96vh] p-0 flex flex-col">
@@ -199,7 +260,7 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                                         type="number"
                                     />
 
-                                    <CustomSelect
+                                    {/* <CustomSelect
                                         id="price_unit"
                                         label="Price Unit"
                                         required
@@ -211,7 +272,7 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                                         setValue={setValue}
                                         value={watch("price_unit")}
                                         errors={errors}
-                                    />
+                                    /> */}
                                 </div>
                                 <CustomTextarea
                                     id="description"
@@ -248,12 +309,12 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                                     showChips
                                     allowClear
                                     groupBy="category"
-                                    options={data?.data?.map(res => ({label:res.name,value:res.id,category: res.category}))}
+                                    options={data?.data?.map(res => ({ label: res.name, value: res.id, category: res.category }))}
                                     value={watch("feature_ids")}
-                                    onChange={(v) => setValue('feature_ids',v)}
+                                    onChange={(v) => setValue('feature_ids', v)}
                                     placeholder="Select Features"
                                     onSearch={onSearch}
-                                    
+
                                 />
                                 {/* Sepreded mutli checkbox */}
                                 {/* <CustomCheckBoxGroup
@@ -262,6 +323,105 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                                     errors={errors}
                                     featureList={FEATURES}
                                 /> */}
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="pb-4">
+                                <CardTitle className="flex items-center gap-2 text-lg">
+                                    Fare Rule's
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="grid grid-cols-2 gap-4">
+                                <CustomInput
+                                    id="base_fare"
+                                    label="Base Fare"
+                                    required
+                                    placeholder="Enter Base Fare"
+                                    objId="fare_rules"
+                                    register={register}
+                                    errors={errors}
+                                    type="text"
+                                />
+                                <CustomInput
+                                    id="price_per_km"
+                                    label="Price Per KM"
+                                    required
+                                    placeholder="Enter price per KM"
+                                    objId="fare_rules"
+                                    register={register}
+                                    errors={errors}
+                                    type="text"
+                                />
+                                <CustomInput
+                                    id="price_per_min"
+                                    label="Price Per Minute"
+                                    required
+                                    placeholder="Enter price per minute"
+                                    objId="fare_rules"
+                                    register={register}
+                                    errors={errors}
+                                    type="text"
+                                />
+                                <CustomInput
+                                    id="waiting_charge_per_min"
+                                    label="Wating Charge Per Minute"
+                                    required
+                                    placeholder="Enter Wating charge per minute"
+                                    objId="fare_rules"
+                                    register={register}
+                                    errors={errors}
+                                    type="text"
+                                />
+                                <CustomInput
+                                    id="late_compensation_per_min"
+                                    label="Late Compensation Per Minute"
+                                    required
+                                    placeholder="Enter late compensation per minute"
+                                    objId="fare_rules"
+                                    register={register}
+                                    errors={errors}
+                                    type="text"
+                                />
+                                <CustomInput
+                                    id="minimum_fare"
+                                    label="Minimum Fare"
+                                    required
+                                    placeholder="Enter minimum fare"
+                                    objId="fare_rules"
+                                    register={register}
+                                    errors={errors}
+                                    type="text"
+                                />
+                                <CustomInput
+                                    id="night_multiplier"
+                                    label="Night Multiplier"
+                                    required
+                                    placeholder="Enter night multiplier"
+                                    objId="fare_rules"
+                                    register={register}
+                                    errors={errors}
+                                    type="text"
+                                />
+                                <CustomInput
+                                    id="night_start"
+                                    label="Night Start"
+                                    required
+                                    placeholder="Enter night start"
+                                    objId="fare_rules"
+                                    register={register}
+                                    errors={errors}
+                                    type="time"
+                                />
+                                <CustomInput
+                                    id="night_end"
+                                    label="Night End"
+                                    required
+                                    placeholder="Enter night end"
+                                    objId="fare_rules"
+                                    register={register}
+                                    errors={errors}
+                                    type="time"
+                                />
                             </CardContent>
                         </Card>
                         <Card>
