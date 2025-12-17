@@ -32,7 +32,14 @@ const CabTable = ({ onDelete,onEdit }) => {
     { key: "car_type", label: "Car Type" },
     { key: "seat_capacity", label: "Seat Capacity" },
     { key: "bag_capacity", label: "Bag Capacity" },
-    { key: "base_price", label: "Base Price" },
+    { 
+      key: "base_price",
+      label: "Base Price" , 
+      render: (record) => (
+        <div className="flex items-center gap-3">
+            <p className="font-medium line-clamp-1">{record?.fare_rules?.base_fare}</p>
+        </div>
+      )},
     {
       key: "fuel_type",
       label: "Fuel Type",
@@ -67,7 +74,12 @@ const CabTable = ({ onDelete,onEdit }) => {
       data={data?.data?.cars}
       columns={columns}
       totalItems={data?.data?.total}
-      onPageChange={(e)=>setFilters(pre => ({...pre,page:e}))}
+      onPageChange={(e,pageSize)=>{
+        setFilters((pre)=> ({
+          ...pre,
+          page:e,
+          limit:pageSize}));
+      }}
     />
   );
 };

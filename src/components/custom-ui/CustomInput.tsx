@@ -12,7 +12,7 @@ export const CustomInput = ({
   className = "",
   prefix = null,
   postfix = null,
-  objId,
+  objId='',
   ...rest
 }) => {
   const fieldName = objId ? `${objId}.${id}` : id;

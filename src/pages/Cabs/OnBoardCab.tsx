@@ -40,7 +40,6 @@ const carFormSchema = z.object({
         .int()
         .min(0, "Cannot be negative")
         .max(20, "Maximum 20 bags"),
-    base_price: z.coerce.number().positive("Price must be positive"),
     description: z
         .string()
         .max(500, "Description must be less than 500 characters")
@@ -172,7 +171,7 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
     const onSearch = (e) => {
         debouncedSearch(e);
     };
-    console.log(errors, "=errors")
+
     return (
         <Dialog open={isOpen} onOpenChange={() => onClose(false)}>
             <DialogContent className="max-w-2xl max-h-[96vh] p-0 flex flex-col">
@@ -250,15 +249,7 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                                         type="number"
                                         min={2}
                                     />
-                                    <CustomInput
-                                        id="base_price"
-                                        label="Base Price"
-                                        required
-                                        placeholder="Enter Base Price"
-                                        register={register}
-                                        errors={errors}
-                                        type="number"
-                                    />
+                                    
 
                                     {/* <CustomSelect
                                         id="price_unit"
