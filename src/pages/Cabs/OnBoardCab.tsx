@@ -1,8 +1,9 @@
 import { addCab } from "@/api/cab";
-import { useCreateCabMutation, useGetCabFeaturesQuery } from "@/app/services/cabApi";
+import { useCreateCabMutation, useGetCabByIdQuery, useGetCabFeaturesQuery, useUpdateCabMutation } from "@/app/services/cabApi";
 import { CustomCheckBoxGroup, CustomInput, CustomSelect, CustomTextarea } from "@/components/custom-ui";
 import { CustomSelectOption } from "@/components/custom-ui/CustomSelectOption";
 import { ImageFile, MultiImageUploader } from "@/components/custom-ui/MultiImageUploader";
+import MultiImageViewer from "@/components/custom-ui/MultiImageViewer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,7 +12,8 @@ import { Label } from "@/components/ui/label";
 import { WORLD_CAR_TYPES } from "@/data/listConstant";
 import { debounce } from "@/helper/debounde";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo, useState } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -86,21 +88,49 @@ const carFormSchema = z.object({
         }
     );
 
+const defaultValues = {
+    car_name: "",
+    car_type: undefined,
+    fuel_type: "",
+    seat_capacity: 4,
+    bag_capacity: 2,
+    description: "",
+    is_available: true,
+    feature_ids: [],
+    fare_rules: {
+        base_fare: 0,
+        night_multiplier: 0,
+        minimum_fare: 0,
+        late_compensation_per_min: 0,
+        waiting_charge_per_min: 0,
+        price_per_min: 0,
+        price_per_km: 0,
+        night_start: "21:00",
+        night_end: "05:00"
+    }
+}
+
 type CarFormValues = z.infer<typeof carFormSchema>;
 
 interface PackageBookingModalProps {
     isOpen: boolean;
     onClose: (value: boolean) => void;
+    carId?: string;
 }
 
-const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
+const OnBoardCab = ({ isOpen, onClose, carId }: PackageBookingModalProps) => {
+
     const [uploadedImages, setUploadedImages] = useState<ImageFile[]>([]);
+    const [uploadedViewImages, setUploadedViewImages] = useState([]);
+    const [deletedImageIds,setDeletedImageIds] = useState([])
     const [createCab, { isLoading }] = useCreateCabMutation()
     const [search, setSearch] = useState("");
     const [type, setType] = useState("");
     const { data, isLoading: isFeatureLoading } = useGetCabFeaturesQuery({
         search, type, limit: 30
     });
+    const { data: carData } = useGetCabByIdQuery(carId ?? skipToken);
+    const [updateCab,{isLoading:isUpdateLoading}] = useUpdateCabMutation()
     const {
         register,
         handleSubmit,
@@ -111,35 +141,17 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
         formState: { errors },
     } = useForm<CarFormValues>({
         resolver: zodResolver(carFormSchema),
-        defaultValues: {
-            car_name: "",
-            car_type: undefined,
-            fuel_type: "",
-            seat_capacity: 4,
-            bag_capacity: 2,
-            base_price: 0,
-            // price_unit: undefined,
-            description: "",
-            is_available: true,
-            feature_ids: [],
-            fare_rules: {
-                base_fare: 0,
-                night_multiplier: 0,
-                minimum_fare: 0,
-                late_compensation_per_min: 0,
-                waiting_charge_per_min: 0,
-                price_per_min: 0,
-                price_per_km: 0,
-                night_start: "21:00",
-                night_end: "05:00"
-            }
-        },
+        defaultValues,
     });
+
 
     async function onSubmit(data: CarFormValues) {
         try {
             const formData = new FormData();
             formData.append("data", JSON.stringify(data));
+            if(deletedImageIds?.length){
+                formData.append("delete_images",JSON.stringify(deletedImageIds))
+            }
 
             let Images = uploadedImages?.map(res => res.file);
             if (Images && Images.length > 0) {
@@ -147,11 +159,13 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                     formData.append("images", file);
                 });
             }
-            let res = await createCab(formData);
+            let res = await (carId ? updateCab({id:carId,payload:formData}) : createCab(formData));
             if (res?.data?.success) {
-                toast.success("Cab Added Successfully!")
+                toast.success(res.data.message || `Cab ${carId ? 'updated' :'Added'} Successfully!`)
                 onClose(false)
-                setUploadedImages([])
+                setUploadedImages([]);
+                setUploadedViewImages([]);
+                setDeletedImageIds([]);
                 reset();
             } else if (!res?.error?.data?.success) {
                 toast.error(res?.error?.data?.message)
@@ -171,6 +185,56 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
     const onSearch = (e) => {
         debouncedSearch(e);
     };
+
+    useEffect(() => {
+        if (!carData?.success || !carId) {
+            setUploadedImages([]);
+            setUploadedViewImages([]);
+            setDeletedImageIds([]);
+            reset(defaultValues);
+            return
+        };
+
+        const car = carData?.car;
+        reset({
+            car_name: car?.car_name ?? "",
+            car_type: car?.car_type ?? undefined,
+            fuel_type: car?.fuel_type ?? "",
+            seat_capacity: car?.seat_capacity ?? 4,
+            bag_capacity: car?.bag_capacity ?? 2,
+            description: car?.description ?? "",
+            is_available: car?.is_available ?? true,
+            feature_ids: car?.features?.map((f: any) => f.id) ?? [],
+
+            fare_rules: {
+                base_fare: car?.fare_rules?.base_fare ?? 0,
+                night_multiplier: car?.fare_rules?.night_multiplier ?? 0,
+                minimum_fare: car?.fare_rules?.minimum_fare ?? 0,
+                late_compensation_per_min:
+                    car?.fare_rules?.late_compensation_per_min ?? 0,
+                waiting_charge_per_min:
+                    car?.fare_rules?.waiting_charge_per_min ?? 0,
+                price_per_min: car?.fare_rules?.price_per_min ?? 0,
+                price_per_km: car?.fare_rules?.price_per_km ?? 0,
+                night_start: car?.fare_rules?.night_start ?? "21:00",
+                night_end: car?.fare_rules?.night_end ?? "05:00",
+            },
+        });
+        if (car.images) {
+            setUploadedViewImages(car.images)
+        }
+    }, [carData, reset]);
+
+    const featureOptions = useMemo(() => {
+        return (
+            data?.data?.map((f: any) => ({
+                value: f.id,
+                label: f.name,
+                category: f.category
+            })) ?? []
+        )
+    }, [data])
+
 
     return (
         <Dialog open={isOpen} onOpenChange={() => onClose(false)}>
@@ -249,7 +313,7 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                                         type="number"
                                         min={2}
                                     />
-                                    
+
 
                                     {/* <CustomSelect
                                         id="price_unit"
@@ -300,7 +364,7 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                                     showChips
                                     allowClear
                                     groupBy="category"
-                                    options={data?.data?.map(res => ({ label: res.name, value: res.id, category: res.category }))}
+                                    options={featureOptions}
                                     value={watch("feature_ids")}
                                     onChange={(v) => setValue('feature_ids', v)}
                                     placeholder="Select Features"
@@ -422,10 +486,18 @@ const OnBoardCab = ({ isOpen, onClose }: PackageBookingModalProps) => {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
+                                <MultiImageViewer
+                                    images={uploadedViewImages}
+                                    onDelete={(id) =>{
+                                         setDeletedImageIds(pre => ([...pre,id]));
+                                         setUploadedViewImages( uploadedViewImages?.filter(res => res.id != id))
+                                        }
+                                    }
+                                />
                                 <MultiImageUploader
                                     images={uploadedImages}
                                     onChange={setUploadedImages}
-                                    maxImages={8}
+                                    maxImages={8 - uploadedViewImages?.length}
                                     maxSizeInMB={5}
                                     description="Upload up to 8 images (JPG, PNG, WebP, GIF)"
                                 />

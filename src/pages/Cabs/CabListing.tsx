@@ -12,13 +12,14 @@ const CabListing = () => {
   const [deleteId, setDeleteId] = useState('')
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [editId, setEditId] = useState()
   const [deleteCab] = useDeleteCabMutation()
 
-    const onHandleDelete = async () => {
-      setIsDeleting(true)
-      await deleteCab(deleteId);
-      setIsDeleting(false)
-    }
+  const onHandleDelete = async () => {
+    setIsDeleting(true)
+    await deleteCab(deleteId);
+    setIsDeleting(false)
+  }
 
 
   return (
@@ -26,16 +27,22 @@ const CabListing = () => {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Cabs</h1>
-          <Button variant="default" onClick={() => setIsOpen(true)} >New Cab</Button>
+          <Button variant="default" onClick={() => {
+            setIsOpen(true);
+            setEditId(null);
+          }} >New Cab</Button>
         </div>
         <div>
           <Card>
-            <CabTable 
-            onDelete={(id) => {
-              setDeleteId(id);
-              setDeleteModalOpen(true);
-            }}
-            onEdit={()=>{}}
+            <CabTable
+              onDelete={(id) => {
+                setDeleteId(id);
+                setDeleteModalOpen(true);
+              }}
+              onEdit={(e) => {
+                setEditId(e);
+                setIsOpen(true)
+              }}
             />
           </Card>
         </div>
@@ -44,9 +51,10 @@ const CabListing = () => {
       {isOpen && <OnBoardCab
         isOpen={isOpen}
         onClose={setIsOpen}
+        carId={editId}
       />}
 
-     { deleteModalOpen && <DeleteConfirmation
+      {deleteModalOpen && <DeleteConfirmation
         open={deleteModalOpen}
         onOpenChange={setDeleteModalOpen}
         onConfirm={() => onHandleDelete()}

@@ -1,18 +1,19 @@
 import { useGetCabsQuery } from "@/app/services/cabApi";
 import { DynamicTable } from "@/components/DynamicTable";
 import { Button } from "@/components/ui/button";
+import { Delete, DeleteIcon, Edit, Trash, Trash2 } from "lucide-react";
 import { useState } from "react";
 const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 
-const CabTable = ({ onDelete,onEdit }) => {  
+const CabTable = ({ onDelete, onEdit }) => {
   const [filters, setFilters] = useState({
-  page: 1,
-  limit: 10,
-  search: "",
-  car_type: "",
-  sortBy: "car_name",
-  sortOrder: "asc",
-});
+    page: 1,
+    limit: 10,
+    search: "",
+    car_type: "",
+    sortBy: "car_name",
+    sortOrder: "asc",
+  });
   const { data, refetch, isLoading } = useGetCabsQuery(filters);
 
 
@@ -32,14 +33,15 @@ const CabTable = ({ onDelete,onEdit }) => {
     { key: "car_type", label: "Car Type" },
     { key: "seat_capacity", label: "Seat Capacity" },
     { key: "bag_capacity", label: "Bag Capacity" },
-    { 
+    {
       key: "base_price",
-      label: "Base Price" , 
+      label: "Base Price",
       render: (record) => (
         <div className="flex items-center gap-3">
-            <p className="font-medium line-clamp-1">{record?.fare_rules?.base_fare}</p>
+          <p className="font-medium line-clamp-1">{record?.fare_rules?.base_fare}</p>
         </div>
-      )},
+      )
+    },
     {
       key: "fuel_type",
       label: "Fuel Type",
@@ -61,9 +63,9 @@ const CabTable = ({ onDelete,onEdit }) => {
       label: "Action",
       className: "text-center",
       render: (record) => (
-        <div className="space-x-2">
-          <Button size="sm" onClick={() => onEdit?.(record.id)} variant="default">Edit</Button>
-          <Button size="sm" onClick={() => onDelete?.(record.id)} variant="destructive">Delete</Button>
+        <div className="flex items-center gap-2 ">
+          <Edit onClick={() => onEdit?.(record.id)} size={20} className="text-primary cursor-pointer"/>
+          <Trash2 onClick={() => onDelete?.(record.id)} size={20} className="text-destructive cursor-pointer"/>
         </div>
       ),
     },
@@ -74,11 +76,12 @@ const CabTable = ({ onDelete,onEdit }) => {
       data={data?.data?.cars}
       columns={columns}
       totalItems={data?.data?.total}
-      onPageChange={(e,pageSize)=>{
-        setFilters((pre)=> ({
+      onPageChange={(e, pageSize) => {
+        setFilters((pre) => ({
           ...pre,
-          page:e,
-          limit:pageSize}));
+          page: e,
+          limit: pageSize
+        }));
       }}
     />
   );

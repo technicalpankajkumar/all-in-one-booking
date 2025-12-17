@@ -38,8 +38,8 @@ export const cabApi = baseApi.injectEndpoints({
       providesTags: ["Cab"],
     }),
     getCabById: builder.query<any, string>({
-      query: (id) => ({ url: `/driver/${id}`, method: "GET" }),
-      providesTags: (result, error, id) => [{ type: "Booking", id }],
+      query: (id) => ({ url: `/cab/get/${id}`, method: "GET" }),
+      providesTags: (result, error, id) => [{ type: "Cab", id }],
     }),
     createCab:builder.mutation({
       query:(payload)=> ({ url:"/cab/create", method:"POST", body:payload}),
@@ -47,7 +47,7 @@ export const cabApi = baseApi.injectEndpoints({
     }),
     updateCab: builder.mutation({
       query: ({id,payload}) => ({ url: `/cab/update/${id}`, method: "PUT", body:payload }),
-      invalidatesTags: ["Cab"],
+      invalidatesTags: (result, error, { id }) => [{ type: "Cab", id },'Cab'],
     }),
     deleteCab: builder.mutation({
       query: (id) => ({ url: `/cab/delete/${id}`, method: "DELETE"}),
