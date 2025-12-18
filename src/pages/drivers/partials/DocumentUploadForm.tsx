@@ -20,21 +20,17 @@ interface DocumentField {
 
 const documentFields: DocumentField[] = [
   { key: "profile", label: "Profile Photo", description: "Clear face photo for identification", required: true },
-  { key: "aadhar_front", label: "Aadhar Card (Front)", description: "Front side of Aadhar card", required: true },
-  { key: "aadhar_back", label: "Aadhar Card (Back)", description: "Back side of Aadhar card", required: true },
+  { key: "aadhar", label: "Aadhar Card (Front/Back)", description: "Front side of Aadhar card", required: true },
   { key: "pan", label: "PAN Card", description: "Clear image of PAN card", required: false },
-  { key: "driving_license_front", label: "Driving License (Front)", description: "Front side of DL", required: true },
-  { key: "driving_license_back", label: "Driving License (Back)", description: "Back side of DL", required: true },
+  { key: "driving_license", label: "Driving License (Front/Back)", description: "Front side of DL", required: true },,
 ];
 
 export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUploadFormProps) {
   const [documents, setDocuments] = useState<DriverDocuments>({
     profile: null,
-    aadhar_front: null,
-    aadhar_back: null,
+    aadhar: null,
     pan: null,
-    driving_license_front: null,
-    driving_license_back: null,
+    driving_license: null,
     ...initialData,
   });
 

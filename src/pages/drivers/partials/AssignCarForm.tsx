@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Briefcase, Car as CarIcon, Fuel, Plus, Users, X } from "lucide-react";
+import { useState } from "react";
 import { Car } from "../../../data/types";
 import { CarSelectionModal } from "../partials/CarSelectionModal";
-import { Car as CarIcon, Users, Briefcase, Fuel, Plus, X, Wind, Navigation, Music, Settings } from "lucide-react";
-import { getCabsListing } from "@/api/cab";
+import { FeatureChips } from "./FeatureChips";
 const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 
 interface AssignCarFormProps {
@@ -15,10 +15,7 @@ interface AssignCarFormProps {
 }
 
 export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormProps) {
-  const [cabs,setCabs] = useState([])
-  const [selectedCar, setSelectedCar] = useState<Car | null>(
-    initialCarId ? cabs?.find((c) => c.id === initialCarId) || null : null
-  );
+  const [selectedCar, setSelectedCar] = useState<Car>({});
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleCarSelect = (car: Car) => {
@@ -29,17 +26,8 @@ export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormP
   const handleSubmit = () => {
     onSubmit(selectedCar?.id || null);
   };
-
-  
-  const getCarApi = async()=>{
-    let data = await getCabsListing();
-    setCabs(data)
-  }
-  useEffect(()=>{
-    getCarApi();
-  },[modalOpen])
-
-
+console.log(selectedCar,)
+ const carImageUrl = selectedCar && selectedCar?.images?.find(res => res.is_main == true)?.image_url;
   return (
     <div className="space-y-6 mb-4">
       <div className="flex justify-between gap-4 absolute top-2.5 right-12">
@@ -59,14 +47,14 @@ export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormP
           </p>
         </CardHeader>
         <CardContent>
-          {selectedCar ? (
+          {carImageUrl ? (
             <div className="border rounded-lg p-4 bg-muted/30">
               <div className="flex flex-col sm:flex-row gap-4">
                 {/* Car Image */}
                 <div className="w-full sm:w-48 h-32 bg-muted rounded-lg overflow-hidden">
-                  {selectedCar.images?.[0] ? (
+                  {carImageUrl ? (
                     <img
-                      src={API_URL+selectedCar.images?.find(res => res.is_main == true)?.image_url}
+                      src={API_URL+carImageUrl}
                       alt={selectedCar.car_name}
                       className="w-full h-full object-cover"
                     />
@@ -110,35 +98,12 @@ export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormP
                       <span className="text-sm">{selectedCar.fuel_type}</span>
                     </div>
                     <div className="text-primary font-semibold text-sm">
-                      ₹{selectedCar.base_price}/{selectedCar.price_unit.replace("per_", "")}
+                      ₹ {selectedCar?.fare_rules?.base_fare ? Number.parseFloat(selectedCar?.fare_rules?.base_fare)?.toFixed(2) : "00.00"}
                     </div>
                   </div>
 
                   {/* Features */}
-                  {selectedCar.features && (
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {selectedCar.features.ac && (
-                        <span className="text-xs bg-background px-2 py-1 rounded-full flex items-center gap-1 border">
-                          <Wind className="w-3 h-3" /> AC
-                        </span>
-                      )}
-                      {selectedCar.features.gps && (
-                        <span className="text-xs bg-background px-2 py-1 rounded-full flex items-center gap-1 border">
-                          <Navigation className="w-3 h-3" /> GPS
-                        </span>
-                      )}
-                      {selectedCar.features.music_system && (
-                        <span className="text-xs bg-background px-2 py-1 rounded-full flex items-center gap-1 border">
-                          <Music className="w-3 h-3" /> Music System
-                        </span>
-                      )}
-                      {selectedCar.features.automatic_transmission && (
-                        <span className="text-xs bg-background px-2 py-1 rounded-full flex items-center gap-1 border">
-                          <Settings className="w-3 h-3" /> Automatic
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  <FeatureChips selectedCar={selectedCar}/>
 
                   <Button variant="default" size="sm" className="mt-4" onClick={() => setModalOpen(true)}>
                     Change Vehicle
@@ -164,7 +129,6 @@ export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormP
       <CarSelectionModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        cars={cabs}
         selectedCarId={selectedCar?.id || null}
         onSelect={handleCarSelect}
       />

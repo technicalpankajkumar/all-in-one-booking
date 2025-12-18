@@ -1,9 +1,19 @@
 import { deleteDriver } from "@/api/driver";
+import { useGetDriversQuery } from "@/app/services/driverApi";
 import { DynamicTable } from "@/components/DynamicTable";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
-const DriverTable = ({ tours, totalItems, onView,onDelete}) => {
- 
+const DriverTable = ({onView,onDelete}) => {
+  const [filters, setFilters] = useState({
+      page: 1,
+      limit: 10,
+      search : "",
+      assigned_car_id:'',
+      status:'',
+    });
+  const {data,isLoading} =useGetDriversQuery(filters)
+
   const columns = [
     {
       key: "full_name",
@@ -63,9 +73,16 @@ const DriverTable = ({ tours, totalItems, onView,onDelete}) => {
 
   return (
     <DynamicTable
-      data={tours}
+      data={data?.drivers || []}
       columns={columns}
-      totalItems={totalItems}
+      totalItems={data?.total || 0}
+      onPageChange={(e, pageSize) => {
+        setFilters((pre) => ({
+          ...pre,
+          page: e,
+          limit: pageSize
+        }));
+      }}
     />
   );
 };

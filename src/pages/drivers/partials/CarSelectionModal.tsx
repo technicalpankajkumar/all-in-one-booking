@@ -1,36 +1,30 @@
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useGetCabsQuery } from "@/app/services/cabApi";
+import { CustomInput } from "@/components/custom-ui";
+import { CustomSelectOption } from "@/components/custom-ui/CustomSelectOption";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { WORLD_CAR_TYPES } from "@/data/listConstant";
+import { Briefcase, Check, Fuel, Music, Navigation, Search, Settings, Users, Wind } from "lucide-react";
+import { useState } from "react";
 import { Car } from "../../../data/types";
-import { Search, Users, Briefcase, Fuel, Check, Settings, Music, Navigation, Wind } from "lucide-react";
-import { CustomInput } from "@/components/custom-ui";
 const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 interface CarSelectionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  cars: Car[];
+  // cars: Car[];
   selectedCarId: string | null;
   onSelect: (car: Car) => void;
 }
 
-export function CarSelectionModal({ open, onOpenChange, cars, selectedCarId, onSelect }: CarSelectionModalProps) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedType, setSelectedType] = useState<string | null>(null);
+export function CarSelectionModal({ open, onOpenChange, selectedCarId, onSelect }: CarSelectionModalProps) {
+    const [filters,setFilters] = useState({
+    car_type:'',
+    search:''
+  })
+  const {data} = useGetCabsQuery(filters);
 
-  const carTypes = ["Mini", "Sedan", "SUV"];
-
-  const filteredCars = cars.filter((car) => {
-    const matchesSearch =
-      car.car_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      car.car_type.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = selectedType ? car.car_type === selectedType : true;
-    return matchesSearch && matchesType && car.is_available;
-  });
-
-  let onChange=(e)=>setSearchTerm(e.target.value);
+  let onChange=(e)=>setFilters(pre => ({...pre,search:e.target.value}));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -41,33 +35,28 @@ export function CarSelectionModal({ open, onOpenChange, cars, selectedCarId, onS
 
         <div className="space-y-4">
           {/* Search and Filters */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
+          <div className="flex items-center sm:flex-row gap-3">
               <CustomInput
                 id={'search'}
                 placeholder="Search cars......."
                 register={()=> ({onChange})}
-                prefix={<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />}
+                prefix={<Search size={18} />}
               />
-            </div>
-            <div className="flex gap-2">
-              {carTypes.map((type) => (
-                <Button
-                  key={type}
-                  variant={selectedType === type ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedType(selectedType === type ? null : type)}
-                >
-                  {type}
-                </Button>
-              ))}
-            </div>
+              <CustomSelectOption
+                    // id="car_type"
+                    required={false}
+                    options={WORLD_CAR_TYPES}
+                    onChange={(value)=>setFilters(pre =>({...pre,car_type:value}))}
+                    value={filters.car_type}
+                    searchable
+                    placeholder="Choose filter's"
+                />
           </div>
 
           {/* Cars Grid */}
           <div className="overflow-y-auto max-h-[50vh] pr-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredCars.map((car) => (
+              {data?.data && data?.data?.cars?.map((car) => (
                 <Card
                   key={car.id}
                   className={`cursor-pointer transition-all hover:shadow-md ${
@@ -150,7 +139,7 @@ export function CarSelectionModal({ open, onOpenChange, cars, selectedCarId, onS
                         )}
 
                         <p className="text-primary font-semibold mt-2">
-                          ₹{car.base_price}/{car.price_unit.replace("per_", "")}
+                          ₹ {car?.fare_rules?.base_fare ? Number.parseFloat(car?.fare_rules?.base_fare)?.toFixed(2) : "00.00"}
                         </p>
                       </div>
                     </div>
@@ -159,7 +148,7 @@ export function CarSelectionModal({ open, onOpenChange, cars, selectedCarId, onS
               ))}
             </div>
 
-            {filteredCars.length === 0 && (
+            {data && data?.data?.cars?.length === 0 && (
               <div className="text-center py-12 text-muted-foreground">
                 <p>No cars found matching your criteria</p>
               </div>

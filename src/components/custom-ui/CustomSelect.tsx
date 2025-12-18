@@ -29,7 +29,7 @@ import {
 
 export const CustomSelect = ({
   id,
-  label,
+  label = '',
   items = [],
   placeholder = "Select",
   required = false,
@@ -69,12 +69,12 @@ export const CustomSelect = ({
   /* -------------------------- NORMAL SELECT ------------------------ */
   const renderNormalSelect = (fieldValue, onChange) => (
     <Select value={fieldValue} onValueChange={onChange}>
-      <SelectTrigger>
+      <SelectTrigger >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
 
       <SelectContent>
-        {items.map((item) => (
+        {items?.map((item) => (
           <SelectItem key={item.value} value={item.value}>
             {item.label}
           </SelectItem>

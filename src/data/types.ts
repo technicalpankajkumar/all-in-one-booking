@@ -91,6 +91,7 @@ export interface Car {
   updated_at: string;
   features: CarFeatures | null;
   images: CarImage[];
+  fare_rules:object
 }
 
 export interface Driver {
@@ -165,11 +166,9 @@ export interface DriverBasicDetails {
 
 export interface DriverDocuments {
   profile: File | null;
-  aadhar_front: File | null;
-  aadhar_back: File | null;
+  aadhar: File | null;
   pan: File | null;
-  driving_license_front: File | null;
-  driving_license_back: File | null;
+  driving_license: File | null;
 }
 
 

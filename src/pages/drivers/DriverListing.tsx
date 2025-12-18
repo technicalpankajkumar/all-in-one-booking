@@ -51,11 +51,11 @@ const DriverListing = () => {
           </Card>
         </div>
       </div>
-      <OnBoardDriver
+    {isOpen &&  <OnBoardDriver
         open={isOpen}
         onOpenChange={setIsOpen}
-      />
-      <DeleteConfirmation
+      />}
+     {deleteModalOpen && <DeleteConfirmation
         open={deleteModalOpen}
         onOpenChange={setDeleteModalOpen}
         onConfirm={() => onHandleDelete()}
@@ -63,7 +63,7 @@ const DriverListing = () => {
         itemName={data?.full_name}
         description="Are your sure to delete driver"
         isLoading={isDeleting}
-      />
+      />}
     </>)
 }
 

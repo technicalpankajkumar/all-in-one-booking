@@ -31,26 +31,26 @@ export const cabApi = baseApi.injectEndpoints({
         if (sortOrder) params.append("sortOrder", sortOrder);
 
         return {
-          url: `/cab/get?${params.toString()}`,
+          url: `/cab?${params.toString()}`,
           method: "GET",
         };
       },
       providesTags: ["Cab"],
     }),
     getCabById: builder.query<any, string>({
-      query: (id) => ({ url: `/cab/get/${id}`, method: "GET" }),
-      providesTags: (result, error, id) => [{ type: "Cab", id }],
+      query: (id) => ({ url: `/cab/${id}`, method: "GET" }),
+      providesTags: (result, error, id) => [{ type: "Cab", id },'Cab'],
     }),
     createCab:builder.mutation({
-      query:(payload)=> ({ url:"/cab/create", method:"POST", body:payload}),
+      query:(payload)=> ({ url:"/cab", method:"POST", body:payload}),
       invalidatesTags:["Cab"]
     }),
     updateCab: builder.mutation({
-      query: ({id,payload}) => ({ url: `/cab/update/${id}`, method: "PUT", body:payload }),
+      query: ({id,payload}) => ({ url: `/cab/${id}`, method: "PUT", body:payload }),
       invalidatesTags: (result, error, { id }) => [{ type: "Cab", id },'Cab'],
     }),
     deleteCab: builder.mutation({
-      query: (id) => ({ url: `/cab/delete/${id}`, method: "DELETE"}),
+      query: (id) => ({ url: `/cab/${id}`, method: "DELETE"}),
       invalidatesTags: ["Cab"],
     }),
     getCabFeatures: builder.query({
@@ -63,7 +63,7 @@ export const cabApi = baseApi.injectEndpoints({
         if (type) params.append("type", type);
 
         return {
-          url: `/cab/feature/get?${params.toString()}`,
+          url: `/cab/feature?${params.toString()}`,
           method: "GET",
         };
       },
