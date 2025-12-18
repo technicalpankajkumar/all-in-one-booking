@@ -4,17 +4,22 @@ import { Card } from "@/components/ui/card"
 import { useState } from "react"
 import CabTable from "./CabTable"
 import OnBoardCab from "./OnBoardCab"
-import { useDeleteCabMutation } from "@/app/services/cabApi"
+import { useDeleteCabMutation, useGetCabByIdQuery } from "@/app/services/cabApi"
+import ViewCabModal from "./ViewCabDetails"
+import { skipToken } from "@reduxjs/toolkit/query"
 
 
 const CabListing = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [deleteId, setDeleteId] = useState('')
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isCabDetailModelOpen,setIsCabDetailModelOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [editId, setEditId] = useState()
-  const [deleteCab] = useDeleteCabMutation()
+  const [editId, setEditId] = useState();
+  const [viewId,setViewId] = useState();
+  const [deleteCab] = useDeleteCabMutation();
 
+  const { data: carData } = useGetCabByIdQuery(viewId ?? skipToken);
   const onHandleDelete = async () => {
     setIsDeleting(true)
     await deleteCab(deleteId);
@@ -30,7 +35,8 @@ const CabListing = () => {
           <Button variant="default" onClick={() => {
             setIsOpen(true);
             setEditId(null);
-          }} >New Cab</Button>
+            setViewId(null)
+          }}>New Cab</Button>
         </div>
         <div>
           <Card>
@@ -42,6 +48,10 @@ const CabListing = () => {
               onEdit={(e) => {
                 setEditId(e);
                 setIsOpen(true)
+              }}
+              onView={(e)=>{
+                setViewId(e)
+                setIsCabDetailModelOpen(true)
               }}
             />
           </Card>
@@ -63,6 +73,12 @@ const CabListing = () => {
         description="Are your sure to delete car"
         isLoading={isDeleting}
       />}
+      {/* View Cab Modal */}
+      <ViewCabModal 
+        isOpen={isCabDetailModelOpen}
+        onClose={() => setIsCabDetailModelOpen(false)}
+        cab={carData?.car}
+      />
     </>)
 }
 

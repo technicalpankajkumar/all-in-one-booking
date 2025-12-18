@@ -1,11 +1,10 @@
 import { useGetCabsQuery } from "@/app/services/cabApi";
 import { DynamicTable } from "@/components/DynamicTable";
-import { Button } from "@/components/ui/button";
-import { Delete, DeleteIcon, Edit, Trash, Trash2 } from "lucide-react";
+import { Edit, Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
 const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 
-const CabTable = ({ onDelete, onEdit }) => {
+const CabTable = ({ onDelete, onEdit ,onView}) => {
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
@@ -64,6 +63,7 @@ const CabTable = ({ onDelete, onEdit }) => {
       className: "text-center",
       render: (record) => (
         <div className="flex items-center gap-2 ">
+          <Eye onClick={() => onView?.(record.id)} size={20} className="text-green-800 cursor-pointer"/>
           <Edit onClick={() => onEdit?.(record.id)} size={20} className="text-primary cursor-pointer"/>
           <Trash2 onClick={() => onDelete?.(record.id)} size={20} className="text-destructive cursor-pointer"/>
         </div>

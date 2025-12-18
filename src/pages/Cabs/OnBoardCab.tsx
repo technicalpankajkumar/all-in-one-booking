@@ -1,6 +1,5 @@
-import { addCab } from "@/api/cab";
 import { useCreateCabMutation, useGetCabByIdQuery, useGetCabFeaturesQuery, useUpdateCabMutation } from "@/app/services/cabApi";
-import { CustomCheckBoxGroup, CustomInput, CustomSelect, CustomTextarea } from "@/components/custom-ui";
+import { CustomInput, CustomSelect, CustomTextarea } from "@/components/custom-ui";
 import { CustomSelectOption } from "@/components/custom-ui/CustomSelectOption";
 import { ImageFile, MultiImageUploader } from "@/components/custom-ui/MultiImageUploader";
 import MultiImageViewer from "@/components/custom-ui/MultiImageViewer";
