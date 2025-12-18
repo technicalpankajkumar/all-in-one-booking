@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { addDriver } from "@/api/driver";
+import { useCreateDriverMutation, useUpdateDriverMutation } from "@/app/services/driverApi";
 
 const steps = [
   { title: "Basic Details", description: "Personal & contact info" },
@@ -24,14 +25,17 @@ const steps = [
 interface OnBoardDriverProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  driverId?: string;
 }
 
-export function OnBoardDriver({ open, onOpenChange }: OnBoardDriverProps) {
+export function OnBoardDriver({ open, driverId, onOpenChange }: OnBoardDriverProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [basicDetails, setBasicDetails] = useState<DriverBasicDetails | null>(null);
   const [documents, setDocuments] = useState<DriverDocuments | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const { toast } = useToast();
+  const [createDriver, { isLoading }] = useCreateDriverMutation();
+  const [updateDriver] = useUpdateDriverMutation();
 
   const handleBasicDetailsSubmit = (data: DriverBasicDetails) => {
     setBasicDetails(data);
@@ -47,11 +51,40 @@ export function OnBoardDriver({ open, onOpenChange }: OnBoardDriverProps) {
 
 
 
-  const handleCarSubmit = async(assigned_car_id: string | null) => {
+  const handleCarSubmit = async (assigned_car_id: string | null) => {
     if (basicDetails && documents) {
-      setIsCompleted(true);
-         
-      await addDriver({...basicDetails,assigned_car_id},documents)
+      try {
+        const formData = new FormData();
+        formData.append("data", JSON.stringify({ ...basicDetails, assigned_car_id }));
+        if (documents.profile)
+          formData.append("profile", documents.profile);
+        if (documents.aadhar)
+          formData.append("aadhar", documents.aadhar);
+        if (documents.pan)
+          formData.append("pan_image", documents.pan);
+        if (documents.driving_license)
+          formData.append("driving_license", documents.driving_license);
+
+        let res = await (driverId ? updateDriver({ id: driverId, payload: formData }) : createDriver(formData));
+
+        console.log(res,'response -------- response')
+        if (res?.data?.success) {
+          setIsCompleted(true);
+          toast({
+            title: res.data.message || `Driver ${driverId ? 'updated' : 'Added'} Successfully!`
+          })
+
+        } else if (!res?.error?.data?.success) {
+          toast({
+            title: res?.error?.data?.message
+          })
+          // toast.error(res?.error?.data?.message)
+        }
+      } catch (e) {
+        console.log(e, 'error')
+      }
+
+
     }
   };
 
@@ -75,7 +108,7 @@ export function OnBoardDriver({ open, onOpenChange }: OnBoardDriverProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className={`${isCompleted ? 'max-w-xl':'max-w-5xl'} max-h-[96vh] overflow-hidden p-0`}>
+      <DialogContent className={`${isCompleted ? 'max-w-xl' : 'max-w-5xl'} max-h-[96vh] overflow-hidden p-0`}>
         <DialogHeader className="px-6 pt-4 pb-4 border-b bg-muted/30">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-bold">

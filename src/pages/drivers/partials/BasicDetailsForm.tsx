@@ -152,9 +152,9 @@ export function BasicDetailsForm({ initialData, onSubmit }: BasicDetailsFormProp
             label="Gender"
             required
             items={[
-              { value: "male", label: "Male" },
-              { value: "female", label: "Female" },
-              { value: "other", label: "Other" },
+              { value: "Male", label: "Male" },
+              { value: "Female", label: "Female" },
+              { value: "Other", label: "Other" },
             ]}
             setValue={setValue}
             value={watch('gender')}

@@ -40,11 +40,11 @@ export const driverApi = baseApi.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "Driver", id },"Driver"],
     }),
     createDriver:builder.mutation({
-      query:(payload)=> ({ url:"/driver/create", method:"POST", body:payload}),
+      query:(payload)=> ({ url:"/driver", method:"POST", body:payload}),
       invalidatesTags:(result, error, id) => [{ type: "Driver", id },"Driver"]
     }),
     updateDriver: builder.mutation({
-      query: ({id,payload}) => ({ url: `/driver/update/${id}`, method: "PUT", body:payload }),
+      query: ({id,payload}) => ({ url: `/driver/${id}`, method: "PUT", body:payload }),
       invalidatesTags: (result, error, id) => [{ type: "Driver", id },"Driver"],
     }),
     deleteDriver: builder.mutation({
