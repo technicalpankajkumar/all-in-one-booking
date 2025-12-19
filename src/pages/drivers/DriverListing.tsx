@@ -1,14 +1,11 @@
-import TourTable from "@/components/TourTable"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { tourPackages } from "@/data/tours"
-import { Clock } from "lucide-react"
-import { useEffect, useState } from "react"
-import { OnBoardDriver } from "./OnBoardDriver"
-import DriverTable from "./DriverTable"
-import { useNavigate } from "react-router-dom"
 import { deleteDriver, getDriverListing } from "@/api/driver"
 import { DeleteConfirmation } from "@/components/custom-ui/DeleteConfirmation"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import DriverTable from "./DriverTable"
+import { OnBoardDriver } from "./OnBoardDriver"
 
 
 const DriverListing = () => {
@@ -44,10 +41,14 @@ const DriverListing = () => {
         </div>
         <div>
           <Card>
-            <DriverTable tours={data} onView={(record) => navigate(`/dashboard/driver/${record.id}`)} onDelete={(id) => {
+            <DriverTable  
+            onView={(id) => navigate(`/dashboard/driver/${id}`)} 
+            onDelete={(id) => {
               setDeleteModalOpen(true);
               setDeleteId(id);
-            }} totalItems={data?.length} />
+            }} 
+            onEdit={(e)=>{}}
+            />
           </Card>
         </div>
       </div>

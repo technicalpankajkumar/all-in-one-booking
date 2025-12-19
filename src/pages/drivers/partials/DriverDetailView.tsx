@@ -1,40 +1,39 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Driver } from "../../../data/types";
+import { format } from "date-fns";
 import {
-  User,
-  Phone,
-  Mail,
-  MapPin,
-  Calendar,
-  CreditCard,
-  Car,
-  Star,
-  Clock,
   AlertCircle,
   Briefcase,
-  Users,
+  Calendar,
+  CarFront,
+  Clock,
+  CreditCard,
   Fuel,
-  Wind,
-  Navigation,
+  Mail,
+  MapPin,
   Music,
+  Navigation,
+  Phone,
   Settings,
+  Star,
+  User,
+  Users,
+  Wind,
 } from "lucide-react";
-import { format } from "date-fns";
-import { getCabsListing } from "@/api/cab";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Car, Driver } from "../../../data/types";
 import { CarSelectionModal } from "./CarSelectionModal";
-import { Button } from "@/components/ui/button";
-import { updateDriver } from "@/api/driver";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useGetDriverByIdQuery } from "@/app/services/driverApi";
 const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 interface DriverDetailsViewProps {
-  driver: Driver;
-  trigger:()=>{}
+  id:string;
 }
 
-export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
+export function DriverDetailsView({ id }: DriverDetailsViewProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "online":
@@ -47,32 +46,22 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
         return "bg-muted-foreground";
     }
   };
-  const [cabs, setCabs] = useState([])
-  const [selectedCar, setSelectedCar] = useState<any | null>(
-    driver ? cabs?.find((c) => c.id === driver.assigned_car_id) || null : null
-  );
+  const {data, isLoading } = useGetDriverByIdQuery(id ?? skipToken)
+  const [selectedCar, setSelectedCar] = useState<Car>({});
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleCarSelect = async(car: any) => {
     setSelectedCar(car);
-    const data = {...driver};
-    delete data.images;
-    delete data.Car;
-    delete data.id;
-    const res = await updateDriver(driver.id,{...data,assigned_car_id:car.id},{},[])
-    trigger()
+    console.log('selected car',car)
+    const newData = {...data?.driver};
+    delete newData.images;
+    delete newData.Car;
+    delete newData.id;
+    // const res = await updateDriver(driver.id,{...data,assigned_car_id:car.id},{},[])
     setModalOpen(false);
   };
 
-  const profileImage = API_URL + driver?.images?.find((img) => img?.image_type === "profile")?.image_path;
-
-  const getCarApi = async () => {
-    let data = await getCabsListing();
-    setCabs(data)
-  }
-  useEffect(() => {
-    getCarApi();
-  }, [modalOpen])
+  const profileImage = API_URL + data?.driver?.images?.find((img) => img?.image_type === "profile")?.image_path;
 
   return (
     <div className="space-y-6">
@@ -84,7 +73,7 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
             <Avatar className="w-24 h-24 sm:w-32 sm:h-32 border-4 border-background shadow-lg">
               <AvatarImage src={profileImage} />
               <AvatarFallback className="text-2xl sm:text-3xl bg-primary text-primary-foreground">
-                {driver?.full_name
+                {data?.driver?.full_name
                   ?.split(" ")
                   ?.map((n) => n[0])
                   ?.join("")}
@@ -93,30 +82,30 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
 
             <div className="flex-1 space-y-2">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <h1 className="text-2xl sm:text-3xl font-bold">{driver.full_name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold">{data?.driver?.full_name}</h1>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="capitalize">
-                    <span className={`w-2 h-2 rounded-full mr-2 ${getStatusColor(driver.availability_status)}`} />
-                    {driver.availability_status}
+                    <span className={`w-2 h-2 rounded-full mr-2 ${getStatusColor(data?.driver?.availability_status)}`} />
+                    {data?.driver?.availability_status}
                   </Badge>
                   <Badge variant="secondary">
                     <Star className="w-3 h-3 mr-1 fill-yellow-500 text-yellow-500" />
-                    {driver.rating}
+                    {data?.driver.rating}
                   </Badge>
                 </div>
               </div>
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Phone className="w-4 h-4" />
-                  {driver.mobile}
+                  {data?.driver?.auth?.mobile}
                 </span>
                 <span className="flex items-center gap-1">
                   <Mail className="w-4 h-4" />
-                  {driver.email}
+                  {data?.driver?.auth?.email}
                 </span>
                 <span className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
-                  {driver.city}, {driver.state}
+                  {data?.driver?.auth?.profile?.city}, {data?.driver?.auth?.profile?.state}
                 </span>
               </div>
             </div>
@@ -124,15 +113,15 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
             {/* Stats */}
             <div className="flex gap-4 sm:gap-6">
               <div className="text-center">
-                <p className="text-2xl font-bold text-primary">{driver.total_rides}</p>
+                <p className="text-2xl font-bold text-primary">{data?.driver?.total_rides}</p>
                 <p className="text-xs text-muted-foreground">Total Rides</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-primary">{driver.experience_years}</p>
+                <p className="text-2xl font-bold text-primary">{data?.driver?.auth?.profile?.experience_years}</p>
                 <p className="text-xs text-muted-foreground">Years Exp.</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-primary">{driver.cancellation_rate}%</p>
+                <p className="text-2xl font-bold text-primary">{data?.driver?.cancellation_rate}%</p>
                 <p className="text-xs text-muted-foreground">Cancel Rate</p>
               </div>
             </div>
@@ -150,16 +139,13 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InfoItem label="Father's Name" value={driver.father_name} />
-              <InfoItem label="Date of Birth" value={
-                driver?.dob &&
-                format(new Date(driver.dob), "dd MMM yyyy")
-              } />
-              <InfoItem label="Gender" value={driver.gender} className="capitalize" />
-              <InfoItem label="Languages" value={driver.languages_known?.join(", ") || "N/A"} />
-              <InfoItem label="Alternate Mobile" value={driver.alternate_mobile || "N/A"} />
-              <InfoItem label="Preferred Service Area" value={`${driver.preferred_service_area} km radius`} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <InfoItem label="Father's Name" value={data?.driver?.auth?.profile?.father_name || "N/A"} />
+              <InfoItem label="Date of Birth" value={data?.driver?.auth?.profile?.dob && format(new Date(data?.driver?.auth?.profile?.dob), "dd MMM yyyy")} />
+              <InfoItem label="Gender" value={data?.driver?.auth?.profile?.gender} className="capitalize" />
+              <InfoItem label="Languages" value={data?.driver?.auth?.profile?.language?.join(", ") || "N/A"} />
+              <InfoItem label="Alternate Mobile" value={data?.driver?.auth?.profile?.alternate_mobile || "N/A"} />
+              <InfoItem label="Preferred Service Area" value={`${data?.driver.preferred_service_area} km radius`} />
             </div>
 
             <Separator className="my-4" />
@@ -169,11 +155,11 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
               Address Details
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InfoItem label="Current Address" value={driver.current_address} />
-              <InfoItem label="Permanent Address" value={driver.permanent_address} />
-              <InfoItem label="City" value={driver.city} />
-              <InfoItem label="State" value={driver.state} />
-              <InfoItem label="Pincode" value={driver.pincode} />
+              <InfoItem label="Current Address" value={data?.driver?.auth?.profile?.current_address} />
+              <InfoItem label="Permanent Address" value={data?.driver?.auth?.profile?.permanent_address} />
+              <InfoItem label="City" value={data?.driver?.auth?.profile?.city} />
+              <InfoItem label="State" value={data?.driver?.auth?.profile?.state} />
+              <InfoItem label="Pincode" value={data?.driver?.auth?.profile?.pincode} />
             </div>
           </CardContent>
         </Card>
@@ -187,14 +173,14 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <InfoItem label="Aadhar Number" value={driver.aadhar_number} />
-            <InfoItem label="PAN Number" value={driver.pan_number} />
-            <InfoItem label="Driving License" value={driver.driving_license_number} />
+            <InfoItem label="Aadhar Number" value={data?.driver?.aadhar_number} />
+            <InfoItem label="PAN Number" value={data?.driver?.pan_number} />
+            <InfoItem label="Driving License" value={data?.driver?.driving_license_number} />
             <InfoItem
               label="License Expiry"
               value={
-                driver?.driving_license_expiry &&
-                format(new Date(driver.driving_license_expiry), "dd MMM yyyy")
+                data?.driver?.driving_license_expiry &&
+                format(new Date(data?.driver?.driving_license_expiry), "dd MMM yyyy")
               }
             />
 
@@ -204,11 +190,11 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
               <CreditCard className="w-4 h-4 text-primary" />
               Bank Details
             </h4>
-            <InfoItem label="Bank Name" value={driver.bank_name} />
-            <InfoItem label="Account Number" value={driver.bank_account_number} />
-            <InfoItem label="IFSC Code" value={driver.bank_ifsc} />
-            <InfoItem label="Account Holder" value={driver.account_holder_name} />
-            <InfoItem label="UPI ID" value={driver.upi_id || "N/A"} />
+            <InfoItem label="Bank Name" value={data?.driver?.bank_name  || "N/A"} />
+            <InfoItem label="Account Number" value={data?.driver?.bank_account_number || "N/A"} />
+            <InfoItem label="IFSC Code" value={data?.driver?.bank_ifsc || "N/A"} />
+            <InfoItem label="Account Holder" value={data?.driver?.account_holder_name || "N/A"} />
+            <InfoItem label="UPI ID" value={data?.driver?.upi_id || "N/A"} />
           </CardContent>
         </Card>
 
@@ -221,9 +207,9 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <InfoItem label="Contact Name" value={driver.emergency_contact_name} />
-            <InfoItem label="Contact Number" value={driver.emergency_contact_number} />
-            <InfoItem label="Relation" value={driver.emergency_contact_relation} />
+            <InfoItem label="Contact Name" value={data?.driver?.emergency_contact_name} />
+            <InfoItem label="Contact Number" value={data?.driver?.emergency_contact_number} />
+            <InfoItem label="Relation" value={data?.driver?.emergency_contact_relation} />
           </CardContent>
         </Card>
 
@@ -231,70 +217,70 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
         <Card className="lg:col-span-2">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Car className="w-5 h-5 text-primary" />
+              <CarFront className="w-5 h-5 text-primary" />
               Assigned Vehicle
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {driver.Car ? (
+            {data?.driver?.Car ? (
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="w-full sm:w-48 h-32 bg-muted rounded-lg overflow-hidden">
-                  {driver?.Car?.images?.[0] ? (
+                  {data?.driver?.Car?.images?.[0] ? (
                     <img
-                      src={API_URL + driver?.Car?.images?.find(res => res.is_main == true)?.image_url}
-                      alt={driver?.Car?.car_name}
+                      src={API_URL + data?.driver?.Car?.images?.find(res => res.is_main == true)?.image_url}
+                      alt={data?.driver?.Car?.car_name}
                       className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Car className="w-12 h-12 text-muted-foreground" />
+                      <CarFront className="w-12 h-12 text-muted-foreground" />
                     </div>
                   )}
                 </div>
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-semibold">{driver?.Car?.car_name}</h3>
-                    <Badge variant="secondary">{driver?.Car?.car_type}</Badge>
+                    <h3 className="text-xl font-semibold">{data?.driver?.Car?.car_name}</h3>
+                    <Badge variant="secondary">{data?.driver?.Car?.car_type}</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">{driver?.Car?.description}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{data?.driver?.Car?.description}</p>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
                     <div className="flex items-center gap-2 text-sm">
                       <Users className="w-4 h-4 text-muted-foreground" />
-                      {driver?.Car?.seat_capacity} Seats
+                      {data?.driver?.Car?.seat_capacity} Seats
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Briefcase className="w-4 h-4 text-muted-foreground" />
-                      {driver?.Car?.bag_capacity} Bags
+                      {data?.driver?.Car?.bag_capacity} Bags
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Fuel className="w-4 h-4 text-muted-foreground" />
-                      {driver?.Car?.fuel_type}
+                      {data?.driver?.Car?.fuel_type}
                     </div>
                     <div className="text-sm font-semibold text-primary">
-                      ₹{driver?.Car?.base_price}/{driver?.Car?.price_unit?.replace("per_", "")}
+                      ₹{data?.driver?.Car?.base_price}/{data?.driver?.Car?.price_unit?.replace("per_", "")}
                     </div>
                   </div>
 
-                  {driver?.Car?.features && (
+                  {data?.driver?.Car?.features && (
                     <div className="flex flex-wrap gap-2 mt-3">
-                      {driver?.Car?.features?.ac && (
+                      {data?.driver?.Car?.features?.ac && (
                         <Badge variant="outline">
                           <Wind className="w-3 h-3 mr-1" /> AC
                         </Badge>
                       )}
-                      {driver?.Car?.features?.gps && (
+                      {data?.driver?.Car?.features?.gps && (
                         <Badge variant="outline">
                           <Navigation className="w-3 h-3 mr-1" /> GPS
                         </Badge>
                       )}
-                      {driver?.Car?.features?.music_system && (
+                      {data?.driver?.Car?.features?.music_system && (
                         <Badge variant="outline">
                           <Music className="w-3 h-3 mr-1" /> Music
                         </Badge>
                       )}
-                      {driver?.Car?.features?.automatic_transmission && (
+                      {data?.driver?.Car?.features?.automatic_transmission && (
                         <Badge variant="outline">
                           <Settings className="w-3 h-3 mr-1" /> Auto
                         </Badge>
@@ -308,7 +294,7 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                <Car className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                <CarFront className="w-12 h-12 mx-auto mb-2 opacity-50" />
                 <p>No vehicle assigned</p>
                 <Button variant="default" size="sm" className="mt-4" onClick={() => setModalOpen(true)}>
                   Assign Vehicle
@@ -319,7 +305,7 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
         </Card>
 
         {/* Driver Images */}
-        {driver?.images && driver?.images?.length > 0 && (
+        {data?.driver?.images && data?.driver?.images?.length > 0 && (
           <Card className="lg:col-span-3">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -329,7 +315,7 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {driver?.images?.filter(res => res.image_type != "profile")?.map((image) => (
+                {data?.driver?.images?.filter(res => res.image_type != "profile")?.map((image) => (
                   <div key={image?.id} className="space-y-2">
                     <div className="aspect-square bg-muted rounded-lg overflow-hidden">
                       <img
@@ -354,22 +340,21 @@ export function DriverDetailsView({ driver,trigger }: DriverDetailsViewProps) {
         <span className="flex items-center gap-1">
           <Clock className="w-4 h-4" />
           Created: {
-            driver?.created_at &&
-            format(new Date(driver.created_at), "dd MMM yyyy, HH:mm")
+            data?.driver?.created_at &&
+            format(new Date(data?.driver?.created_at), "dd MMM yyyy, HH:mm")
           }
         </span>
         <span className="flex items-center gap-1">
           <Calendar className="w-4 h-4" />
           Updated: {
-            driver?.updated_at &&
-            format(new Date(driver.updated_at), "dd MMM yyyy, HH:mm")
+            data?.driver?.updated_at &&
+            format(new Date(data?.driver?.updated_at), "dd MMM yyyy, HH:mm")
           }
         </span>
       </div>
-      <CarSelectionModal
+     <CarSelectionModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        cars={cabs}
         selectedCarId={selectedCar?.id || null}
         onSelect={handleCarSelect}
       />
@@ -388,8 +373,8 @@ function InfoItem({
 }) {
   return (
     <div>
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className={`font-medium ${className}`}>{value}</p>
+      <p className="text-sm text-muted-foreground mb-0.5">{label}</p>
+      <p className={`font-medium text-sm ${className}`}>{value}</p>
     </div>
   );
 }
