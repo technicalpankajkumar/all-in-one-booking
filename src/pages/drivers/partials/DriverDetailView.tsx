@@ -29,6 +29,8 @@ import { CarSelectionModal } from "./CarSelectionModal";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useGetDriverByIdQuery, useUpdateDriverMutation, useUpdateDriverSpecificDataMutation } from "@/app/services/driverApi";
 import { FeatureChips } from "./FeatureChips";
+import MultiImageViewer from "@/components/custom-ui/MultiImageViewer";
+import ProfileBannerCard from "@/components/custom-ui/ProfileBannerCard";
 const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 interface DriverDetailsViewProps {
   id:string;
@@ -75,68 +77,14 @@ export function DriverDetailsView({ id }: DriverDetailsViewProps) {
   return (
     <div className="space-y-6">
       {/* Header Card */}
-      <Card className="overflow-hidden">
-        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent h-24 sm:h-32" />
-        <CardContent className="relative px-4 sm:px-6 pb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-12 sm:-mt-16">
-            <Avatar className="w-24 h-24 sm:w-32 sm:h-32 border-4 border-background shadow-lg">
-              <AvatarImage src={profileImage} />
-              <AvatarFallback className="text-2xl sm:text-3xl bg-primary text-primary-foreground">
-                {data?.driver?.full_name
-                  ?.split(" ")
-                  ?.map((n) => n[0])
-                  ?.join("")}
-              </AvatarFallback>
-            </Avatar>
-
-            <div className="flex-1 space-y-2">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <h1 className="text-2xl sm:text-3xl font-bold">{data?.driver?.full_name}</h1>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="capitalize">
-                    <span className={`w-2 h-2 rounded-full mr-2 ${getStatusColor(data?.driver?.availability_status)}`} />
-                    {data?.driver?.availability_status}
-                  </Badge>
-                  <Badge variant="secondary">
-                    <Star className="w-3 h-3 mr-1 fill-yellow-500 text-yellow-500" />
-                    {data?.driver.rating}
-                  </Badge>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <Phone className="w-4 h-4" />
-                  {data?.driver?.auth?.mobile}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Mail className="w-4 h-4" />
-                  {data?.driver?.auth?.email}
-                </span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4" />
-                  {data?.driver?.auth?.profile?.city}, {data?.driver?.auth?.profile?.state}
-                </span>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="flex gap-4 sm:gap-6">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-primary">{data?.driver?.total_rides}</p>
-                <p className="text-xs text-muted-foreground">Total Rides</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-primary">{data?.driver?.auth?.profile?.experience_years}</p>
-                <p className="text-xs text-muted-foreground">Years Exp.</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-primary">{data?.driver?.cancellation_rate}%</p>
-                <p className="text-xs text-muted-foreground">Cancel Rate</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <ProfileBannerCard 
+         data={data}
+         profileImage={profileImage}
+         bannerImage={profileImage}
+         onBannerImageChange={(file)=>console.log("Banner file",file)}
+         onProfileImageChange={(file)=>console.log("Profile file",file)}
+         editable
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Personal Information */}
@@ -290,6 +238,7 @@ export function DriverDetailsView({ id }: DriverDetailsViewProps) {
         </Card>
 
         {/* Driver Images */}
+        
         {data?.driver?.images && data?.driver?.images?.length > 0 && (
           <Card className="lg:col-span-3">
             <CardHeader className="pb-4">
@@ -299,22 +248,14 @@ export function DriverDetailsView({ id }: DriverDetailsViewProps) {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {data?.driver?.images?.filter(res => res.image_type != "profile")?.map((image) => (
-                  <div key={image?.id} className="space-y-2">
-                    <div className="aspect-square bg-muted rounded-lg overflow-hidden">
-                      <img
-                        src={API_URL + image?.image_path}
-                        alt={image?.image_type}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <p className="text-xs text-center text-muted-foreground capitalize">
-                      {image?.image_type?.replace("_", " ")}
-                    </p>
-                  </div>
-                ))}
-              </div>
+              <MultiImageViewer
+            images={data?.driver?.images?.filter(res => res.image_type != "profile")}
+            onDelete={(id) =>{
+                  // setDeletedImageIds(pre => ([...pre,id]));
+                  // setUploadedViewImages( uploadedViewImages?.filter(res => res.id != id))
+                }
+            }
+        />
             </CardContent>
           </Card>
         )}

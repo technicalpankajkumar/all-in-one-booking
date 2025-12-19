@@ -6,7 +6,9 @@ interface ThumbnailImage {
   id: number | string;
   car_id: string;
   image_url?: string;
-  is_main: boolean
+  is_main: boolean;
+  image_path?:string;
+ image_type?:string;
 }
 
 interface MultiImageViewerProps {
@@ -29,6 +31,8 @@ const MultiImageViewer = ({ images, onDelete, onView }: MultiImageViewerProps) =
   const handleDelete = (id: number) => {
     onDelete?.(id);
   };
+  
+  console.log(images,'images')
 
   return (
     <div className="w-full">
@@ -45,7 +49,7 @@ const MultiImageViewer = ({ images, onDelete, onView }: MultiImageViewerProps) =
 
             {/* Image */}
             <img
-              src={API_URL + image.image_url}
+              src={API_URL + (image?.image_url || image?.image_path)}
               alt={`Image ${index + 1}`}
               className="w-full h-full object-cover"
             />
@@ -81,13 +85,13 @@ const MultiImageViewer = ({ images, onDelete, onView }: MultiImageViewerProps) =
           {selectedImage && (
             <div className="relative">
               <img
-                src={API_URL + selectedImage.image_url}
+                src={API_URL + (selectedImage.image_url || selectedImage.image_path)}
                 alt={"Full view"}
                 className="w-full h-auto max-h-[75vh] object-contain rounded"
               />
-              {selectedImage?.title && (
+              {(selectedImage?.image_type) && (
                 <p className="text-center text-sm text-muted-foreground mt-2">
-                  {selectedImage?.title}
+                  {selectedImage?.image_type}
                 </p>
               )}
             </div>
