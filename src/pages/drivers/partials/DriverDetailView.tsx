@@ -27,7 +27,8 @@ import { useState } from "react";
 import { Car, Driver } from "../../../data/types";
 import { CarSelectionModal } from "./CarSelectionModal";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useGetDriverByIdQuery } from "@/app/services/driverApi";
+import { useGetDriverByIdQuery, useUpdateDriverMutation, useUpdateDriverSpecificDataMutation } from "@/app/services/driverApi";
+import { FeatureChips } from "./FeatureChips";
 const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 interface DriverDetailsViewProps {
   id:string;
@@ -47,17 +48,25 @@ export function DriverDetailsView({ id }: DriverDetailsViewProps) {
     }
   };
   const {data, isLoading } = useGetDriverByIdQuery(id ?? skipToken)
-  const [selectedCar, setSelectedCar] = useState<Car>({});
+  const [updateDriverSpecificData] = useUpdateDriverSpecificDataMutation()
+  const [selectedCar, setSelectedCar] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [profileImg,setProfileImg] = useState<Blob>(null)
 
   const handleCarSelect = async(car: any) => {
-    setSelectedCar(car);
-    console.log('selected car',car)
-    const newData = {...data?.driver};
-    delete newData.images;
-    delete newData.Car;
-    delete newData.id;
-    // const res = await updateDriver(driver.id,{...data,assigned_car_id:car.id},{},[])
+    setSelectedCar(car.id);
+     
+    const formData = new FormData();
+    if (profileImg) {
+        formData.append("profile", profileImg);
+    }
+    formData.append('data',JSON.stringify({
+      assigned_car_id:car.id,
+      availability_status: data?.driver?.availability_status
+    }))
+
+    const res = await updateDriverSpecificData({id,payload:formData})
+    console.log(res,'res')
     setModalOpen(false);
   };
 
@@ -222,13 +231,13 @@ export function DriverDetailsView({ id }: DriverDetailsViewProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {data?.driver?.Car ? (
+            {data?.driver?.car ? (
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="w-full sm:w-48 h-32 bg-muted rounded-lg overflow-hidden">
-                  {data?.driver?.Car?.images?.[0] ? (
+                  {data?.driver?.car?.images?.[0] ? (
                     <img
-                      src={API_URL + data?.driver?.Car?.images?.find(res => res.is_main == true)?.image_url}
-                      alt={data?.driver?.Car?.car_name}
+                      src={API_URL + data?.driver?.car?.images?.find(res => res.is_main == true)?.image_url}
+                      alt={data?.driver?.car?.car_name}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -240,53 +249,29 @@ export function DriverDetailsView({ id }: DriverDetailsViewProps) {
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-semibold">{data?.driver?.Car?.car_name}</h3>
-                    <Badge variant="secondary">{data?.driver?.Car?.car_type}</Badge>
+                    <h3 className="text-xl font-semibold">{data?.driver?.car?.car_name}</h3>
+                    <Badge variant="secondary">{data?.driver?.car?.car_type}</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">{data?.driver?.Car?.description}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{data?.driver?.car?.description}</p>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
                     <div className="flex items-center gap-2 text-sm">
                       <Users className="w-4 h-4 text-muted-foreground" />
-                      {data?.driver?.Car?.seat_capacity} Seats
+                      {data?.driver?.car?.seat_capacity} Seats
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Briefcase className="w-4 h-4 text-muted-foreground" />
-                      {data?.driver?.Car?.bag_capacity} Bags
+                      {data?.driver?.car?.bag_capacity} Bags
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Fuel className="w-4 h-4 text-muted-foreground" />
-                      {data?.driver?.Car?.fuel_type}
+                      {data?.driver?.car?.fuel_type}
                     </div>
                     <div className="text-sm font-semibold text-primary">
-                      ₹{data?.driver?.Car?.base_price}/{data?.driver?.Car?.price_unit?.replace("per_", "")}
+                      ₹ {data?.driver?.car?.fare_rules?.base_fare}
                     </div>
                   </div>
-
-                  {data?.driver?.Car?.features && (
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {data?.driver?.Car?.features?.ac && (
-                        <Badge variant="outline">
-                          <Wind className="w-3 h-3 mr-1" /> AC
-                        </Badge>
-                      )}
-                      {data?.driver?.Car?.features?.gps && (
-                        <Badge variant="outline">
-                          <Navigation className="w-3 h-3 mr-1" /> GPS
-                        </Badge>
-                      )}
-                      {data?.driver?.Car?.features?.music_system && (
-                        <Badge variant="outline">
-                          <Music className="w-3 h-3 mr-1" /> Music
-                        </Badge>
-                      )}
-                      {data?.driver?.Car?.features?.automatic_transmission && (
-                        <Badge variant="outline">
-                          <Settings className="w-3 h-3 mr-1" /> Auto
-                        </Badge>
-                      )}
-                    </div>
-                  )}
+                  <FeatureChips  selectedCar={data?.driver?.car}/> 
                   <Button variant="default" size="sm" className="mt-4" onClick={() => setModalOpen(true)}>
                     Change Vehicle
                   </Button>
@@ -355,7 +340,7 @@ export function DriverDetailsView({ id }: DriverDetailsViewProps) {
      <CarSelectionModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        selectedCarId={selectedCar?.id || null}
+        selectedCarId={selectedCar || null}
         onSelect={handleCarSelect}
       />
     </div>

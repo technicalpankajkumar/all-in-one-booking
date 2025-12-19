@@ -47,6 +47,10 @@ export const driverApi = baseApi.injectEndpoints({
       query: ({id,payload}) => ({ url: `/driver/${id}`, method: "PUT", body:payload }),
       invalidatesTags: (result, error, id) => [{ type: "Driver", id },"Driver"],
     }),
+    updateDriverSpecificData: builder.mutation({
+      query: ({id,payload}) => ({ url: `/driver/${id}`, method: "PATCH", body:payload }),
+      invalidatesTags: (result, error, id) => [{ type: "Driver", id },"Driver"],
+    }),
     deleteDriver: builder.mutation({
       query: ({id}) => ({ url: `/driver/delete/${id}`, method: "DELETE"}),
       invalidatesTags: ["Driver"],
@@ -54,4 +58,4 @@ export const driverApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetDriversQuery, useGetDriverByIdQuery, useCreateDriverMutation, useUpdateDriverMutation , useDeleteDriverMutation} = driverApi;
+export const { useGetDriversQuery, useGetDriverByIdQuery, useCreateDriverMutation, useUpdateDriverMutation , useDeleteDriverMutation, useUpdateDriverSpecificDataMutation} = driverApi;
