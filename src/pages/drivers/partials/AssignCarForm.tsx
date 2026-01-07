@@ -38,7 +38,7 @@ export function AssignCarForm({ initialCar, onSubmit, onBack }: AssignCarFormPro
         <Button type="button" variant="outline" onClick={onBack} size="sm">
           Back
         </Button>
-        <Button onClick={handleSubmit} size="sm">Complete Registration</Button>
+        <Button onClick={handleSubmit} size="sm">{initialCar.id ? 'Complete Updation' : 'Complete Registration'}</Button>
       </div>
       <Card>
         <CardHeader className="pb-4">

@@ -1,13 +1,14 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Upload, X, FileImage, Check } from "lucide-react";
 import { DriverDocuments } from "../../../data/types";
+import MultiImageViewer from "@/components/custom-ui/MultiImageViewer";
 
 interface DocumentUploadFormProps {
-  initialData?: Partial<DriverDocuments>;
-  onSubmit: (data: DriverDocuments) => void;
+  initialData?: {images:[]};
+  onSubmit: (payload: { documents: DriverDocuments; deletedImageIds: string[]}) => void;
   onBack: () => void;
 }
 
@@ -31,8 +32,9 @@ export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUp
     aadhar: null,
     pan: null,
     driving_license: null,
-    ...initialData,
   });
+  const [uploadedViewImages, setUploadedViewImages] = useState([]);
+  const [deletedImageIds,setDeletedImageIds] = useState([])
 
   const [previews, setPreviews] = useState<Record<string, string>>({});
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
@@ -65,12 +67,16 @@ export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUp
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(documents);
+    onSubmit({documents,deletedImageIds});
   };
 
   const allRequiredUploaded = documentFields
     .filter((f) => f.required)
-    .every((f) => documents[f.key] !== null);
+    .every((f) => documents[f.key] !== null || (uploadedViewImages.filter(res => res.image_type == f.key)?.length > 0));
+
+  useEffect(()=>{
+       setUploadedViewImages(initialData?.images);
+  },[initialData])
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 mb-4">
@@ -93,17 +99,28 @@ export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUp
           </p>
         </CardHeader>
         <CardContent>
+          <MultiImageViewer
+            images={uploadedViewImages}
+            onDelete={(id) =>{
+                  setDeletedImageIds(pre => ([...pre,id]));
+                  setUploadedViewImages(uploadedViewImages?.filter(res => res.id != id))
+                }
+            }
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {documentFields.map((field) => (
+            {documentFields.map((field) => {
+              const disabled = uploadedViewImages.find(res => res.image_type == field.key);
+
+              return (
               <div key={field.key} className="space-y-2">
                 <Label className="flex items-center gap-1">
                   {field.label}
                   {field.required && <span className="text-destructive text-red-500">*</span>}
                 </Label>
                 <div
-                  className={`relative border-2 border-primary/50 border-dashed rounded-lg p-1 transition-colors cursor-pointer hover:border-primary/50 ${
+                  className={`relative border-2 border-primary/50 border-dashed rounded-lg p-1 transition-colors  hover:border-primary/50 ${
                     documents[field.key] ? "border-primary bg-primary/5" : "border-muted"
-                  }`}
+                  } ${disabled ? 'bg-gray-100 cursor-not-allowed': 'cursor-pointer'}`}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(field.key, e)}
                   onClick={() => fileInputRefs.current[field.key]?.click()}
@@ -112,8 +129,9 @@ export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUp
                     ref={(el) => (fileInputRefs.current[field.key] = el)}
                     type="file"
                     accept="image/*"
-                    className="hidden"
+                    className={`hidden ${disabled ? 'cursor-not-allowed':''}`}
                     onChange={(e) => handleFileChange(field.key, e.target.files?.[0] || null)}
+                    disabled={disabled}
                   />
 
                   {previews[field.key] ? (
@@ -146,11 +164,11 @@ export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUp
                   )}
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </CardContent>
       </Card>
-
+     
      
     </form>
   );

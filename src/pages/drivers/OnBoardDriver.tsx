@@ -34,22 +34,23 @@ export function OnBoardDriver({ open, driverId, onOpenChange }: OnBoardDriverPro
   const [currentStep, setCurrentStep] = useState(0);
   const [basicDetails, setBasicDetails] = useState<DriverBasicDetails | null>(null);
   const [documents, setDocuments] = useState<DriverDocuments | null>(null);
-  const [carDetails,setCarDetails] = useState<Car>(null)
+  const [deletedImages,setDeletedImage] = useState([])
   const [isCompleted, setIsCompleted] = useState(false);
   const { toast } = useToast();
   const [createDriver, { isLoading }] = useCreateDriverMutation();
   const [updateDriver] = useUpdateDriverMutation();
   const {data } = useGetDriverByIdQuery(driverId ?? skipToken);
-  console.log(data,'data');
+
   const handleBasicDetailsSubmit = (data: DriverBasicDetails) => {
     setBasicDetails(data);
     setCurrentStep(1);
     toast({ title: "Basic details saved", description: "Proceed to upload documents" });
   };
 
-  const handleDocumentsSubmit = (data: DriverDocuments) => {
-    setDocuments(data);
+  const handleDocumentsSubmit = (payload: { documents: DriverDocuments; deletedImageIds: string[]}) => {
+    setDocuments(payload.documents);
     setCurrentStep(2);
+    setDeletedImage(payload.deletedImageIds);
     toast({ title: "Documents uploaded", description: "Proceed to assign a vehicle" });
   };
 
@@ -98,12 +99,15 @@ export function OnBoardDriver({ open, driverId, onOpenChange }: OnBoardDriverPro
           formData.append("pan", documents.pan);
         if (documents.driving_license)
           formData.append("driving_license", documents.driving_license);
-
+        if(deletedImages?.length)
+          formData.append('deleted_images',JSON.stringify(deletedImages))
+        
         let res = await (driverId ? updateDriver({ id: driverId, payload: formData }) : createDriver(formData));
 
         console.log(res,'response -------- response')
         if (res?.data?.success) {
           setIsCompleted(true);
+          setDeletedImage([]);
           toast({
             title: res.data.message || `Driver ${driverId ? 'updated' : 'Added'} Successfully!`
           })
@@ -184,13 +188,13 @@ export function OnBoardDriver({ open, driverId, onOpenChange }: OnBoardDriverPro
               )}
               {currentStep === 1 && (
                 <DocumentUploadForm
-                  initialData={documents || undefined}
+                  initialData={data?.driver || undefined}
                   onSubmit={handleDocumentsSubmit}
                   onBack={() => setCurrentStep(0)}
                 />
               )}
               {currentStep === 2 && (
-                <AssignCarForm initialCar={carDetails} onSubmit={handleCarSubmit} onBack={() => setCurrentStep(1)} />
+                <AssignCarForm initialCar={data?.driver?.car} onSubmit={handleCarSubmit} onBack={() => setCurrentStep(1)} />
               )}
             </div>
           )}
