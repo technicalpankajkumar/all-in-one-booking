@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Phone, MapPin, CreditCard, AlertCircle } from "lucide-react";
 import { DriverBasicDetails } from "../../../data/types";
 import { CustomInput, CustomSelect, CustomTextarea } from "@/components/custom-ui";
+import { useEffect } from "react";
 
 const basicDetailsSchema = z.object({
   full_name: z.string().min(2, "Full name is required"),
@@ -51,6 +52,7 @@ export function BasicDetailsForm({ initialData, onSubmit }: BasicDetailsFormProp
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm<DriverBasicDetails>({
     resolver: zodResolver(basicDetailsSchema),
@@ -81,9 +83,12 @@ export function BasicDetailsForm({ initialData, onSubmit }: BasicDetailsFormProp
       emergency_contact_name: "",
       emergency_contact_number: "",
       emergency_contact_relation: "",
-      ...initialData,
     },
   });
+
+  useEffect(()=>{
+    reset(initialData)
+  },[initialData])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mb-4">

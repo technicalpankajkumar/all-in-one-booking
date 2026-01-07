@@ -179,7 +179,7 @@ export function DriverDetailsView({ id }: DriverDetailsViewProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {data?.driver?.car ? (
+            {data?.driver?.car?.car_name ? (
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="w-full sm:w-48 h-32 bg-muted rounded-lg overflow-hidden">
                   {data?.driver?.car?.images?.[0] ? (
@@ -226,7 +226,7 @@ export function DriverDetailsView({ id }: DriverDetailsViewProps) {
                 </div>
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-2 text-muted-foreground">
                 <CarFront className="w-12 h-12 mx-auto mb-2 opacity-50" />
                 <p>No vehicle assigned</p>
                 <Button variant="default" size="sm" className="mt-4" onClick={() => setModalOpen(true)}>

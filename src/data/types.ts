@@ -157,7 +157,7 @@ export interface DriverBasicDetails {
   bank_name: string;
   account_holder_name: string;
   upi_id: string;
-  experience_years: number;
+  experience_years: number | string;
   languages_known: string[];
   emergency_contact_name: string;
   emergency_contact_number: string;

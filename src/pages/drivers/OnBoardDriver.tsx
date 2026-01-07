@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,12 +9,14 @@ import { Stepper } from "@/components/ui/stepper";
 import { BasicDetailsForm } from "./partials/BasicDetailsForm";
 import { DocumentUploadForm } from "./partials/DocumentUploadForm";
 import { AssignCarForm } from "./partials/AssignCarForm";
-import { DriverBasicDetails, DriverDocuments } from "../../data/types";
+import { Car, DriverBasicDetails, DriverDocuments } from "../../data/types";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { addDriver } from "@/api/driver";
-import { useCreateDriverMutation, useUpdateDriverMutation } from "@/app/services/driverApi";
+import { useCreateDriverMutation, useGetDriverByIdQuery, useUpdateDriverMutation } from "@/app/services/driverApi";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { format } from "date-fns";
 
 const steps = [
   { title: "Basic Details", description: "Personal & contact info" },
@@ -32,11 +34,13 @@ export function OnBoardDriver({ open, driverId, onOpenChange }: OnBoardDriverPro
   const [currentStep, setCurrentStep] = useState(0);
   const [basicDetails, setBasicDetails] = useState<DriverBasicDetails | null>(null);
   const [documents, setDocuments] = useState<DriverDocuments | null>(null);
+  const [carDetails,setCarDetails] = useState<Car>(null)
   const [isCompleted, setIsCompleted] = useState(false);
   const { toast } = useToast();
   const [createDriver, { isLoading }] = useCreateDriverMutation();
   const [updateDriver] = useUpdateDriverMutation();
-
+  const {data } = useGetDriverByIdQuery(driverId ?? skipToken);
+  console.log(data,'data');
   const handleBasicDetailsSubmit = (data: DriverBasicDetails) => {
     setBasicDetails(data);
     setCurrentStep(1);
@@ -49,7 +53,37 @@ export function OnBoardDriver({ open, driverId, onOpenChange }: OnBoardDriverPro
     toast({ title: "Documents uploaded", description: "Proceed to assign a vehicle" });
   };
 
-
+ useEffect(()=>{
+    const driver = data?.driver;
+    setBasicDetails({
+      full_name: driver?.auth?.name,
+      father_name: driver?.father_name,
+      email: driver?.auth?.email,
+      mobile: driver?.auth?.mobile,
+      alternate_mobile: driver?.auth?.profile?.alternate_mobile,
+      dob: driver?.auth?.profile?.dob && format(new Date(driver?.auth?.profile?.dob), "yyyy-MM-dd") || null,
+      gender: driver?.auth?.profile?.gender,
+      current_address: driver?.auth?.profile?.current_address,
+      permanent_address: driver?.auth?.profile?.permanent_address,
+      city: driver?.auth?.profile?.city,
+      state: driver?.auth?.profile?.state,
+      pincode: driver?.auth?.profile?.pincode,
+      aadhar_number: driver?.aadhar_number,
+      pan_number: driver?.pan_number,
+      driving_license_number: driver?.driving_license_number,
+      driving_license_expiry: driver?.driving_license_expiry && format(new Date(driver?.driving_license_expiry), "yyyy-MM-dd") || null,
+      bank_account_number: driver?.bank_account_number,
+      bank_ifsc: driver?.bank_ifsc,
+      bank_name: driver?.bank_name,
+      account_holder_name: driver?.account_holder_name,
+      upi_id: driver?.upi_id,
+      experience_years: String(driver?.auth?.profile?.experience_years),
+      languages_known: driver?.auth?.profile?.language,
+      emergency_contact_name: driver?.emergency_contact_name,
+      emergency_contact_number: driver?.emergency_contact_number,
+      emergency_contact_relation: driver?.emergency_contact_relation
+    })
+ },[data])
 
   const handleCarSubmit = async (assigned_car_id: string | null) => {
     if (basicDetails && documents) {
@@ -61,7 +95,7 @@ export function OnBoardDriver({ open, driverId, onOpenChange }: OnBoardDriverPro
         if (documents.aadhar)
           formData.append("aadhar", documents.aadhar);
         if (documents.pan)
-          formData.append("pan_image", documents.pan);
+          formData.append("pan", documents.pan);
         if (documents.driving_license)
           formData.append("driving_license", documents.driving_license);
 
@@ -156,7 +190,7 @@ export function OnBoardDriver({ open, driverId, onOpenChange }: OnBoardDriverPro
                 />
               )}
               {currentStep === 2 && (
-                <AssignCarForm initialCarId={null} onSubmit={handleCarSubmit} onBack={() => setCurrentStep(1)} />
+                <AssignCarForm initialCar={carDetails} onSubmit={handleCarSubmit} onBack={() => setCurrentStep(1)} />
               )}
             </div>
           )}

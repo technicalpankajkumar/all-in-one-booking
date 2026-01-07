@@ -93,7 +93,7 @@ export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUp
           </p>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {documentFields.map((field) => (
               <div key={field.key} className="space-y-2">
                 <Label className="flex items-center gap-1">
@@ -101,7 +101,7 @@ export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUp
                   {field.required && <span className="text-destructive text-red-500">*</span>}
                 </Label>
                 <div
-                  className={`relative border-2 border-primary/50 border-dashed rounded-lg p-4 transition-colors cursor-pointer hover:border-primary/50 ${
+                  className={`relative border-2 border-primary/50 border-dashed rounded-lg p-1 transition-colors cursor-pointer hover:border-primary/50 ${
                     documents[field.key] ? "border-primary bg-primary/5" : "border-muted"
                   }`}
                   onDragOver={(e) => e.preventDefault()}
@@ -111,7 +111,7 @@ export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUp
                   <input
                     ref={(el) => (fileInputRefs.current[field.key] = el)}
                     type="file"
-                    accept="image/*,.pdf"
+                    accept="image/*"
                     className="hidden"
                     onChange={(e) => handleFileChange(field.key, e.target.files?.[0] || null)}
                   />
@@ -138,9 +138,9 @@ export function DocumentUploadForm({ initialData, onSubmit, onBack }: DocumentUp
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center justify-center h-32 text-center">
-                      <Upload className="w-8 h-8 text-muted-foreground mb-2" />
-                      <p className="text-sm font-medium">Click or drag to upload</p>
+                    <div className="flex flex-col items-center justify-center h-28 text-center">
+                      <Upload className="w-6 h-6 text-muted-foreground mb-2" />
+                      <p className="text-xs font-medium">Click or drag to upload</p>
                       <p className="text-xs text-muted-foreground mt-1">{field.description}</p>
                     </div>
                   )}

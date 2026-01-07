@@ -11,7 +11,8 @@ import { OnBoardDriver } from "./OnBoardDriver"
 const DriverListing = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [refetch, setRefetch] = useState(false);
-  const [deleteId, setDeleteId] = useState('')
+  const [deleteId, setDeleteId] = useState('');
+  const [id,setId] = useState(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
@@ -47,14 +48,18 @@ const DriverListing = () => {
               setDeleteModalOpen(true);
               setDeleteId(id);
             }} 
-            onEdit={(e)=>{}}
+            onEdit={(e)=>{
+              setId(e);
+              setIsOpen(true);
+            }}
             />
           </Card>
         </div>
       </div>
-    {isOpen &&  <OnBoardDriver
+    {(isOpen && id) &&  <OnBoardDriver
         open={isOpen}
         onOpenChange={setIsOpen}
+        driverId={id}
       />}
      {deleteModalOpen && <DeleteConfirmation
         open={deleteModalOpen}

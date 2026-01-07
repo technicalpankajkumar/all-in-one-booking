@@ -2,20 +2,20 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Briefcase, Car as CarIcon, Fuel, Plus, Users, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Car } from "../../../data/types";
 import { CarSelectionModal } from "../partials/CarSelectionModal";
 import { FeatureChips } from "./FeatureChips";
 const API_URL = import.meta.env.VITE_APP_API_IMAGE_URL;
 
 interface AssignCarFormProps {
-  initialCarId?: string | null;
+  initialCar?: Car | null ;
   onSubmit: (assigned_car_id: string | null) => void;
   onBack: () => void;
 }
 
-export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormProps) {
-  const [selectedCar, setSelectedCar] = useState<Car>({});
+export function AssignCarForm({ initialCar, onSubmit, onBack }: AssignCarFormProps) {
+  const [selectedCar, setSelectedCar] = useState<Car>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleCarSelect = (car: Car) => {
@@ -26,7 +26,11 @@ export function AssignCarForm({ initialCarId, onSubmit, onBack }: AssignCarFormP
   const handleSubmit = () => {
     onSubmit(selectedCar?.id || null);
   };
-console.log(selectedCar,)
+
+  useEffect(()=>{
+    setSelectedCar(initialCar)
+  },[initialCar])
+
  const carImageUrl = selectedCar && selectedCar?.images?.find(res => res.is_main == true)?.image_url;
   return (
     <div className="space-y-6 mb-4">
@@ -55,7 +59,7 @@ console.log(selectedCar,)
                   {carImageUrl ? (
                     <img
                       src={API_URL+carImageUrl}
-                      alt={selectedCar.car_name}
+                      alt={selectedCar?.car_name}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -69,9 +73,9 @@ console.log(selectedCar,)
                 <div className="flex-1">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-xl font-semibold">{selectedCar.car_name}</h3>
+                      <h3 className="text-xl font-semibold">{selectedCar?.car_name}</h3>
                       <Badge variant="secondary" className="mt-1">
-                        {selectedCar.car_type}
+                        {selectedCar?.car_type}
                       </Badge>
                     </div>
                     <Button
@@ -87,15 +91,15 @@ console.log(selectedCar,)
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
                     <div className="flex items-center gap-2">
                       <Users className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{selectedCar.seat_capacity} Seats</span>
+                      <span className="text-sm">{selectedCar?.seat_capacity} Seats</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Briefcase className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{selectedCar.bag_capacity} Bags</span>
+                      <span className="text-sm">{selectedCar?.bag_capacity} Bags</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Fuel className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{selectedCar.fuel_type}</span>
+                      <span className="text-sm">{selectedCar?.fuel_type}</span>
                     </div>
                     <div className="text-primary font-semibold text-sm">
                       ₹ {selectedCar?.fare_rules?.base_fare ? Number.parseFloat(selectedCar?.fare_rules?.base_fare)?.toFixed(2) : "00.00"}
