@@ -194,7 +194,7 @@ export function OnBoardDriver({ open, driverId, onOpenChange }: OnBoardDriverPro
                 />
               )}
               {currentStep === 2 && (
-                <AssignCarForm initialCar={data?.driver?.car} onSubmit={handleCarSubmit} onBack={() => setCurrentStep(1)} />
+                <AssignCarForm initialCar={data?.driver?.car} driverId={driverId} onSubmit={handleCarSubmit} onBack={() => setCurrentStep(1)} />
               )}
             </div>
           )}

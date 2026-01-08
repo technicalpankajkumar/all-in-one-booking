@@ -12,9 +12,10 @@ interface AssignCarFormProps {
   initialCar?: Car | null ;
   onSubmit: (assigned_car_id: string | null) => void;
   onBack: () => void;
+  driverId?:string;
 }
 
-export function AssignCarForm({ initialCar, onSubmit, onBack }: AssignCarFormProps) {
+export function AssignCarForm({ initialCar,driverId, onSubmit, onBack }: AssignCarFormProps) {
   const [selectedCar, setSelectedCar] = useState<Car>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -38,7 +39,7 @@ export function AssignCarForm({ initialCar, onSubmit, onBack }: AssignCarFormPro
         <Button type="button" variant="outline" onClick={onBack} size="sm">
           Back
         </Button>
-        <Button onClick={handleSubmit} size="sm">{initialCar.id ? 'Complete Updation' : 'Complete Registration'}</Button>
+        <Button onClick={handleSubmit} size="sm">{(driverId) ? 'Complete Updation' : 'Complete Registration'}</Button>
       </div>
       <Card>
         <CardHeader className="pb-4">
