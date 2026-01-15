@@ -339,22 +339,11 @@ const HotelDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background ">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate("/")} className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to listings
-          </Button>
-          <Button onClick={() => setShowBookingForm(true)} className="bg-accent hover:bg-accent/90">
-            Book Now - ${hotel.price}/night
-          </Button>
-        </div>
-      </header>
 
       {/* Photo Gallery */}
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 mt-14">
         <PhotoGallery images={hotel.images} hotelName={hotel.name} />
       </div>
 

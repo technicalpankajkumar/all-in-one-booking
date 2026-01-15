@@ -1,13 +1,15 @@
 import { BookingForm } from "@/components/BookingForm";
-import { FilterSidebar } from "@/components/FilterSidebar";
+import { CustomCategoryTabs } from "@/components/custom-ui/CustomCategoryTabs";
+import { DynamicTable } from "@/components/DynamicTable";
 import HeroSection from "@/components/HeroSection";
 import { Hotel, HotelCard } from "@/components/HotelCard";
+import { HotelFilters } from "@/components/HotelFilters";
 import { HotelListItem } from "@/components/HotelListItem";
 import { SearchBar, SearchParams } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { LayoutGrid, List } from "lucide-react";
-import { useState } from "react";
+import { LayoutGrid, List, TableIcon } from "lucide-react";
+import { useMemo, useState } from "react";
 
 const mockHotels: Hotel[] = [
   {
@@ -78,22 +80,123 @@ const mockHotels: Hotel[] = [
   },
 ];
 
+interface FiltersState {
+  priceRange: [number, number];
+  placeTypes: string[];
+  bedrooms: number | null;
+  beds: number | null;
+  bathrooms: number | null;
+  propertyTypes: string[];
+  ratings:number[]
+}
+
 const Hotels = () => {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "table">("grid");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
   const [searchParams, setSearchParams] = useState<SearchParams | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<FiltersState>({
+    priceRange: [0, 50000],
+    placeTypes: [],
+    bedrooms: null,
+    beds: null,
+    bathrooms: null,
+    propertyTypes: [],
+    ratings:[]
+  });
+
+    // Calculate active filters count
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 50000) count++;
+    if (filters.placeTypes.length > 0) count++;
+    if (filters.bedrooms !== null) count++;
+    if (filters.beds !== null) count++;
+    if (filters.bathrooms !== null) count++;
+    if (filters.propertyTypes.length > 0) count++;
+    return count;
+  }, [filters]);
+
+  const clearAllFilters = () => {
+    setFilters({
+      priceRange: [0, 50000],
+      placeTypes: [],
+      bedrooms: null,
+      beds: null,
+      bathrooms: null,
+      propertyTypes: [],
+      ratings:[]
+    });
+    setSelectedCategory(null);
+  };
 
   const filteredHotels = mockHotels.filter((hotel) => {
     const priceMatch = hotel.price >= priceRange[0] && hotel.price <= priceRange[1];
-    const ratingMatch = selectedRatings.length === 0 || selectedRatings.includes(Math.floor(hotel.rating));
+    const ratingMatch = filters?.ratings?.length === 0 || filters?.ratings?.includes(Math.floor(hotel.rating));
     const amenityMatch =
       selectedAmenities.length === 0 ||
       selectedAmenities.every((amenity) => hotel.amenities.includes(amenity));
     return priceMatch && ratingMatch && amenityMatch;
   });
+
+  const columns = [
+    {
+      key: "image",
+      label: "Name",
+      render: (record) => (
+        <div className="flex items-center gap-3">
+          <img src={record.image} className="w-16 h-12 rounded-lg object-cover" />
+          <div>
+            <p className="font-medium line-clamp-1">{record.name}</p>
+          </div>
+        </div>
+      ),
+    },
+    { key: "location", label: "Location" },
+    { key: "reviews", label: "Review's" },
+    { key: "rating", label: "Rating's" },
+    {
+      key: "price",
+      label: "Base Price",
+      render: (record) => (
+        <div className="flex items-center gap-3">
+          <p className="font-medium line-clamp-1">{'Rs.' + record?.price}</p>
+        </div>
+      )
+    },
+    {
+      key: "action",
+      label: "Action",
+      className: "text-center",
+      render: (record) => (
+        <div className="flex items-center gap-2 ">
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedHotel(record);
+            }}
+            size="sm"
+            className="bg-accent hover:bg-accent/90"
+          >
+            Book Now
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    mockHotels.forEach((hotel) => {
+      const category = hotel?.description?.toLowerCase()?.replace(/\s+/g, "-");
+      counts[category] = (counts[category] || 0) + 1;
+    });
+    return counts;
+  }, [mockHotels]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -110,53 +213,74 @@ const Hotels = () => {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Filters Sidebar */}
           <aside className="lg:w-80 flex-shrink-0">
-            <FilterSidebar
-              priceRange={priceRange}
-              onPriceRangeChange={setPriceRange}
-              selectedRatings={selectedRatings}
-              onRatingChange={setSelectedRatings}
-              selectedAmenities={selectedAmenities}
-              onAmenityChange={setSelectedAmenities}
-            />
+            <HotelFilters
+            filters={filters}
+            onFiltersChange={(f) => {
+              setFilters(f);
+              setCurrentPage(1);
+            }}
+            onClearAll={clearAllFilters}
+            activeFiltersCount={activeFiltersCount}
+          />
           </aside>
 
           {/* Hotel Listings */}
-          <div className="flex-1">
+          <div className="flex-1 container mx-auto p-6 max-w-6xl">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">
                 {filteredHotels.length} Properties Found
               </h2>
-              <div className="flex gap-2">
+              <div className="flex items-center border rounded-lg p-1 gap-2">
                 <Button
-                  variant={viewMode === "grid" ? "default" : "outline"}
-                  size="icon"
+                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  size="sm"
                   onClick={() => setViewMode("grid")}
+                  className="gap-1.5"
                 >
                   <LayoutGrid className="h-4 w-4" />
+                  Card View
                 </Button>
                 <Button
-                  variant={viewMode === "list" ? "default" : "outline"}
-                  size="icon"
+                  variant={viewMode === "list" ? "default" : "ghost"}
+                  size="sm"
                   onClick={() => setViewMode("list")}
+                  className="gap-1.5"
                 >
                   <List className="h-4 w-4" />
+                  List View
+                </Button>
+                <Button
+                  variant={viewMode === "table" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("table")}
+                  className="gap-1.5"
+                >
+                  <TableIcon className="h-4 w-4" />
+                  Table View
                 </Button>
               </div>
             </div>
-
+            <CustomCategoryTabs
+              selectedCategory={selectedCategory}
+              onCategoryChange={(cat) => {
+                setSelectedCategory(cat);
+                setCurrentPage(1);
+              }}
+              categoryCounts={categoryCounts}
+            />
             {viewMode === "grid" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredHotels.map((hotel) => (
                   <HotelCard key={hotel.id} hotel={hotel} onBook={setSelectedHotel} />
                 ))}
               </div>
-            ) : (
+            ) : viewMode == 'list' ? (
               <div className="space-y-4">
                 {filteredHotels.map((hotel) => (
                   <HotelListItem key={hotel.id} hotel={hotel} onBook={setSelectedHotel} />
                 ))}
               </div>
-            )}
+            ) : <DynamicTable totalItems={10} columns={columns} data={filteredHotels} />}
           </div>
         </div>
       </main>

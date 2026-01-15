@@ -1,8 +1,14 @@
-import { Search, MapPin, Calendar, Users } from "lucide-react";
+import { Search, MapPin, Users, CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Calendar } from "./ui/calendar";
+import { CustomSelect } from "./custom-ui";
+import { CustomSelectOption } from "./custom-ui/CustomSelectOption";
 
 interface SearchBarProps {
   onSearch: (params: SearchParams) => void;
@@ -19,9 +25,9 @@ export interface SearchParams {
 
 export const SearchBar = ({ onSearch, pageType = "hotel" }: SearchBarProps) => {
   const [destination, setDestination] = useState("");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [guests, setGuests] = useState(2);
+  const [checkIn, setCheckIn] = useState<Date>();
+  const [checkOut, setCheckOut] = useState<Date>();
+  const [guests, setGuests] = useState('2');
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = () => {
@@ -45,30 +51,50 @@ export const SearchBar = ({ onSearch, pageType = "hotel" }: SearchBarProps) => {
           />
         </div>
         <div>
-          <Label htmlFor="checkIn" className="text-sm font-medium mb-2 flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-primary" />
+            <Label htmlFor="checkIn" className="text-sm font-medium mb-2 flex items-center gap-2">
+            <CalendarIcon className="h-4 w-4 text-primary" />
             Check-in
           </Label>
-          <Input
-            id="checkIn"
-            type="date"
-            value={checkIn}
-            onChange={(e) => setCheckIn(e.target.value)}
-            className="w-full"
-          />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !checkIn && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {checkIn ? format(checkIn, "MMM d, yyyy") : "Select date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={checkIn} onSelect={setCheckIn} />
+              </PopoverContent>
+            </Popover>
         </div>
         <div>
           <Label htmlFor="checkOut" className="text-sm font-medium mb-2 flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-primary" />
+            <CalendarIcon className="h-4 w-4 text-primary" />
             Check-out
           </Label>
-          <Input
-            id="checkOut"
-            type="date"
-            value={checkOut}
-            onChange={(e) => setCheckOut(e.target.value)}
-            className="w-full"
-          />
+          <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !checkIn && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {checkIn ? format(checkIn, "MMM d, yyyy") : "Select date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={checkOut} onSelect={setCheckOut} />
+              </PopoverContent>
+            </Popover>
         </div>
         <div>
           <Label htmlFor="guests" className="text-sm font-medium mb-2 flex items-center gap-2">
@@ -76,13 +102,14 @@ export const SearchBar = ({ onSearch, pageType = "hotel" }: SearchBarProps) => {
             Guests
           </Label>
           <div className="flex gap-2">
-            <Input
-              id="guests"
-              type="number"
-              min="1"
-              value={guests}
-              onChange={(e) => setGuests(parseInt(e.target.value))}
-              className="w-full"
+            <CustomSelectOption
+                prefixIcon={ <Users className="h-4 w-4 text-primary" />}
+                options={[{label:"1 Adult",value:"1"},{label:"2 Adults",value:"2"}]}
+                // setValue={setValue}
+                value={guests}
+                searchable
+                allowClear
+                
             />
             <Button onClick={handleSearch} className="bg-accent hover:bg-accent/90">
               <Search className="h-4 w-4" />
