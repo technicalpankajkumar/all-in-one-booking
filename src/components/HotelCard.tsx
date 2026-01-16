@@ -3,18 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { Hotel } from "@/data/types";
 
-export interface Hotel {
-  id: number;
-  name: string;
-  location: string;
-  rating: number;
-  reviews: number;
-  price: number;
-  image: string;
-  amenities: string[];
-  description: string;
-}
 
 interface HotelCardProps {
   hotel: Hotel;
@@ -37,8 +27,8 @@ export const HotelCard = ({ hotel, onBook }: HotelCardProps) => {
     >
       <div className="relative h-52 overflow-hidden">
         <img
-          src={hotel.image}
-          alt={hotel.name}
+          src={hotel?.images?.[0]}
+          alt={hotel?.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
         <Badge className="absolute top-3 right-3 bg-accent text-accent-foreground">
@@ -57,31 +47,13 @@ export const HotelCard = ({ hotel, onBook }: HotelCardProps) => {
         </div>
         <div className="flex items-center gap-1 text-sm text-muted-foreground mb-3">
           <MapPin className="h-4 w-4" />
-          <span>{hotel.location}</span>
+          <span>{hotel?.location?.address}</span>
+          <span>{hotel?.location?.pincode}</span>
         </div>
         <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{hotel.description}</p>
-        <div className="flex items-center gap-2 mb-4 flex-wrap">
-          {hotel.amenities.slice(0, 3).map((amenity) => {
-            const Icon = amenityIcons[amenity];
-            return (
-              <Badge key={amenity} variant="secondary" className="text-xs gap-1">
-                {Icon && <Icon className="h-3 w-3" />}
-                {amenity}
-              </Badge>
-            );
-          })}
-        </div>
         <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">{hotel.reviews} reviews</div>
-          <Button 
-            onClick={(e) => {
-              e.stopPropagation();
-              onBook(hotel);
-            }} 
-            className="bg-primary hover:bg-primary/90"
-          >
-            Book Now
-          </Button>
+          <div className="text-sm text-muted-foreground">{hotel?.rating} reviews {`(${hotel?.reviewCount})`}</div>
+          <div className="text-sm text-muted-foreground"><span className="text-sm font-semibold">Category</span> {hotel?.category} </div>           
         </div>
       </div>
     </Card>

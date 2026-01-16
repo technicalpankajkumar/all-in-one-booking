@@ -18,7 +18,7 @@ export const ReviewsSection = ({ reviews, overallRating }: ReviewsSectionProps) 
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
   const [showFilters, setShowFilters] = useState(false);
-
+console.log(reviews,'reviews')
   // Calculate rating distribution
   const ratingDistribution = useMemo(() => {
     const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };

@@ -248,6 +248,7 @@ export interface Hotel {
   name: string;
   description: string;
   category: string;
+  price:number;
   location: {
     address: string;
     city: string;

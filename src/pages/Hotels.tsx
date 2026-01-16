@@ -8,6 +8,7 @@ import { HotelListItem } from "@/components/HotelListItem";
 import { SearchBar, SearchParams } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DEMO_HOTELS } from "@/data/data";
 import { LayoutGrid, List, TableIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -92,7 +93,6 @@ interface FiltersState {
 
 const Hotels = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list" | "table">("grid");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
@@ -138,14 +138,82 @@ const Hotels = () => {
     setSelectedCategory(null);
   };
 
-  const filteredHotels = mockHotels.filter((hotel) => {
-    const priceMatch = hotel.price >= priceRange[0] && hotel.price <= priceRange[1];
-    const ratingMatch = filters?.ratings?.length === 0 || filters?.ratings?.includes(Math.floor(hotel.rating));
-    const amenityMatch =
-      selectedAmenities.length === 0 ||
-      selectedAmenities.every((amenity) => hotel.amenities.includes(amenity));
-    return priceMatch && ratingMatch && amenityMatch;
-  });
+const filteredHotels = useMemo(() => {
+    let result = [...DEMO_HOTELS];
+
+    // Filter by category
+    if (selectedCategory) {
+      result = result.filter(
+        (hotel) =>
+          hotel.category.toLowerCase().replace(/\s+/g, "-") === selectedCategory
+      );
+    }
+
+    // Filter by price range
+    result = result.filter((hotel) => {
+      const minPrice = hotel.roomTypes.reduce((min, room) => {
+        const roomMin = room.plans.reduce(
+          (pMin, plan) => Math.min(pMin, plan.discountedPrice),
+          Infinity
+        );
+        return Math.min(min, roomMin);
+      }, Infinity);
+      return (
+        minPrice >= filters.priceRange[0] && minPrice <= filters.priceRange[1]
+      );
+    });
+
+    // Sort
+    // switch (sortBy) {
+    //   case "price-low":
+    //     result.sort((a, b) => {
+    //       const aMin = a.roomTypes.reduce(
+    //         (min, r) =>
+    //           Math.min(
+    //             min,
+    //             r.plans.reduce((m, p) => Math.min(m, p.discountedPrice), Infinity)
+    //           ),
+    //         Infinity
+    //       );
+    //       const bMin = b.roomTypes.reduce(
+    //         (min, r) =>
+    //           Math.min(
+    //             min,
+    //             r.plans.reduce((m, p) => Math.min(m, p.discountedPrice), Infinity)
+    //           ),
+    //         Infinity
+    //       );
+    //       return aMin - bMin;
+    //     });
+    //     break;
+    //   case "price-high":
+    //     result.sort((a, b) => {
+    //       const aMin = a.roomTypes.reduce(
+    //         (min, r) =>
+    //           Math.min(
+    //             min,
+    //             r.plans.reduce((m, p) => Math.min(m, p.discountedPrice), Infinity)
+    //           ),
+    //         Infinity
+    //       );
+    //       const bMin = b.roomTypes.reduce(
+    //         (min, r) =>
+    //           Math.min(
+    //             min,
+    //             r.plans.reduce((m, p) => Math.min(m, p.discountedPrice), Infinity)
+    //           ),
+    //         Infinity
+    //       );
+    //       return bMin - aMin;
+    //     });
+    //     break;
+    //   default:
+    //     // Latest - keep original order
+    //     break;
+    // }
+
+    return result;
+  }, [DEMO_HOTELS, selectedCategory, filters]);
 
   const columns = [
     {
@@ -195,12 +263,12 @@ const Hotels = () => {
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    mockHotels.forEach((hotel) => {
+    DEMO_HOTELS?.forEach((hotel) => {
       const category = hotel?.description && hotel?.description?.toLowerCase()?.replace(/\s+/g, "-");
       counts[category] = (counts[category] || 0) + 1;
     });
     return counts;
-  }, [mockHotels]);
+  }, [DEMO_HOTELS]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -274,13 +342,13 @@ const Hotels = () => {
             />
             {viewMode === "grid" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredHotels.map((hotel) => (
+                {filteredHotels?.map((hotel) => (
                   <HotelCard key={hotel.id} hotel={hotel} onBook={handleViewHotel} />
                 ))}
               </div>
             ) : viewMode == 'list' ? (
               <div className="space-y-4">
-                {filteredHotels.map((hotel) => (
+                {filteredHotels?.map((hotel) => (
                   <HotelListItem key={hotel.id} hotel={hotel} onBook={handleViewHotel} />
                 ))}
               </div>

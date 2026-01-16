@@ -26,10 +26,10 @@ import {
   Eye,
   Bath,
 } from "lucide-react";
-import { Hotel } from "@/components/HotelCard";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Booking, RoomPlan, RoomType } from "@/data/types";
+import { Booking, Hotel, RoomPlan, RoomType } from "@/data/types";
+import { ReviewRatings } from "@/components/ReviewRatings";
 
 const amenityIcons: Record<string, any> = {
   "Free WiFi": Wifi,
@@ -43,8 +43,8 @@ const amenityIcons: Record<string, any> = {
 };
 
 // Mock reviews data
-const mockReviews: Record<number, Review[]> = {
-  1: [
+const mockReviews: Record<number | string, Review[]> = {
+  'demo-1': [
     {
       id: 1,
       userName: "Sarah Johnson",
@@ -84,7 +84,7 @@ const mockReviews: Record<number, Review[]> = {
       categories: { cleanliness: 5.0, service: 5.0, facilities: 4.5, location: 4.8 },
     },
   ],
-  2: [
+  'demo-2': [
     {
       id: 4,
       userName: "David Martinez",
@@ -112,7 +112,7 @@ const mockReviews: Record<number, Review[]> = {
       categories: { cleanliness: 4.5, service: 4.2, facilities: 4.5, location: 5.0 },
     },
   ],
-  3: [
+  'demo-3': [
     {
       id: 6,
       userName: "James Anderson",
@@ -126,7 +126,7 @@ const mockReviews: Record<number, Review[]> = {
       categories: { cleanliness: 5.0, service: 5.0, facilities: 5.0, location: 5.0 },
     },
   ],
-  4: [
+  'demo-4': [
     {
       id: 7,
       userName: "Lisa Thompson",
@@ -139,7 +139,7 @@ const mockReviews: Record<number, Review[]> = {
       categories: { cleanliness: 4.8, service: 4.5, facilities: 4.4, location: 5.0 },
     },
   ],
-  5: [
+  'demo-5': [
     {
       id: 8,
       userName: "Robert Lee",
@@ -152,7 +152,7 @@ const mockReviews: Record<number, Review[]> = {
       categories: { cleanliness: 4.5, service: 4.3, facilities: 4.2, location: 4.8 },
     },
   ],
-  6: [
+  'demo-6': [
     {
       id: 9,
       userName: "Patricia Brown",
@@ -168,165 +168,6 @@ const mockReviews: Record<number, Review[]> = {
   ],
 };
 
-// Extended mock data with more images
-const mockHotelsDetailed: Record<number, Hotel & { images: string[]; fullDescription: string; facilities: string[] }> = {
-  1: {
-    id: 1,
-    name: "Grand Plaza Hotel",
-    location: "New York, NY",
-    rating: 4.8,
-    reviews: 234,
-    price: 299,
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80",
-    amenities: ["Free WiFi", "Parking", "Pool", "Spa"],
-    description: "Luxurious 5-star hotel in the heart of Manhattan with stunning city views and world-class amenities.",
-    images: [
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80",
-      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80",
-      "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800&q=80",
-      "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800&q=80",
-      "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&q=80",
-      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80",
-    ],
-    fullDescription:
-      "Experience unparalleled luxury at the Grand Plaza Hotel, a prestigious 5-star establishment located in the heart of Manhattan. Our hotel combines classic elegance with modern sophistication, offering breathtaking views of the New York City skyline. Each room is meticulously designed with premium furnishings, marble bathrooms, and state-of-the-art technology to ensure your comfort and convenience. Indulge in world-class dining at our Michelin-starred restaurant, relax in our rooftop infinity pool, or rejuvenate at our award-winning spa. Whether you're visiting for business or pleasure, our dedicated concierge team is ready to make your stay unforgettable.",
-    facilities: [
-      "24/7 Concierge Service",
-      "Rooftop Infinity Pool",
-      "Michelin-Starred Restaurant",
-      "Full-Service Spa",
-      "State-of-the-Art Fitness Center",
-      "Business Center",
-      "Valet Parking",
-      "Room Service",
-    ],
-  },
-  2: {
-    id: 2,
-    name: "Beachfront Resort",
-    location: "Miami, FL",
-    rating: 4.6,
-    reviews: 189,
-    price: 450,
-    image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80",
-    amenities: ["Free WiFi", "Pool", "Beach Access", "Restaurant"],
-    description: "Tropical paradise with private beach access, infinity pools, and oceanfront suites.",
-    images: [
-      "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&q=80",
-      "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800&q=80",
-      "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=800&q=80",
-      "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800&q=80",
-      "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=800&q=80",
-    ],
-    fullDescription:
-      "Escape to paradise at our stunning Beachfront Resort in Miami. Wake up to the sound of waves and enjoy direct access to pristine white sandy beaches. Our resort features spacious oceanfront suites with private balconies, multiple infinity pools, and world-class dining options. Spend your days lounging by the pool, enjoying water sports, or being pampered at our beachside spa. As the sun sets, savor fresh seafood and cocktails at our beachfront restaurant while watching the colors dance across the ocean.",
-    facilities: [
-      "Private Beach Access",
-      "Multiple Swimming Pools",
-      "Water Sports Center",
-      "Beachside Spa",
-      "Oceanfront Dining",
-      "Beach Cabanas",
-      "Kids Club",
-      "Poolside Bar",
-    ],
-  },
-  3: {
-    id: 3,
-    name: "Mountain Lodge",
-    location: "Aspen, CO",
-    rating: 4.9,
-    reviews: 156,
-    price: 380,
-    image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&q=80",
-    amenities: ["Free WiFi", "Parking", "Gym", "Pet Friendly"],
-    description: "Cozy mountain retreat with ski-in/ski-out access and breathtaking alpine views.",
-    images: [
-      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1200&q=80",
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-      "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=800&q=80",
-      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80",
-      "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80",
-    ],
-    fullDescription:
-      "Nestled in the heart of the Rocky Mountains, our Mountain Lodge offers the ultimate alpine getaway. Enjoy ski-in/ski-out access during winter months and world-class hiking trails in summer. Our rustic yet luxurious rooms feature stone fireplaces, plush bedding, and panoramic mountain views. After a day on the slopes, unwind in our heated outdoor pool or enjoy après-ski cocktails by the fire pit.",
-    facilities: [
-      "Ski-In/Ski-Out Access",
-      "Heated Outdoor Pool",
-      "Mountain View Restaurant",
-      "Ski Equipment Rental",
-      "Fireside Lounge",
-      "Hiking Trail Access",
-      "Pet-Friendly Rooms",
-      "Outdoor Fire Pits",
-    ],
-  },
-  4: {
-    id: 4,
-    name: "Downtown Boutique Hotel",
-    location: "San Francisco, CA",
-    rating: 4.7,
-    reviews: 312,
-    price: 220,
-    image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80",
-    amenities: ["Free WiFi", "Restaurant", "Gym"],
-    description: "Modern boutique hotel in the vibrant downtown area, perfect for urban explorers.",
-    images: [
-      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=1200&q=80",
-      "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800&q=80",
-      "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80",
-      "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80",
-    ],
-    fullDescription:
-      "Discover San Francisco from our stylish Downtown Boutique Hotel. Located in the heart of the city, you'll be steps away from iconic attractions, world-class dining, and vibrant nightlife. Our modern rooms blend contemporary design with comfort, featuring curated local art and premium amenities.",
-    facilities: [
-      "Prime Downtown Location",
-      "Modern Fitness Center",
-      "Farm-to-Table Restaurant",
-      "Rooftop Terrace",
-      "Business Facilities",
-      "Daily Coffee Service",
-    ],
-  },
-  5: {
-    id: 5,
-    name: "Lakeside Inn",
-    location: "Lake Tahoe, NV",
-    rating: 4.5,
-    reviews: 98,
-    price: 175,
-    image: "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800&q=80",
-    amenities: ["Free WiFi", "Parking", "Beach Access"],
-    description: "Charming lakeside property with water sports, fishing, and serene natural beauty.",
-    images: [
-      "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=1200&q=80",
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-      "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800&q=80",
-    ],
-    fullDescription:
-      "Relax by the pristine waters of Lake Tahoe at our cozy Lakeside Inn. Perfect for nature lovers, our property offers direct lake access, kayaking, paddle boarding, and fishing. Unwind on your private deck overlooking the crystal-clear waters.",
-    facilities: ["Lake Access", "Water Sports Equipment", "Fishing Dock", "Outdoor Seating", "BBQ Area"],
-  },
-  6: {
-    id: 6,
-    name: "Historic Manor",
-    location: "Charleston, SC",
-    rating: 4.8,
-    reviews: 201,
-    price: 340,
-    image: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80",
-    amenities: ["Free WiFi", "Spa", "Restaurant", "Parking"],
-    description: "Elegant historic mansion transformed into a luxury hotel with southern charm and hospitality.",
-    images: [
-      "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1200&q=80",
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80",
-      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80",
-    ],
-    fullDescription:
-      "Step back in time at our Historic Manor in Charleston. This beautifully restored 19th-century mansion combines period charm with modern luxury. Enjoy southern hospitality, fine dining, and gracious accommodations in the heart of Charleston's historic district.",
-    facilities: ["Historic Architecture", "Fine Dining", "Garden Terrace", "Full-Service Spa", "Valet Service"],
-  },
-};
 interface HotelDetailsProps {
   hotel?: Hotel;
   onBack: () => void;
@@ -354,8 +195,6 @@ const categoryLabels: Record<string, string> = {
 const HotelDetails = ({ 
   onBack, 
   onBookNow,
-  reviews = [],
-  onAddReview,
   userBookings = [],
   currentUserId,
 }: HotelDetailsProps) => {
@@ -364,11 +203,11 @@ const HotelDetails = ({
   console.log(state,'state')
   const navigate = useNavigate();
   const [showBookingForm, setShowBookingForm] = useState(false);
+  const [reviews,setReviews] = useState(mockReviews[id] || [])
+  const hotel = state;
+  const hotelReviews = mockReviews[id] || [];
 
-  const hotel = mockHotelsDetailed[parseInt(id || "1")];
-  const hotelReviews = mockReviews[parseInt(id || "1")] || [];
-
-  const hasAmenities = Object.values(hotel.amenities).some((arr) => arr.length > 0);
+  const hasAmenities = Object.values(hotel?.amenities).some((arr) => arr?.length > 0);
   if (!hotel) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -380,6 +219,15 @@ const HotelDetails = ({
     );
   }
 
+  const addReview = (review: Omit<Review, "id" | "createdAt" | "helpful">) => {
+    const newReview: Review = {
+      ...review,
+      id: `rev-${Date.now()}`,
+      createdAt: String(new Date()),
+      helpful: 0,
+    };
+    setReviews((prev) => [newReview, ...prev]);
+  };
   return (
     <div className="min-h-screen bg-background ">
       {/* Header */}
@@ -399,7 +247,7 @@ const HotelDetails = ({
               <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
                 <span>
-                  {hotel?.location && `${hotel?.location}, `}
+                  {hotel?.location?.address && `${hotel?.location?.address}, `}
                   {hotel?.location?.city}
                   {hotel?.location?.state && `, ${hotel?.location?.state}`}
                   {hotel?.location?.pincode && ` - ${hotel?.location?.pincode}`}
@@ -526,6 +374,16 @@ const HotelDetails = ({
               </div>
             </Card>
           ))}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Reviews Section */}
+            <div>
+              <h2 className="text-2xl font-semibold mb-6">Guest Reviews For Hotel</h2>
+              <ReviewsSection reviews={hotelReviews} overallRating={hotel.rating} />
+            </div>
+          </div>
+        </div>
         </TabsContent>
 
         <TabsContent value="amenities" className="mt-6">
@@ -534,19 +392,19 @@ const HotelDetails = ({
               {hasAmenities ? (
                 <div className="space-y-6">
                   {Object.entries(hotel.amenities).map(([category, items]) => {
-                    if (items.length === 0) return null;
+                    if (items?.length === 0) return null;
                     return (
                       <div key={category}>
                         <h3 className="font-semibold text-foreground border-b pb-2 mb-3">
                           {categoryLabels[category]}
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                          {/* {items && items?.map((item) => (
+                          {items && items?.map((item) => (
                             <div key={item} className="flex items-center gap-2 text-sm">
                               <Check className="h-4 w-4 text-green-600" />
                               <span>{item}</span>
                             </div>
-                          ))} */}
+                          ))}
                         </div>
                       </div>
                     );
@@ -562,15 +420,14 @@ const HotelDetails = ({
         </TabsContent>
 
         <TabsContent value="reviews" className="mt-6">
-          {'onAddReview' ? (
-            // <ReviewsRatings
-            //   hotel={hotel}
-            //   reviews={reviews}
-            //   onAddReview={onAddReview}
-            //   userBookings={userBookings}
-            //   currentUserId={currentUserId}
-            // />
-            <></>
+          {addReview ? (
+            <ReviewRatings
+              hotel={hotel}
+              reviews={reviews}
+              onAddReview={addReview}
+              userBookings={userBookings}
+              currentUserId={currentUserId}
+            />
           ) : (
             <Card>
               <CardContent className="py-8 text-center text-muted-foreground">
@@ -580,19 +437,6 @@ const HotelDetails = ({
           )}
         </TabsContent>
       </Tabs>
-      </div>
-      {/* Hotel Information */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Reviews Section */}
-            <div>
-              <h2 className="text-2xl font-semibold mb-6">Guest Reviews</h2>
-              <ReviewsSection reviews={hotelReviews} overallRating={hotel.rating} />
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Booking Dialog */}

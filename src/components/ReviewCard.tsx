@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 
 export interface Review {
-  id: number;
+  id: number | string;
   userName: string;
   userAvatar?: string;
   rating: number;
@@ -20,6 +20,7 @@ export interface Review {
     facilities: number;
     location: number;
   };
+  createdAt?:string;
 }
 
 interface ReviewCardProps {
