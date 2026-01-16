@@ -282,12 +282,13 @@ const HotelDetails = ({
         </TabsList>
        <TabsContent value="rooms" className="mt-6 space-y-6">
           {hotel?.roomTypes && hotel?.roomTypes?.map((room) => (
-            <Card key={room?.id} className="overflow-hidden">
+            <Card key={room?.id} className="overflow-hidden shadow-lg">
               <div className="flex flex-col lg:flex-row">
                 {/* Room Info Left Side */}
                 <div className="lg:w-1/3 p-4 border-r border-border">
-                  <div className="bg-muted rounded-lg h-40 flex items-center justify-center mb-4">
-                    <Bed className="h-16 w-16 text-muted-foreground/50" />
+                  <div className="bg-muted rounded-lg h-40 flex items-center justify-center mb-4 shadow-sm">
+                    <img src="https://images.pexels.com/photos/5371573/pexels-photo-5371573.jpeg"  
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 shadow-sm rounded-md"/>
                   </div>
                   <h3 className="font-semibold text-lg mb-3">{room?.name || "Room Type"}</h3>
                   <div className="space-y-2 text-sm text-muted-foreground">
@@ -328,7 +329,7 @@ const HotelDetails = ({
                       {room?.plans && room?.plans?.map((plan) => (
                         <div
                           key={plan?.id}
-                          className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg hover:border-primary/50 transition-colors"
+                          className="flex flex-col shadow-md md:flex-row md:items-center justify-between p-4 border rounded-lg hover:border-primary/50 transition-colors"
                         >
                           <div className="flex-1">
                             <h4 className="font-medium text-primary">{plan?.name}</h4>
@@ -356,7 +357,8 @@ const HotelDetails = ({
                               +₹{plan?.taxesAndFees} Taxes & Fees per night
                             </div>
                             <Button 
-                              className="mt-2 bg-teal-600 hover:bg-teal-700"
+                             size="sm"
+                             className="mt-4"
                               onClick={() => onBookNow?.(room, plan)}
                             >
                               BOOK NOW
