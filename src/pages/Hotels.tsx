@@ -108,6 +108,10 @@ const Hotels = () => {
     propertyTypes: [],
     ratings:[]
   });
+  const handleViewHotel = (hotel: Hotel) => {
+    setSelectedHotel(hotel);
+    // setView("view");
+  };
 
     // Calculate active filters count
   const activeFiltersCount = useMemo(() => {
@@ -177,7 +181,7 @@ const Hotels = () => {
           <Button
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedHotel(record);
+              handleViewHotel(record);
             }}
             size="sm"
             className="bg-accent hover:bg-accent/90"
@@ -192,7 +196,7 @@ const Hotels = () => {
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     mockHotels.forEach((hotel) => {
-      const category = hotel?.description?.toLowerCase()?.replace(/\s+/g, "-");
+      const category = hotel?.description && hotel?.description?.toLowerCase()?.replace(/\s+/g, "-");
       counts[category] = (counts[category] || 0) + 1;
     });
     return counts;
@@ -271,13 +275,13 @@ const Hotels = () => {
             {viewMode === "grid" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredHotels.map((hotel) => (
-                  <HotelCard key={hotel.id} hotel={hotel} onBook={setSelectedHotel} />
+                  <HotelCard key={hotel.id} hotel={hotel} onBook={handleViewHotel} />
                 ))}
               </div>
             ) : viewMode == 'list' ? (
               <div className="space-y-4">
                 {filteredHotels.map((hotel) => (
-                  <HotelListItem key={hotel.id} hotel={hotel} onBook={setSelectedHotel} />
+                  <HotelListItem key={hotel.id} hotel={hotel} onBook={handleViewHotel} />
                 ))}
               </div>
             ) : <DynamicTable totalItems={10} columns={columns} data={filteredHotels} />}

@@ -33,7 +33,7 @@ export const HotelCard = ({ hotel, onBook }: HotelCardProps) => {
   return (
     <Card 
       className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
-      onClick={() => navigate(`/hotel/${hotel.id}`)}
+      onClick={() => navigate(`/hotel/${hotel.id}`,{state:hotel})}
     >
       <div className="relative h-52 overflow-hidden">
         <img
